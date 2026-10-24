@@ -1,0 +1,21 @@
+# Third-party notices
+
+This file lists licenses for the locked Rust dependencies used to build Clowder
+for macOS and Linux. It includes build dependencies. Clowder's own license is in
+`LICENSE`. Regenerate this file with `script/update-rust-licenses` after changing
+`Cargo.lock` or the supported targets in `about.toml`.
+
+{{#each licenses}}
+## {{name}} ({{id}})
+
+Used by:
+
+{{#each used_by}}
+- {{crate.name}} {{crate.version}}{{#if crate.repository}} — {{crate.repository}}{{/if}}
+{{/each}}
+
+```text
+{{{text}}}
+```
+
+{{/each}}

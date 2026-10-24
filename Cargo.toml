@@ -12,6 +12,8 @@ include = [
     "/clowder/clowder.schema.json", "/LICENSE", "/README.md",
     "/docs/rust-*.md", "/TODO.md", "/script/package-rust",
     "/completions/**",
+    "/about.toml", "/docs/rust-licenses.hbs", "/THIRD-PARTY-NOTICES.md",
+    "/script/update-rust-licenses",
     "/tests/rust_cli.rs", "/tests/data/rust/**",
 ]
 

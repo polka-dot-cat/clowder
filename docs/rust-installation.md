@@ -83,10 +83,23 @@ script/package-rust
 ```
 
 `script/package-rust` writes a `.tar.gz` and SHA-256 file under `dist/rust/`.
-The archive contains the binary, shell completion files, this guide, and the license. It does not upload
-files, create a tag, or publish a release. An optional target triple selects a
+The archive contains the binary, shell completion files, this guide, the project
+license, and dependency notices. It does not upload files, create a tag, or publish
+a release. An optional target triple selects a
 different installed Rust target; its linker and system libraries must also be
 available. Build on each target platform unless a cross toolchain is configured.
+
+After changing Rust dependencies, regenerate `THIRD-PARTY-NOTICES.md` before
+packaging. The archive helper checks that its recorded lockfile digest matches.
+Notice generation uses the pinned [cargo-about](https://embarkstudios.github.io/cargo-about/)
+tool; normal builds and archive packaging do not require it:
+
+```sh
+cargo install cargo-about --version 0.9.2 --features cli --locked
+script/update-rust-licenses
+```
+
+Review the generated notices and any new license types with dependency updates.
 
 GNU Linux binaries depend on the build system's glibc baseline. A macOS binary
 depends on its build deployment target. Record those minimum operating system
