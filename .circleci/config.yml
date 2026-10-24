@@ -327,11 +327,13 @@ jobs:
             python -m pip install --upgrade 'pip<25' setuptools==67.8.0 wheel==0.40.0
             python -m pip install -r requirements.txt
       - run:
-          name: Run read-only BDD scenarios against the native CLI
+          name: Measure native coverage with local and read-only BDD scenarios
           no_output_timeout: 15m
           command: |
+            rustup component add llvm-tools-preview
+            cargo install cargo-llvm-cov --version 0.9.1 --locked
             mkdir -p temp build/junit build/cucumber
-            python -m pytest tests/functional -v -n 4 --tb=short \
+            script/coverage-rust -- python -m pytest tests/functional -v -n 4 --tb=short \
               --basetemp=temp/rust -m 'not ssh and not offline and not write and not lfs' \
               --junitxml=build/junit/rust.xml --cucumberjson=build/cucumber/rust.json
       - store_test_results:
