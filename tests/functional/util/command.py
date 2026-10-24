@@ -45,8 +45,10 @@ def _process_clowder_commands(command: str) -> str:
     executable = os.environ.get('CLOWDER_EXECUTABLE')
     if executable:
         replacement = shlex.quote(executable)
-    else:
+    elif os.environ.get('CLOWDER_IMPLEMENTATION') == 'python':
         replacement = f'{shlex.quote(sys.executable)} -m clowder.app'
+    else:
+        raise RuntimeError('The native CLI was not selected; run through pytest or set CLOWDER_EXECUTABLE')
     output = re.sub(pattern, lambda match: replacement, command)
 
     return output

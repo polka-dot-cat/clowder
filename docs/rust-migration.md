@@ -33,7 +33,8 @@ cargo clippy --all-targets -- -D warnings
 cargo test --locked
 ```
 
-Use the existing Python test environment to run the BDD suite against Rust:
+Use the existing Python test environment to run the BDD suite. It builds the
+native executable once before starting workers, or accepts an explicit binary:
 
 ```sh
 export CLOWDER_EXECUTABLE="$PWD/target/debug/clowder"
@@ -42,7 +43,9 @@ pipenv run python -m pytest tests/functional -q \
   -m 'not ssh and not offline and not write and not lfs'
 ```
 
-Unset `CLOWDER_EXECUTABLE` to compare with Python. The Rust build itself needs
+To compare with Python, unset `CLOWDER_EXECUTABLE` and set
+`CLOWDER_IMPLEMENTATION=python`. The harness also routes Git aliases to that
+reference interpreter. The Rust build itself needs
 no Python installation. Git handles credentials, transports, and repository
 configuration. Git LFS is needed only for manifests that enable LFS.
 

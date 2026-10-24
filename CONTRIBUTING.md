@@ -13,7 +13,8 @@ cargo test --locked
 ```
 
 Keep the Gherkin features unchanged. With the existing Python test dependencies
-installed, select the native executable for the functional harness:
+installed, pytest builds/selects the native CLI by default. An explicit executable
+can select another native build:
 
 ```sh
 export CLOWDER_EXECUTABLE="$PWD/target/debug/clowder"
@@ -25,6 +26,8 @@ Use the interpreter from your test environment. This selection still uses public
 Git repositories. Run offline, LFS, and write scenarios in disposable or serialized
 environments as described in `AGENTS.md`. The Rust unit/integration tests use
 temporary local repositories and do not need credentials or Python.
+To compare behavior with Python, unset `CLOWDER_EXECUTABLE` and set
+`CLOWDER_IMPLEMENTATION=python`.
 
 See [the migration guide](docs/rust-migration.md) and
 [native packaging instructions](docs/rust-installation.md). The legacy setup

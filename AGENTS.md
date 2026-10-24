@@ -26,9 +26,10 @@ executable must not invoke Python to implement commands. Preserve all current
 Gherkin feature files.
 
 Use `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
-`cargo test --locked`. Build with `cargo build --locked`, then set
-`CLOWDER_EXECUTABLE` to the absolute `target/debug/clowder` path when running
-pytest. The existing network, SSH, remote-write, and LFS precautions below
+`cargo test --locked`. Pytest builds and selects the native binary by default.
+Set `CLOWDER_EXECUTABLE` to an absolute executable path to test an existing build.
+For the Python reference, unset that variable and set `CLOWDER_IMPLEMENTATION=python`.
+The existing network, SSH, remote-write, and LFS precautions below
 still apply. `tests/rust_cli.rs` uses temporary repositories and captured Python
 output in `tests/data/rust/` for local regression checks.
 
@@ -37,6 +38,10 @@ workspace-specific help tables are generated in Rust. Git remains an external
 runtime dependency. Each worker owns its subprocess working directory,
 environment, and output; do not change the process directory or environment
 inside parallel operations.
+
+`completions/` contains native Bash and Zsh wrappers. They invoke the executable
+with `CLOWDER_COMPLETE=1`; completion may read local manifests and refs but must
+not run a command handler or contact a remote.
 
 | Location | Purpose |
 | --- | --- |
