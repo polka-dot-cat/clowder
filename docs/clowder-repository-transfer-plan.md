@@ -2,7 +2,9 @@
 
 Implementation started on October 23, 2026. See the
 [progress record](clowder-repository-transfer-status.md) for completed work,
-validation results, and the deleted test-fork assessment.
+validation results, and the deleted test-fork assessment. The owner transferred
+the repository and merged PR #641 on October 24; the planned manifest cutover
+is complete. The remaining work is CI cleanup and hosted validation.
 
 ## Recommended approach
 
@@ -73,17 +75,24 @@ with the owner's approval. Qlty and Codecov are also deferred: the legacy Code
 Climate webhook is disabled, coverage uploads remain off, and separate
 [TODOs](https://github.com/polka-dot-cat/clowder/blob/master/TODO.md#deferred-reporting-integrations--after-transfer) cover later
 reactivation. They are not transfer prerequisites.
-CircleCI is retained; account access and checkout are
-restored, while its repaired write-test job still needs validation.
-The owner registered that job's separate additional SSH key with GitHub and
-started a rerun. The preflight record contains its fingerprint and recovery
-instructions. All 89 write
-cases pass against isolated local fixtures, but hosted SSH validation is pending.
+CircleCI is retained; account access, checkout, and hosted write tests are
+restored. After the owner registered the separate additional SSH key with
+GitHub, [job 2982](https://circleci.com/gh/polka-dot-cat/clowder/2982) passed all 89
+write cases with no failures or skips. The required GitHub status is successful.
+The owner confirmed CircleCI's GitHub OAuth access to `polka-dot-cat` is granted.
+After transfer, verify the project's configuration, keys, and required status.
+The preflight record contains the hosted evidence and key recovery history.
 Keep the remaining service checks distinct from successful GitHub webhook delivery.
 
 ### 4. Transfer ownership
 
 In the existing repository, open **Settings → General → Danger Zone → Transfer**. Select `polka-dot-cat`, retain the name `clowder`, review GitHub’s transfer details, and complete the transfer.
+
+The ownership transfer can proceed while PR checks are running. The owner elected to merge PR #641 before its latest checks completed;
+that validation remains explicitly pending. Let any old-path CircleCI write jobs finish before
+triggering jobs at the new path: the serial group uses `pipeline.project.slug`,
+so jobs using the two paths could otherwise mutate the shared fixtures at once.
+Recheck CI after transfer and rerun interrupted checks as needed.
 
 Update each local clone’s remote:
 
@@ -126,16 +135,16 @@ If validation fails, restore the affected configuration or revert the migration 
 
 ## Completion checks
 
-- [ ] `polka-dot-cat/clowder` is the intended public repository, with the expected admins and collaborators.
-- [ ] Branches, tags, releases, issues, and pull requests match the pre-transfer inventory.
-- [ ] Branch protections and required checks are reviewed under the organization.
-- [ ] Old repository links redirect, and local clones use the new remote.
+- [x] `polka-dot-cat/clowder` is the intended public repository, with the expected admins and collaborators.
+- [x] Branches, tags, releases, issues, and pull requests match the pre-transfer inventory.
+- [x] Branch protections and required checks are reviewed under the organization.
+- [x] Old repository links redirect, and local clones use the new remote.
 - [x] Website DNS, Pages, and domain-verification work is explicitly deferred to its own TODO; website availability does not block transfer completion.
 - [x] Read the Docs is explicitly deferred; its GitHub webhook is disabled and build badges are removed.
 - [x] Qlty and Codecov are explicitly deferred, with uploads inactive, the legacy Code Climate webhook disabled, badges removed, and separate follow-up TODOs.
 - [ ] Retained CI and reporting services can access the repository.
-- [ ] Active test manifests and Clowder assertions use the agreed repository mapping.
+- [x] Active test manifests and Clowder assertions use the agreed repository mapping.
 - [ ] Focused migration tests pass; any unrelated build or environment failures are recorded separately.
-- [ ] Package naming remains `clowder-repo`, with corrected source links prepared for the next release.
+- [x] Package naming remains `clowder-repo`, with corrected source links prepared for the next release.
 
 Resume the existing TODO backlog after the transfer checks are complete.
