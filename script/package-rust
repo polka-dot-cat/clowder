@@ -40,7 +40,8 @@ mkdir "$staging/$name"
 cp "$binary" LICENSE THIRD-PARTY-NOTICES.md "$staging/$name/"
 cp docs/rust-installation.md "$staging/$name/README.md"
 cp -R completions "$staging/$name/"
-tar -czf "$output/$name.tar.gz" -C "$staging" "$name"
+# Do not put macOS AppleDouble metadata files into cross-platform downloads.
+COPYFILE_DISABLE=1 tar -czf "$output/$name.tar.gz" -C "$staging" "$name"
 (
     cd "$output"
     if command -v sha256sum >/dev/null 2>&1; then

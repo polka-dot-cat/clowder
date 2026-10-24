@@ -39,9 +39,11 @@ case checks Zsh completion; Linux checks Bash. All 23 applicable configuration a
 46 `forall` scenarios also pass after those follow-ups.
 
 A separate Debian runtime image containing Git and the release executable,
-with no Python interpreter, passes all eight native CLI integration tests at
-`f646ccac` with its network disabled. These include local Git mutations,
-concurrent workers, shell input, and captured reference output.
+with no Python interpreter, passes all eleven native CLI integration tests at
+`5c68fc1a` with its network disabled. These include local Git mutations,
+concurrent workers, shell input, completion, and captured reference output.
+The Cargo source package contains 35 files and builds after extraction. Native
+archives include the shell scripts and dependency notices tied to `Cargo.lock`.
 
 ## Evidence
 
