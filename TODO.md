@@ -52,6 +52,14 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
 - [x] Add reproducible local LLVM coverage for native Rust; keep Qlty/Codecov inactive.
 - [x] Check isolated container and private fixture validation helpers into the repository.
 - [x] Expand deterministic YAML/INI differential cases against the Python reference.
+- [x] Benchmark manifest parsing and persistent cache options in disposable builds.
+  See the [results](docs/rust-manifest-benchmark.md): validated JSON with content
+  hashing cuts `--help` time by 23–30% in the synthetic fixtures; the small-workspace
+  `status` difference is within timing noise. No production cache is enabled.
+- [ ] Decide whether manifest startup savings justify a production cache. If
+  adopted, use a versioned per-user cache checked against source contents, retain
+  live config/path checks, and test invalidation, corrupt/unwritable entries,
+  concurrent writers, and cleanup. Do not create `.clowder` for this cache.
 
 ## Before the backlog: transfer the repository
 

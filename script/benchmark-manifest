@@ -1,0 +1,264 @@
+#!/usr/bin/env python3
+"""Measure manifest loading and disposable cache prototypes; never change the CLI."""
+import argparse
+import datetime
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import random
+import shutil
+import statistics
+import subprocess
+import time
+
+ROOT = Path(__file__).resolve().parent.parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--samples", type=int, default=31)
+parser.add_argument("--warmups", type=int, default=3)
+parser.add_argument("--sizes", default="8,100,1000,10000")
+parser.add_argument("--seed", type=int, default=20261024)
+parser.add_argument("--output", type=Path)
+args = parser.parse_args()
+sizes = [int(value) for value in args.sizes.split(",")]
+if args.samples < 3 or args.warmups < 1 or not sizes or min(sizes) < 2:
+    parser.error("Use at least 3 samples, 1 warmup, and 2 projects")
+output = (args.output or ROOT / "build/benchmarks" / datetime.datetime.now(
+    datetime.timezone.utc).strftime("manifest-%Y%m%dT%H%M%SZ")).resolve()
+output.mkdir(parents=True, exist_ok=False)
+env = os.environ.copy()
+for key in list(env):
+    if key.startswith("CLOWDER_BENCH_") or key in ("CLOWDER_COMPLETE", "BASH_ENV"):
+        env.pop(key)
+env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull, GIT_TERMINAL_PROMPT="0")
+
+
+def read_command(command, cwd=ROOT):
+    return subprocess.check_output(command, cwd=cwd, env=env, text=True).strip()
+
+
+def build(command, cwd):
+    subprocess.run(command, cwd=cwd, env=env, check=True)
+
+
+def replace_once(path, old, new):
+    text = path.read_text()
+    if text.count(old) != 1:
+        raise RuntimeError("Benchmark patch no longer matches " + str(path))
+    path.write_text(text.replace(old, new))
+
+
+def summary(values):
+    ordered = sorted(values)
+    return {"median_ms": statistics.median(values),
+            "p95_ms": ordered[math.ceil(len(ordered) * .95) - 1],
+            "min_ms": ordered[0], "max_ms": ordered[-1], "samples_ms": values}
+
+
+source = output / "source"
+source.mkdir()
+for name in ("Cargo.toml", "Cargo.lock", "rust-toolchain.toml"):
+    shutil.copy2(ROOT / name, source / name)
+shutil.copytree(ROOT / "src", source / "src")
+(source / "clowder").mkdir()
+shutil.copy2(ROOT / "clowder/clowder.schema.json", source / "clowder/clowder.schema.json")
+source_files = sorted((source / "src").rglob("*")) + [source / name for name in (
+    "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "clowder/clowder.schema.json")]
+source_digest = hashlib.sha256()
+for path in source_files:
+    if path.is_file():
+        source_digest.update(str(path.relative_to(source)).encode() + b"\0" + path.read_bytes())
+
+# Refactor only the private copy to expose stage boundaries, then inject the
+# prototype loader. Fail explicitly if the production implementation has moved.
+manifest = source / "src/manifest.rs"
+replace_once(manifest, "fn schema() ->", "pub(crate) fn schema() ->")
+replace_once(manifest, "        let mut sources = HashMap::from([", """        Self::from_validated_value(workspace, raw, protocol)
+    }
+
+    pub(crate) fn from_validated_value(workspace: &Workspace, raw: Value, protocol: Option<&str>) -> Result<Self> {
+        let mut sources = HashMap::from([""")
+replace_once(manifest, """        let path = workspace.manifest()?;
+        let contents =
+            fs::read_to_string(&path).with_context(|| format!("Cannot read {}", path.display()))?;
+        let raw = crate::yaml::parse(&contents).context("Invalid YAML")?;
+        Self::from_value(workspace, raw, protocol)""", "        crate::benchmark::load(workspace, protocol)")
+# The original imports may be used only by the code removed above.
+replace_once(manifest, "use anyhow::{Context, Result, anyhow, bail};", "use anyhow::{Result, anyhow, bail};")
+replace_once(manifest, "use std::fs;\n", "")
+main = source / "src/main.rs"
+replace_once(main, "mod cli;", "mod benchmark;\nmod cli;")
+replace_once(main, "    let tokens: Vec<String>", """    if let Ok(action) = std::env::var("CLOWDER_BENCH_ACTION") {
+        if let Err(error) = benchmark::action(&action) {
+            eprintln!("{error:#}");
+            std::process::exit(1);
+        }
+        return;
+    }
+    let tokens: Vec<String>""")
+shutil.copy2(ROOT / "script/benchmarks/manifest_cache.rs", source / "src/benchmark.rs")
+replace_once(source / "Cargo.toml", "[dependencies]\n", '[dependencies]\nsha2 = "=0.10.9"\n')
+build(["cargo", "build", "--release", "--locked"], ROOT)
+# Only the private lockfile gains the benchmark's SHA-256 dependency. Existing
+# application dependency resolutions are retained by Cargo and the lock is saved.
+target = ROOT / "target/manifest-benchmark"
+build(["cargo", "build", "--release", "--manifest-path", str(source / "Cargo.toml"),
+       "--target-dir", str(target)], source)
+binary = target / "release/clowder"
+original = ROOT / "target/release/clowder"
+shutil.copy2(binary, output / "clowder-benchmark")
+shutil.copy2(original, output / "clowder-original")
+binary, original = output / "clowder-benchmark", output / "clowder-original"
+
+metadata = {"time_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "commit": read_command(["git", "rev-parse", "HEAD"]),
+            "source_sha256": source_digest.hexdigest(),
+            "rustc": read_command(["rustc", "--version"]), "cargo": read_command(["cargo", "--version"]),
+            "platform": platform.platform(), "machine": platform.machine(),
+            "cpu_count": os.cpu_count(), "load_average_start": os.getloadavg(),
+            "samples": args.samples, "warmups": args.warmups, "seed": args.seed,
+            "filesystem_cache": "warm; no OS cache purge", "processes": "fresh for every sample",
+            "sha256_dependency": "sha2 0.10.9, benchmark copy only",
+            "cache_write": "atomic temporary-file rename, no fsync",
+            "build_environment": {key: env[key] for key in ("RUSTFLAGS", "RUSTC", "CARGO_ENCODED_RUSTFLAGS") if key in env}}
+if platform.system() == "Darwin":
+    metadata.update(cpu=read_command(["sysctl", "-n", "machdep.cpu.brand_string"]),
+                    memory_bytes=int(read_command(["sysctl", "-n", "hw.memsize"])))
+report = {"metadata": metadata, "fixtures": [], "checks": []}
+rng = random.Random(args.seed)
+
+
+def fixture(count):
+    workspace = output / "fixtures" / str(count)
+    workspace.mkdir(parents=True)
+    lines = ["name: manifest-benchmark", "protocol: https", "defaults:", "  branch: main",
+             "  git:", "    submodules: recursive", "    depth: 10", "    config:",
+             "      core.autocrlf: false", "sources:", "  mirror:", "    url: github.com",
+             "    protocol: https", "clowder:"]
+    paths = []
+    for group in range(min(10, count)):
+        lines += [f"  group{group}:", f"    path: group{group}", f"    groups: [team{group}, common]",
+                  "    defaults:", "      source: mirror", "    projects:"]
+        for index in range(group, count, min(10, count)):
+            name = f"project-{index:05}"
+            lines += [f"      - name: example/{name}", f"        path: {name}",
+                      "        groups: [tools, libraries]", "        upstream:",
+                      f"          name: upstream/{name}", "        git:", "          config:",
+                      "            core.filemode: true"]
+            path = workspace / f"group{group}" / name
+            path.mkdir(parents=True)
+            paths.append(path)
+    (workspace / "clowder.yml").write_text("\n".join(lines) + "\n")
+    return workspace, paths
+
+
+def invoke(workspace, mode, action, capture=False):
+    run_env = env.copy()
+    cache = output / "cache" / workspace.name / mode
+    run_env["CLOWDER_BENCH_MODE"] = "validated" if mode == "miss" else mode
+    run_env["CLOWDER_BENCH_CACHE"] = str(cache)
+    if action in ("load", "profile", "inspect"):
+        run_env["CLOWDER_BENCH_ACTION"] = action
+        command = []
+    else:
+        command = [action]
+    if mode == "miss" and cache.exists():
+        for path in cache.glob("*.json"):
+            path.unlink()
+    start = time.perf_counter_ns()
+    result = subprocess.run([str(original if mode == "original" else binary), *command], cwd=workspace,
+                            env=run_env, stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
+                            stderr=subprocess.PIPE)
+    elapsed = (time.perf_counter_ns() - start) / 1e6
+    if not capture and result.returncode:
+        raise RuntimeError(result.stderr.decode())
+    return result, elapsed
+
+
+def measure(workspace, actions):
+    cases = [(mode, action) for action in actions for mode in ("baseline", "json", "validated", "stat", "miss")]
+    cases += [("original", action) for action in actions if action not in ("load", "inspect")]
+    samples = {(mode, action): [] for mode, action in cases}
+    for action in actions:
+        expected, _ = invoke(workspace, "baseline", action, True)
+        assert expected.returncode == 0, expected.stderr
+        for mode, candidate_action in cases:
+            if candidate_action == action:
+                result, _ = invoke(workspace, mode, action, True)
+                assert (result.returncode, result.stdout, result.stderr) == (
+                    expected.returncode, expected.stdout, expected.stderr), (workspace, mode, action)
+    for index in range(args.warmups + args.samples):
+        rng.shuffle(cases)
+        for mode, action in cases:
+            _, elapsed = invoke(workspace, mode, action)
+            if index >= args.warmups:
+                samples[(mode, action)].append(elapsed)
+        if index >= args.warmups and (index - args.warmups + 1) % 8 == 0:
+            print(f"{workspace.name}: {index - args.warmups + 1}/{args.samples} rounds", flush=True)
+    return {action: {mode: summary(samples[(mode, action)]) for mode, candidate in samples if candidate == action}
+            for action in actions}
+
+
+for count in sizes:
+    workspace, paths = fixture(count)
+    print(f"Measuring {count} projects ({(workspace / 'clowder.yml').stat().st_size} YAML bytes)", flush=True)
+    profiles = []
+    for index in range(args.warmups + args.samples):
+        result, _ = invoke(workspace, "baseline", "profile", True)
+        assert result.returncode == 0, result.stderr
+        profile = json.loads(result.stdout)
+        assert profile["projects"] == count
+        if index >= args.warmups:
+            profiles.append(profile)
+    result = {"projects": count, "yaml_bytes": profiles[0]["yaml_bytes"],
+              "json_bytes": profiles[0]["json_bytes"], "profiles": profiles,
+              "stage_medians_us": {key: statistics.median(p[key] for p in profiles)
+                                   for key in profiles[0] if key.endswith("_us")},
+              "commands": measure(workspace, ["load", "--help"])}
+    if count == min(sizes):
+        # Only a small local Git workload; no remotes are contacted or changed.
+        for path in paths:
+            build(["git", "init", "-q", "--initial-branch=main", str(path)], ROOT)
+            build(["git", "-C", str(path), "-c", "user.name=Benchmark", "-c", "user.email=benchmark@example.invalid",
+                   "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-qm", "fixture"], ROOT)
+        result["commands"].update(measure(workspace, ["status"]))
+    report["fixtures"].append(result)
+    (output / "results.json").write_text(json.dumps(report, indent=2) + "\n")
+    for action, modes in result["commands"].items():
+        print(count, action, {mode: round(data["median_ms"], 3) for mode, data in modes.items()}, flush=True)
+
+# Check the correctness boundary used by this experiment, outside timed samples.
+guard = output / "fixtures/guards"
+guard.mkdir()
+manifest = guard / "clowder.yml"
+manifest.write_text("name: guard\nclowder:\n  - name: example/one\n    path: one\n  - name: example/two\n    path: two\n")
+(guard / "one").mkdir()
+(guard / "two").mkdir()
+for mode in ("validated", "stat"):
+    invoke(guard, mode, "inspect")
+stamp = manifest.stat()
+manifest.write_text(manifest.read_text().replace("example/one", "example/new"))
+os.utime(manifest, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+expected, _ = invoke(guard, "baseline", "inspect", True)
+hashed, _ = invoke(guard, "validated", "inspect", True)
+stat_only, _ = invoke(guard, "stat", "inspect", True)
+assert hashed.stdout == expected.stdout and stat_only.stdout != expected.stdout
+report["checks"].append("Hash detects a same-size edit with restored mtime; metadata-only mode returns stale data")
+(guard / "clowder.config").write_text("[git]\nprotocol=https\n")
+expected, _ = invoke(guard, "baseline", "inspect", True)
+hashed, _ = invoke(guard, "validated", "inspect", True)
+assert hashed.stdout == expected.stdout and b"https://github.com/" in hashed.stdout
+report["checks"].append("Current protocol configuration is applied on a cache hit")
+(guard / "two").rmdir()
+(guard / "two").symlink_to("one", target_is_directory=True)
+expected, _ = invoke(guard, "baseline", "inspect", True)
+hashed, _ = invoke(guard, "validated", "inspect", True)
+assert expected.returncode == hashed.returncode == 1 and expected.stderr == hashed.stderr
+assert b"Multiple projects with path" in hashed.stderr
+report["checks"].append("Changed project symlinks still trigger duplicate-path validation on a cache hit")
+report["metadata"]["load_average_end"] = os.getloadavg()
+(output / "results.json").write_text(json.dumps(report, indent=2) + "\n")
+print("Output equality checks passed for every measured mode/command/fixture.", flush=True)
+print("Results: " + str(output / "results.json"), flush=True)

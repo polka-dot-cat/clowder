@@ -8,6 +8,15 @@ and the macOS/Linux `script` and `ps` utilities for terminal input checks. They 
 credentials, public repositories, or Python. `cargo clippy --all-targets -- -D warnings`
 and `cargo fmt --check` provide the remaining native checks.
 
+## Manifest performance
+
+`python3 script/benchmark-manifest` measures fresh-process manifest loading and
+disposable cache prototypes against the unchanged release CLI. It uses synthetic
+workspaces and local Git repositories, with no Git network access. It builds a
+private source copy under `build/benchmarks/`; application source is unchanged.
+See the [results and reproduction steps](rust-manifest-benchmark.md) for measured
+tradeoffs, correctness checks, and limits.
+
 ## Native coverage
 
 Install the pinned development tool and the LLVM tools for the repository's Rust
