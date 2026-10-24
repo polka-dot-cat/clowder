@@ -64,10 +64,13 @@ Tool reference: [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov).
 538 generated YAML cases and 531 generated INI cases (seed `20261024`). Native
 unit tests compare values, rejection of invalid input, YAML serialization round
 trips, INI interpolation errors, and INI serialization with those expectations.
-The Python oracle uses PyYAML 6.0 and ConfigParser from the retained test environment.
+The Python oracle uses PyYAML 6.0 and ConfigParser from Python 3.10 or 3.11.
+The generator rejects other interpreter versions before writing fixtures. In
+particular, Python 3.8 parses section headers containing extra closing brackets
+differently; see the [compatibility notes](rust-compatibility.md).
 
 ```sh
-# Run with the existing Python 3.8–3.11 test environment, not system Python 3.14.
+# Run with a Python 3.10 or 3.11 environment containing PyYAML 6.0.
 python script/generate-rust-compatibility --check
 # To capture another bounded, deterministic sample without replacing the corpus:
 python script/generate-rust-compatibility --seed 42 --count 5000 \

@@ -6,6 +6,7 @@ import io
 import json
 import math
 import random
+import sys
 from pathlib import Path
 
 import yaml
@@ -17,6 +18,8 @@ parser.add_argument("--count", type=int, default=512, help="random cases per for
 parser.add_argument("--output", type=Path, default=ROOT / "tests/data/rust")
 parser.add_argument("--check", action="store_true", help="compare regenerated fixtures without changing files")
 args = parser.parse_args()
+if sys.version_info[:2] not in ((3, 10), (3, 11)):
+    raise SystemExit("Use Python 3.10 or 3.11 for the parser reference; ConfigParser differs in other versions")
 if yaml.__version__ != "6.0":
     raise SystemExit("Use the reference environment with PyYAML 6.0")
 if args.count < 1 or args.count > 10000:
@@ -151,7 +154,7 @@ outputs = {"yaml-generated.json": {"cases": cases, "excluded_outside_contract": 
 args.output.mkdir(parents=True, exist_ok=True)
 for name, data in outputs.items():
     data = {"generator": "script/generate-rust-compatibility", "seed": args.seed,
-            "random_cases_requested": args.count, "reference": "PyYAML 6.0 / Python ConfigParser", **data}
+            "random_cases_requested": args.count, "reference": "PyYAML 6.0 / Python 3.10/3.11 ConfigParser", **data}
     content = json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     path = args.output / name
     if args.check:

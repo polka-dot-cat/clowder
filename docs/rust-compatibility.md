@@ -86,7 +86,11 @@ commands, terminal input, an 8 MiB combined parallel log, and a failed fetch
 which preserves the checked-out branch, commit, and files.
 
 Generated reference cases also preserve PyYAML's duplicate-anchor rejection and
-explicit signed-integer conversion. INI section names use ConfigParser's greedy
-closing bracket rule, and interpolation retains its key syntax and ten-level
-recursion boundary. See [native testing](rust-testing.md) to regenerate or extend
-the deterministic corpus.
+explicit signed-integer conversion. INI section names use Python 3.10/3.11
+ConfigParser's greedy closing bracket rule, and interpolation retains its key
+syntax and ten-level recursion boundary. For the unusual header `[a]b]`, Rust
+and the selected reference use the section name `a]b`; Python 3.8 instead uses
+`a`. Ordinary `[git]` and `[command]` sections are unaffected. The generator
+requires Python 3.10 or 3.11 so another interpreter cannot silently replace
+these expectations. See [native testing](rust-testing.md) to regenerate or
+extend the deterministic corpus.

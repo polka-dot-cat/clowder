@@ -150,6 +150,10 @@ All four follow-up areas have a repeatable repository workflow in
   additional comparisons. The generator found and now covers duplicate YAML
   anchors, explicit signed integers, bracket-containing INI sections, malformed
   interpolation keys, and the ten-level interpolation boundary.
+  Regeneration matches under Python 3.10 and 3.11. A Python 3.8.16 container
+  confirmed a different closing-bracket rule in ConfigParser; the generator
+  now requires 3.10 or 3.11, and the compatibility notes record this edge case.
+  The host Docker launcher still starts successfully with Python 3.8.16.
 - The source package builds successfully with 46 intended files (1.4 MiB before
   compression), including the generated corpus and native test modules. All 28
   native tests also pass from the extracted package. The Sphinx HTML build

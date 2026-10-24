@@ -2,7 +2,7 @@
   "generator": "script/generate-rust-compatibility",
   "seed": 20261024,
   "random_cases_requested": 512,
-  "reference": "PyYAML 6.0 / Python ConfigParser",
+  "reference": "PyYAML 6.0 / Python 3.10/3.11 ConfigParser",
   "cases": [
     {
       "ini": "[a]b]\nkey=value\n",
