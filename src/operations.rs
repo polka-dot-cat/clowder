@@ -92,6 +92,15 @@ pub fn run(
             git::validate(&project.path, true)?;
         }
     }
+    if (command == "start" && args.flag("tracking"))
+        || (command == "prune" && (args.flag("all") || args.flag("remote")))
+    {
+        // Check the actual remotes before creating or deleting local branches.
+        // Local remotes remain usable without a public Internet connection.
+        for project in projects.iter().filter(|p| git::exists(&p.path)) {
+            git::read(&project.path, ["ls-remote", "--heads", &project.remote])?;
+        }
+    }
     let jobs = if ["herd", "reset", "forall"].contains(&command) {
         config.jobs()?.or(args.number("jobs")).unwrap_or(1)
     } else {

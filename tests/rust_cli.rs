@@ -133,3 +133,37 @@ fn validates_every_project_before_mutating_any_branch() {
         "keep my changes\n"
     );
 }
+
+#[test]
+fn tracking_start_checks_remote_access_before_creating_a_local_branch() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    fs::write(
+        root.join("clowder.yml"),
+        "name: local\ndefaults: {branch: main}\nclowder: [owner/alpha]\n",
+    )
+    .unwrap();
+    project(root, "alpha");
+    git(
+        &root.join("alpha"),
+        &[
+            "remote",
+            "add",
+            "origin",
+            root.join("missing.git").to_str().unwrap(),
+        ],
+    );
+    assert!(
+        !clowder(root, &["start", "--tracking", "feature"])
+            .status
+            .success()
+    );
+    assert_eq!(
+        git(&root.join("alpha"), &["branch", "--show-current"]),
+        "main"
+    );
+    assert_eq!(
+        git(&root.join("alpha"), &["branch", "--list", "feature"]),
+        ""
+    );
+}

@@ -1,6 +1,30 @@
 version: 2.1
 
 commands:
+  setup_rust:
+    steps:
+      - run:
+          name: Install the pinned Rust toolchain
+          command: |
+            curl --proto '=https' --tlsv1.2 -fsS https://sh.rustup.rs -o /tmp/clowder-rustup-init.sh
+            sh /tmp/clowder-rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain 1.99.1
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$BASH_ENV"
+            export PATH="$HOME/.cargo/bin:$PATH"
+            rustup component add clippy rustfmt
+      - restore_cache:
+          keys:
+            - rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Build the native CLI
+          command: |
+            cargo build --locked
+            echo "export CLOWDER_EXECUTABLE='$PWD/target/debug/clowder'" >> "$BASH_ENV"
+            echo "export PYTHONPATH='$PWD'" >> "$BASH_ENV"
+      - save_cache:
+          key: rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/.cargo/registry
+            - ~/.cargo/git
   install_code_climate:
     steps:
       - run:
@@ -244,8 +268,9 @@ jobs:
       - install_git_lfs
       - setup_git_config
       - run: script/cibuild
+      - setup_rust
       - run:
-          name: Run write tests against published manifests
+          name: Run native write tests against published manifests
           command: |
             write_key="$HOME/.ssh/id_rsa_e97d20a051b29c22f6b95b5547c47c20"
             if [[ ! -f "$write_key" ]]; then
@@ -272,6 +297,36 @@ jobs:
               --cucumberjson=build/cucumber/results.write.json
       - store_test_results:
           path: build/junit/
+      - store_artifacts:
+          path: build
+  rust:
+    docker:
+      - image: cimg/python:3.11.9
+    steps:
+      - checkout
+      - setup_git_config
+      - setup_rust
+      - run:
+          name: Check Rust formatting, lints, and local regressions
+          command: |
+            cargo fmt --check
+            cargo clippy --all-targets -- -D warnings
+            cargo test --locked
+      - run:
+          name: Install the unchanged BDD harness
+          command: |
+            python -m pip install --upgrade 'pip<25' setuptools==67.8.0 wheel==0.40.0
+            python -m pip install -r requirements.txt
+      - run:
+          name: Run read-only BDD scenarios against the native CLI
+          no_output_timeout: 15m
+          command: |
+            mkdir -p build/junit build/cucumber
+            python -m pytest tests/functional -v -n 4 --tb=short \
+              --basetemp=temp/rust -m 'not ssh and not offline and not write and not lfs' \
+              --junitxml=build/junit/rust.xml --cucumberjson=build/cucumber/rust.json
+      - store_test_results:
+          path: build/junit
       - store_artifacts:
           path: build
   test_offline:
@@ -310,6 +365,7 @@ jobs:
 workflows:
   pytest:
     jobs:
+      - rust
       - test_write:
           # These cases share remote pytest branches in the example repositories.
           serial-group: << pipeline.project.slug >>/test-write
