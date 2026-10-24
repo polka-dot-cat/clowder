@@ -192,10 +192,11 @@ fn repo(args: &Args, workspace: &Workspace) -> Result<()> {
         "repo run" => {
             let command = args.one("command").unwrap();
             println!("{command}");
-            let status = std::process::Command::new("sh")
-                .args(["-c", command])
-                .current_dir(path)
-                .status()?;
+            let status = crate::process::status(
+                std::process::Command::new("sh")
+                    .args(["-c", command])
+                    .current_dir(path),
+            )?;
             if status.success() {
                 Ok(())
             } else {

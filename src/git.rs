@@ -9,10 +9,7 @@ where
     I: IntoIterator<Item = S>,
     S: AsRef<OsStr>,
 {
-    Command::new("git")
-        .args(args)
-        .current_dir(path)
-        .output()
+    crate::process::output(Command::new("git").args(args).current_dir(path))
         .with_context(|| format!("Failed to run Git in {}", path.display()))
 }
 

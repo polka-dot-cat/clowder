@@ -67,3 +67,19 @@ This port keeps several behaviors of the reference CLI that need separate fixes:
 
 Those changes need their own regression cases and release notes. The migration
 does not claim to fix the full backlog by replacing the implementation language.
+
+## Interruption and subprocess failures
+
+On macOS and Linux, Ctrl-C, SIGTERM, and SIGHUP stop the active Git or shell
+process groups and prevent queued projects from starting. Clowder waits 250 ms
+for graceful exit, then kills remaining children in those groups. It returns
+128 plus the signal number (130 for Ctrl-C, 143 for SIGTERM), including with
+`forall --ignore-errors`. Sequential commands retain foreground terminal input;
+parallel commands use closed stdin and temporary output files. Cleanup removes
+those files on success, failure, or handled interruption.
+
+This does not roll back Git operations already completed, handle SIGKILL, or
+terminate programs that deliberately detach into a new session/process group.
+The local process tests cover stubborn grandchildren, queued work, captured Git
+commands, terminal input, an 8 MiB combined parallel log, and a failed fetch
+which preserves the checked-out branch, commit, and files.

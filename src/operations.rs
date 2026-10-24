@@ -126,13 +126,15 @@ pub fn run(
     let jobs = if jobs <= 0 { 4 } else { jobs as usize };
     let rebase = config.rebase()?.unwrap_or(args.flag("rebase"));
     let execute = |project: &Project| {
-        let mut log = Log {
-            interactive: jobs == 1,
-            ..Log::default()
-        };
-        let result = perform(args, workspace, project, rebase, &mut log)
-            .with_context(|| format!("Project {}", project.name));
-        (log, result)
+        crate::process::interactive(jobs == 1, || {
+            let mut log = Log {
+                interactive: jobs == 1,
+                ..Log::default()
+            };
+            let result = perform(args, workspace, project, rebase, &mut log)
+                .with_context(|| format!("Project {}", project.name));
+            (log, result)
+        })
     };
     if jobs == 1 {
         for project in projects {
@@ -166,6 +168,7 @@ fn perform(
     rebase: bool,
     log: &mut Log,
 ) -> Result<()> {
+    crate::process::check()?;
     log.line(project.status(None)?);
     if args.command != "herd" && !git::exists(&project.path) {
         log.line(" - Project missing\n");
@@ -202,7 +205,7 @@ fn perform(
             let status = if log.interactive {
                 // Sequential commands keep terminal input and stream their output.
                 log.print()?;
-                process.status()?
+                crate::process::status(&mut process)?
             } else {
                 // Parallel commands must not compete for terminal input. Spool
                 // output to disk so long build logs do not accumulate in memory.
@@ -211,7 +214,7 @@ fn perform(
                     .stdin(Stdio::null())
                     .stdout(output.as_file().try_clone()?)
                     .stderr(output.as_file().try_clone()?);
-                let status = process.status()?;
+                let status = crate::process::status(&mut process)?;
                 // Close the file while other projects run. Retaining open files
                 // for every completed project can exhaust descriptor limits.
                 log.command_output = Some(output.into_temp_path());
