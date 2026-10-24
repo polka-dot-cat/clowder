@@ -30,12 +30,14 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), with no skips.
 - [x] Validate all 63 offline scenarios in disposable environments. Repair the
   Python harness gateway-output capture so these scenarios can run on Linux.
-- [ ] Build and test the native CLI on macOS and Linux in hosted CI.
+- [x] Build and test the native CLI on macOS and Linux in hosted CI. Jobs
+  [3015](https://circleci.com/gh/polka-dot-cat/clowder/3015) and
+  [3016](https://circleci.com/gh/polka-dot-cat/clowder/3016) pass and publish native archives.
 - [x] Add native installation/release instructions and local archive packaging;
   compare startup and parallel execution with the Python reference. See the
   [native installation guide](docs/rust-installation.md) and validation record.
   Release publication and signing remain separate tasks.
-- [ ] Audit remaining behavior and output differences before removing the Python
+- [x] Audit remaining behavior and output differences before removing the Python
   CLI from the distribution. Keep Python support needed by the test harness.
   The [compatibility notes](docs/rust-compatibility.md) record the current audit.
 - [x] Add native Bash and Zsh completion to replace Python `argcomplete`
@@ -68,8 +70,10 @@ are separate from the initial review and were updated on 2026-10-24.
 - [x] After PR #641 merged, fast-forward the active Cats and clowder-examples
   manifest branches to the [recorded commits](docs/clowder-repository-transfer-status.md#cats-and-felidae-migration).
   Verify all published refs and preserve unrelated branches and tags.
-- [ ] Validate hosted CI against the published manifests after removing the
-  temporary fixture pins and URL overrides.
+- [x] Validate hosted CI against the published manifests after removing the
+  temporary fixture pins and URL overrides. All four Actions jobs pass at
+  `ab1e9110` in [run 40100795242](https://github.com/polka-dot-cat/clowder/actions/runs/40100795242);
+  CircleCI native read-only and write checks also pass.
 - [ ] Verify Beanstalk's server host key, then check SSH access and run the 28
   explicit source-URL cases. Retain Beanstalk; the owner confirmed the account
   public key is already registered and chose to leave host verification pending.

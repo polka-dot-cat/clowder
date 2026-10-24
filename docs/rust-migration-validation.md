@@ -32,9 +32,10 @@ builds successfully after extraction.
 
 The YAML compatibility follow-up passes all 681 read-only scenarios again in a
 single macOS run. It also matches 86 captured PyYAML examples. The current local
-suite has 17 Rust tests on macOS and Linux, including shell-safe Git aliases,
+suite has 21 Rust tests on macOS and 20 on Linux, including shell-safe Git aliases,
 duplicate symlinked project paths, parent traversal through symlinks, INI
-compatibility, and sequential shell input. All 23 applicable configuration and
+compatibility, sequential shell input, and native completion. The extra macOS
+case checks Zsh completion; Linux checks Bash. All 23 applicable configuration and
 46 `forall` scenarios also pass after those follow-ups.
 
 A separate Debian runtime image containing Git and the release executable,
@@ -88,9 +89,18 @@ the samples and `benchmark-rust-forall.py` contains the local fixture setup.
 
 ## Remaining checks
 
-Hosted native write CI has passed. CircleCI's native read-only job
-[3011](https://circleci.com/gh/polka-dot-cat/clowder/3011) at `ab1e9110` also
-passes all 681 cases with no failures or skips. Native macOS CI and archive
-artifacts are being added. Existing Actions jobs still test the
-Python reference. Keep the PR in draft while these checks and the remaining
-packaging/compatibility work in [TODO.md](../TODO.md) are open.
+Hosted native write CI has passed. At `692d09e5`, CircleCI Linux job
+[3015](https://circleci.com/gh/polka-dot-cat/clowder/3015) passes all 681 read-only
+cases with no failures or skips. Apple Silicon macOS job
+[3016](https://circleci.com/gh/polka-dot-cat/clowder/3016) passes native unit and
+integration tests, formatting, Clippy, and archive extraction. Both jobs publish
+archives with SHA-256 files; the Linux job also verifies a Cargo source package.
+The downloaded macOS archive passes its checksum and runs on this workstation.
+
+The BDD harness now builds/selects Rust by default, including in the existing
+Actions matrix; Python comparison requires `CLOWDER_IMPLEMENTATION=python`.
+Local checks pass for automatic native builds with xdist, explicit Python
+comparison, and Python Git aliases. Collection still finds all 1,111 cases.
+Hosted verification of that default, including Intel macOS runtime tests, is
+pending. Keep the PR in draft until the remaining checks in [TODO.md](../TODO.md)
+are complete.
