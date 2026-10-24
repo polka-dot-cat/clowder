@@ -8,7 +8,7 @@ deferred under the owner's existing host-key decision.
 
 | Selection | Cases passed | Environment and limits |
 | --- | ---: | --- |
-| Read-only cases excluding SSH, offline, and LFS | 681 | Native macOS executable, public fixture URLs. This is the union of the initial run and focused runs after harness fixes. |
+| Read-only cases excluding SSH, offline, and LFS | 681 | Native macOS executable and hosted Linux job 3011, public fixture URLs. The macOS YAML follow-up and hosted job each pass all 681 cases in a single run. |
 | Write cases excluding offline | 89 | Native Linux release executable, private local fixture copies, container network disabled. No public repository writes. |
 | Hosted write confirmation (same 89 cases) | 89 | CircleCI job [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), native executable at `408a2f4b`, published GitHub fixtures and the registered write key. All passed with no failures or skips in 33m34s. Counted once in the total above. |
 | Main LFS command cases | 3 | Native Linux release executable, public HTTPS Git/LFS, disposable container. |
@@ -18,11 +18,11 @@ deferred under the owner's existing host-key decision.
 | Offline cases excluding remote writes | 51 | Public HTTPS setup, then disable/re-enable the container's `eth0`. |
 | Offline remote-write cases | 12 | Private fixture transport rejects requests while container `eth0` is down. Verifies failure before local branch mutations. |
 
-The Linux tests use the native implementation at `8d7d9bb8`. The offline cases
-also use the gateway-output capture repair in `8b9f3935`. Local functional runs
-include the Git-alias PATH fix in `408a2f4b`. Each case is counted once across
-reports. Earlier failed runs remain in the evidence directory and do not add
-to the passed count.
+The first Linux runs used `8d7d9bb8`, with the offline harness repair in
+`8b9f3935`. The schema, LFS, SSH-form, and offline selections were repeated
+successfully at `ab1e9110`. Hosted job 3013 also passes all 89 write cases at
+`ab1e9110`. Each case is counted once across reports. Earlier failed runs remain
+in the evidence directory and do not add to the passed count.
 
 Eight Rust tests pass on macOS and Linux at the original checkpoint: four unit
 tests and four native CLI integration tests. These check manifest inheritance, parsing, captured Python
@@ -32,13 +32,15 @@ builds successfully after extraction.
 
 The YAML compatibility follow-up passes all 681 read-only scenarios again in a
 single macOS run. It also matches 86 captured PyYAML examples. The current local
-suite has 15 Rust tests, including shell-safe Git aliases, duplicate symlinked
-project paths, and parent traversal through symlinks. Those follow-up checks are
-being added to the Linux validation snapshot.
+suite has 17 Rust tests on macOS and Linux, including shell-safe Git aliases,
+duplicate symlinked project paths, parent traversal through symlinks, INI
+compatibility, and sequential shell input. All 23 applicable configuration and
+46 `forall` scenarios also pass after those follow-ups.
 
 A separate Debian runtime image containing Git and the release executable,
-with no Python interpreter, passes version, YAML, status, and configuration
-smoke checks with its network disabled.
+with no Python interpreter, passes all eight native CLI integration tests at
+`f646ccac` with its network disabled. These include local Git mutations,
+concurrent workers, shell input, and captured reference output.
 
 ## Evidence
 
@@ -76,10 +78,10 @@ gave these medians on the same workstation:
 
 | Implementation | One worker | Four workers |
 | --- | ---: | ---: |
-| Python reference | 2,015.65 ms | 1,946.40 ms |
-| Rust release | 508.40 ms | 203.24 ms |
+| Python reference | 1,991.98 ms | 1,959.57 ms |
+| Rust release | 517.42 ms | 190.12 ms |
 
-The Rust four-worker run was about 2.5 times faster than its one-worker run for
+The Rust four-worker run was about 2.7 times faster than its one-worker run for
 this workload. These measurements include command startup and status output;
 they do not predict network performance. `rust-forall-benchmark.json` contains
 the samples and `benchmark-rust-forall.py` contains the local fixture setup.
