@@ -302,6 +302,8 @@ jobs:
   rust:
     docker:
       - image: cimg/python:3.11.9
+    environment:
+      PYENV_VERSION: "3.11.9"
     steps:
       - checkout
       - setup_git_config
