@@ -118,6 +118,16 @@ fn parallel_forall_is_concurrent_and_isolates_project_environments() {
         Some(42)
     );
     success(clowder(root, &["forall", "-ij2", "exit 42"]));
+    let binary = clowder(root, &["forall", "-j2", "printf '\\377\\000\\376'"]);
+    assert!(binary.status.success());
+    assert_eq!(
+        binary
+            .stdout
+            .windows(3)
+            .filter(|bytes| *bytes == [255, 0, 254])
+            .count(),
+        2
+    );
 }
 
 #[test]
