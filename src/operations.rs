@@ -6,16 +6,33 @@ use crate::{
 use anyhow::{Context, Result, bail};
 use rayon::prelude::*;
 use std::ffi::OsStr;
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command, Stdio};
 
 #[derive(Default)]
-struct Log(String);
+struct Log {
+    text: String,
+    command_output: Option<tempfile::TempPath>,
+    interactive: bool,
+}
 
 impl Log {
     fn line(&mut self, message: impl AsRef<str>) {
-        self.0.push_str(message.as_ref());
-        self.0.push('\n');
+        self.text.push_str(message.as_ref());
+        self.text.push('\n');
+    }
+
+    fn print(&mut self) -> Result<()> {
+        let mut stdout = std::io::stdout().lock();
+        stdout.write_all(self.text.as_bytes())?;
+        self.text.clear();
+        if let Some(path) = self.command_output.take() {
+            std::io::copy(&mut File::open(&path)?, &mut stdout)?;
+        }
+        stdout.flush()?;
+        Ok(())
     }
 
     fn git<I, S>(&mut self, path: &Path, args: I) -> Result<()>
@@ -24,8 +41,8 @@ impl Log {
         S: AsRef<OsStr>,
     {
         let output = git::output(path, args)?;
-        self.0 += &String::from_utf8_lossy(&output.stdout);
-        self.0 += &String::from_utf8_lossy(&output.stderr);
+        self.text += &String::from_utf8_lossy(&output.stdout);
+        self.text += &String::from_utf8_lossy(&output.stderr);
         if output.status.success() {
             Ok(())
         } else {
@@ -109,15 +126,18 @@ pub fn run(
     let jobs = if jobs <= 0 { 4 } else { jobs as usize };
     let rebase = config.rebase()?.unwrap_or(args.flag("rebase"));
     let execute = |project: &Project| {
-        let mut log = Log::default();
+        let mut log = Log {
+            interactive: jobs == 1,
+            ..Log::default()
+        };
         let result = perform(args, workspace, project, rebase, &mut log)
             .with_context(|| format!("Project {}", project.name));
-        (log.0, result)
+        (log, result)
     };
     if jobs == 1 {
         for project in projects {
-            let (output, result) = execute(project);
-            print!("{output}");
+            let (mut output, result) = execute(project);
+            output.print()?;
             result?;
         }
     } else {
@@ -126,8 +146,8 @@ pub fn run(
             .build()?;
         let results: Vec<_> = pool.install(|| projects.par_iter().map(execute).collect());
         let mut error = None;
-        for (output, result) in results {
-            print!("{output}");
+        for (mut output, result) in results {
+            output.print()?;
             if error.is_none() {
                 error = result.err();
             }
@@ -179,11 +199,26 @@ fn perform(
                     .env_remove("UPSTREAM_NAME")
                     .env_remove("UPSTREAM_REMOTE");
             }
-            let result = process.output()?;
-            log.0 += &String::from_utf8_lossy(&result.stdout);
-            log.0 += &String::from_utf8_lossy(&result.stderr);
-            if !result.status.success() && !args.flag("ignore_errors") {
-                return Err(ExitCode(result.status.code().unwrap_or(1)).into());
+            let status = if log.interactive {
+                // Sequential commands keep terminal input and stream their output.
+                log.print()?;
+                process.status()?
+            } else {
+                // Parallel commands must not compete for terminal input. Spool
+                // output to disk so long build logs do not accumulate in memory.
+                let output = tempfile::NamedTempFile::new()?;
+                process
+                    .stdin(Stdio::null())
+                    .stdout(output.as_file().try_clone()?)
+                    .stderr(output.as_file().try_clone()?);
+                let status = process.status()?;
+                // Close the file while other projects run. Retaining open files
+                // for every completed project can exhaust descriptor limits.
+                log.command_output = Some(output.into_temp_path());
+                status
+            };
+            if !status.success() && !args.flag("ignore_errors") {
+                return Err(ExitCode(status.code().unwrap_or(1)).into());
             }
             Ok(())
         }

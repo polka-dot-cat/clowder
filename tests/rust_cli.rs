@@ -2,8 +2,9 @@
 use serde_json::Value;
 use std::{
     fs,
+    io::Write,
     path::Path,
-    process::{Command, Output},
+    process::{Command, Output, Stdio},
 };
 use tempfile::TempDir;
 
@@ -269,4 +270,30 @@ fn parent_components_are_resolved_after_symlinks() {
     ));
     assert!(root.join("outside/project/selected").is_file());
     assert!(!root.join("workspace/project").exists());
+}
+
+#[test]
+fn sequential_forall_preserves_standard_input_and_error() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    project(root, "alpha");
+    fs::write(
+        root.join("clowder.yml"),
+        "name: local\ndefaults: {branch: main}\nclowder: [owner/alpha]\n",
+    )
+    .unwrap();
+    let mut child = Command::new(env!("CARGO_BIN_EXE_clowder"))
+        .args(["forall", "read value; printf '%s:%s\\n' \"$PROJECT_NAME\" \"$value\"; printf 'child stderr\\n' >&2"])
+        .current_dir(root)
+        .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped())
+        .spawn().unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(b"from stdin\n")
+        .unwrap();
+    let result = child.wait_with_output().unwrap();
+    assert_eq!(String::from_utf8_lossy(&result.stderr), "child stderr\n");
+    assert!(success(result).contains("owner/alpha:from stdin\n"));
 }

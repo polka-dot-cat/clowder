@@ -70,6 +70,8 @@ host settings, so run those in disposable environments.
 
 The [validation record](rust-migration-validation.md) lists native test results,
 the isolation used for remote writes and offline checks, and startup measurements.
+The [compatibility notes](rust-compatibility.md) describe output, parallel-command,
+and parser differences, along with limitations retained from the Python CLI.
 
 ## Install from source
 

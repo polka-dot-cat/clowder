@@ -37,6 +37,10 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   Release publication and signing remain separate tasks.
 - [ ] Audit remaining behavior and output differences before removing the Python
   CLI from the distribution. Keep Python support needed by the test harness.
+  The [compatibility notes](docs/rust-compatibility.md) record the current audit.
+- [ ] Add native shell completion to replace Python `argcomplete` integration.
+- [ ] Validate Intel macOS runtime behavior. The cross-compiled archive builds;
+  this workstation has no Rosetta runtime, so it cannot execute that binary.
 
 ## Before the backlog: transfer the repository
 
@@ -140,6 +144,9 @@ coverage files and storing them as CI artifacts in the meantime.
   Verify default-branch coverage and PR comparisons against the uploaded commit
   before restoring its badge or enabling coverage checks. Review overlap with
   Qlty if both services are enabled.
+
+  For either service, collect Rust CLI coverage separately from Python harness
+  coverage. Python coverage from a native BDD run does not measure the Rust CLI.
 
 ## First: establish a repeatable development baseline
 
