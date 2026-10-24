@@ -28,7 +28,10 @@ excluded from the report. Branch coverage requires nightly tooling and is not
 reported by this stable-toolchain command.
 
 An optional command runs after the local native tests and inherits
-`CLOWDER_EXECUTABLE` pointing to the instrumented binary. For example, with the
+`CLOWDER_EXECUTABLE` and `PATH` pointing to the instrumented binary. Bash-based
+launchers cannot reload CI startup exports and silently restore the ordinary
+binary: coverage tests and the optional command run with `BASH_ENV` unset after
+setup is loaded. For example, with the
 existing Python test environment active:
 
 ```sh

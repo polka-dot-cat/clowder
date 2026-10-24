@@ -314,7 +314,8 @@ jobs:
           command: |
             cargo fmt --check
             cargo clippy --all-targets -- -D warnings
-            cargo test --locked
+            env -u BASH_ENV cargo test --locked
+            python -m unittest discover -s tests/isolation -p 'test_*.py'
       - run:
           name: Build the native Linux archive
           command: |
@@ -354,7 +355,7 @@ jobs:
           command: |
             cargo fmt --check
             cargo clippy --all-targets -- -D warnings
-            cargo test --locked
+            env -u BASH_ENV cargo test --locked
             script/package-rust
             archive=$(find dist/rust -name '*.tar.gz' -print -quit)
             (cd dist/rust && shasum -a 256 -c "$(basename "$archive").sha256")

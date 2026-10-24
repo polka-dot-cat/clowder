@@ -2,6 +2,9 @@
 # Local native coverage. An optional command can exercise the instrumented CLI.
 set -euo pipefail
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
+# CI setup has already been loaded by this Bash process. Do not let Bash-based
+# launchers reload it and replace test-specific executables or PATH entries.
+unset BASH_ENV
 
 tool="${CARGO_LLVM_COV_BIN:-cargo-llvm-cov}"
 if [[ "$("$tool" llvm-cov --version)" != 'cargo-llvm-cov 0.9.1' ]]; then
@@ -37,6 +40,7 @@ if [[ $# -gt 0 ]]; then
     [[ "$1" != -- ]] || shift
     cargo build --locked
     export CLOWDER_EXECUTABLE="$CARGO_TARGET_DIR/debug/clowder"
+    export PATH="$CARGO_TARGET_DIR/debug:$PATH"
     export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
     "$@"
 fi
