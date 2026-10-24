@@ -316,6 +316,9 @@ jobs:
             cargo clippy --all-targets -- -D warnings
             cargo test --locked
       - run:
+          name: Build the native Linux archive
+          command: script/package-rust
+      - run:
           name: Install the unchanged BDD harness
           command: |
             python -m pip install --upgrade 'pip<25' setuptools==67.8.0 wheel==0.40.0
@@ -332,6 +335,30 @@ jobs:
           path: build/junit
       - store_artifacts:
           path: build
+      - store_artifacts:
+          path: dist/rust
+  rust_macos:
+    macos:
+      xcode: "16.4.0"
+    resource_class: m4pro.medium
+    steps:
+      - checkout
+      - setup_rust
+      - run:
+          name: Check native macOS regressions and packaging
+          command: |
+            cargo fmt --check
+            cargo clippy --all-targets -- -D warnings
+            cargo test --locked
+            script/package-rust
+            archive=$(find dist/rust -name '*.tar.gz' -print -quit)
+            (cd dist/rust && shasum -a 256 -c "$(basename "$archive").sha256")
+            staging=$(mktemp -d)
+            trap 'rm -rf "$staging"' EXIT
+            tar -xzf "$archive" -C "$staging"
+            "$staging"/*/clowder --version
+      - store_artifacts:
+          path: dist/rust
   test_offline:
     machine: true
     steps:
@@ -369,6 +396,7 @@ workflows:
   pytest:
     jobs:
       - rust
+      - rust_macos
       - test_write:
           # These cases share remote pytest branches in the example repositories.
           serial-group: << pipeline.project.slug >>/test-write

@@ -31,8 +31,10 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
 - [x] Validate all 63 offline scenarios in disposable environments. Repair the
   Python harness gateway-output capture so these scenarios can run on Linux.
 - [ ] Build and test the native CLI on macOS and Linux in hosted CI.
-- [ ] Add native installation/release instructions and packaging; compare
-  startup and parallel execution with the Python reference.
+- [x] Add native installation/release instructions and local archive packaging;
+  compare startup and parallel execution with the Python reference. See the
+  [native installation guide](docs/rust-installation.md) and validation record.
+  Release publication and signing remain separate tasks.
 - [ ] Audit remaining behavior and output differences before removing the Python
   CLI from the distribution. Keep Python support needed by the test harness.
 

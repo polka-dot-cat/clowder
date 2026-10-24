@@ -70,10 +70,25 @@ these measurements cover startup, parsing, and local output, without network
 work. They do not predict clone/fetch speed. Raw measurements are in
 `rust-startup-benchmark.json` alongside the test evidence.
 
+For a local `forall` workload, eight cloned repositories each ran
+`git rev-parse --verify HEAD >/dev/null`. Seven measured runs after one warm-up
+gave these medians on the same workstation:
+
+| Implementation | One worker | Four workers |
+| --- | ---: | ---: |
+| Python reference | 2,015.65 ms | 1,946.40 ms |
+| Rust release | 508.40 ms | 203.24 ms |
+
+The Rust four-worker run was about 2.5 times faster than its one-worker run for
+this workload. These measurements include command startup and status output;
+they do not predict network performance. `rust-forall-benchmark.json` contains
+the samples and `benchmark-rust-forall.py` contains the local fixture setup.
+
 ## Remaining checks
 
-Hosted native write CI has passed. CircleCI builds Rust and runs the read-only
-and serialized write suites; the read-only job's temporary-directory setup has
-been repaired and its rerun is pending. Existing Actions jobs still test the
+Hosted native write CI has passed. CircleCI's native read-only job
+[3011](https://circleci.com/gh/polka-dot-cat/clowder/3011) at `ab1e9110` also
+passes all 681 cases with no failures or skips. Native macOS CI and archive
+artifacts are being added. Existing Actions jobs still test the
 Python reference. Keep the PR in draft while these checks and the remaining
 packaging/compatibility work in [TODO.md](../TODO.md) are open.
