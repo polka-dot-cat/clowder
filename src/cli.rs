@@ -214,6 +214,42 @@ pub fn parse(tokens: Vec<String>) -> Result<Option<Args>> {
     while let Some(mut token) = pending.pop_front() {
         let spec = &specs()[&args.command];
         if !options_ended {
+            if token.starts_with("--") && token != "--" {
+                let (flag, suffix) = token
+                    .split_once('=')
+                    .map_or((token.as_str(), None), |(flag, value)| (flag, Some(value)));
+                let mut flags: Vec<_> = spec
+                    .actions
+                    .iter()
+                    .flat_map(|a| a.flags.iter().map(String::as_str))
+                    .collect();
+                flags.push("--help");
+                if args.command.is_empty() {
+                    flags.push("--version");
+                }
+                if !flags.contains(&flag) {
+                    let matches: Vec<_> = flags
+                        .into_iter()
+                        .filter(|candidate| candidate.starts_with(flag))
+                        .collect();
+                    if matches.len() > 1 {
+                        return Err(error(
+                            spec,
+                            &args.command,
+                            format!(
+                                "ambiguous option: {flag} could match {}",
+                                matches.join(", ")
+                            ),
+                        ));
+                    }
+                    if let Some(resolved) = matches.first() {
+                        token = suffix.map_or_else(
+                            || (*resolved).to_owned(),
+                            |value| format!("{resolved}={value}"),
+                        );
+                    }
+                }
+            }
             if token == "--" {
                 options_ended = true;
                 continue;
@@ -264,11 +300,7 @@ pub fn parse(tokens: Vec<String>) -> Result<Option<Args>> {
                 let matches: Vec<_> = spec
                     .actions
                     .iter()
-                    .filter(|a| {
-                        a.flags.contains(&token)
-                            || (token.starts_with("--")
-                                && a.flags.iter().any(|f| f.starts_with(&token)))
-                    })
+                    .filter(|a| a.flags.contains(&token))
                     .collect();
                 if matches.len() != 1 {
                     return Err(error(

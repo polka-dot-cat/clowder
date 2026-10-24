@@ -77,6 +77,14 @@ fn preserves_python_reference_output() {
             "arguments: {args:?}"
         );
     }
+    assert_eq!(
+        success(clowder(directory.path(), &["--ver"])),
+        success(clowder(directory.path(), &["--version"]))
+    );
+    assert_eq!(
+        success(clowder(directory.path(), &["herd", "--he"])),
+        success(clowder(directory.path(), &["herd", "--help"]))
+    );
 }
 
 #[test]
