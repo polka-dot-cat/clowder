@@ -19,6 +19,7 @@ commands:
           command: |
             cargo build --locked
             echo "export CLOWDER_EXECUTABLE='$PWD/target/debug/clowder'" >> "$BASH_ENV"
+            echo "export PATH='$PWD/target/debug':\"\$PATH\"" >> "$BASH_ENV"
             echo "export PYTHONPATH='$PWD'" >> "$BASH_ENV"
       - save_cache:
           key: rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}

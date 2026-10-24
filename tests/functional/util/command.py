@@ -19,6 +19,11 @@ class CommandResults:
 
 def run_command(command: str, cwd: Path, check: bool = False) -> CompletedProcess:
     env = {"DEBUG": "true"}
+    executable = os.environ.get('CLOWDER_EXECUTABLE')
+    if executable:
+        # Git aliases and user scripts call `clowder` through PATH too.
+        executable_directory = str(Path(executable).resolve().parent)
+        env['PATH'] = executable_directory + os.pathsep + os.environ.get('PATH', '')
     processed_command = _process_clowder_commands(command)
     CONSOLE.stdout('echo $PATH')
     result = cmd.run('echo $PATH', cwd=cwd, check=check, print_output=False, print_command=True, env=env)
