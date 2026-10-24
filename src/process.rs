@@ -3,7 +3,10 @@
 use crate::commands::ExitCode;
 use anyhow::Result;
 use nix::{
-    sys::signal::{SigSet, SigmaskHow, Signal, killpg, pthread_sigmask},
+    sys::{
+        signal::{SigSet, SigmaskHow, Signal, kill, killpg, pthread_sigmask},
+        wait::{WaitPidFlag, WaitStatus, waitpid},
+    },
     unistd::{Pid, getpgrp, tcgetpgrp, tcsetpgrp},
 };
 use std::{
@@ -97,17 +100,21 @@ struct Running {
     group: Pid,
     finished: bool,
     _terminal: Option<Terminal>,
+    terminal_job: bool,
 }
 impl Running {
     fn spawn(command: &mut Command) -> Result<Self> {
         check()?;
         let child = command.process_group(0).spawn()?;
         let group = Pid::from_raw(child.id() as i32);
+        let terminal = Terminal::give_to(group);
+        let terminal_job = terminal.is_some();
         Ok(Self {
             child,
             group,
             finished: false,
-            _terminal: Terminal::give_to(group),
+            _terminal: terminal,
+            terminal_job,
         })
     }
 
@@ -121,13 +128,40 @@ impl Running {
         self.finished = true;
     }
 
+    fn poll(&mut self) -> Result<Option<ExitStatus>> {
+        if !self.terminal_job {
+            return Ok(self.child.try_wait()?);
+        }
+        // Child owns the terminal, so Ctrl-Z reaches its group, not ours.
+        // Observe stops as well as exits, return terminal control, and suspend
+        // Clowder so the user's shell can handle `fg` in the usual way.
+        match waitpid(
+            self.group,
+            Some(WaitPidFlag::WNOHANG | WaitPidFlag::WUNTRACED),
+        )? {
+            WaitStatus::Exited(_, code) => Ok(Some(ExitStatus::from_raw(code << 8))),
+            WaitStatus::Signaled(_, signal, core) => Ok(Some(ExitStatus::from_raw(
+                signal as i32 | if core { 128 } else { 0 },
+            ))),
+            WaitStatus::Stopped(_, _) => {
+                self._terminal.take();
+                kill(Pid::this(), Signal::SIGSTOP)?;
+                // Execution resumes here when the shell continues Clowder.
+                self._terminal = Terminal::give_to(self.group);
+                let _ = killpg(self.group, Signal::SIGCONT);
+                Ok(None)
+            }
+            _ => Ok(None),
+        }
+    }
+
     fn wait(mut self) -> Result<ExitStatus> {
         loop {
             if let Some(code) = exit_code() {
                 self.stop(Signal::try_from(code - 128).unwrap_or(Signal::SIGTERM));
                 return Err(ExitCode(code).into());
             }
-            if let Some(status) = self.child.try_wait()? {
+            if let Some(status) = self.poll()? {
                 if let Some(signal) = status.signal()
                     && [
                         Signal::SIGINT as i32,

@@ -75,7 +75,8 @@ process groups and prevent queued projects from starting. Clowder waits 250 ms
 for graceful exit, then kills remaining children in those groups. It returns
 128 plus the signal number (130 for Ctrl-C, 143 for SIGTERM), including with
 `forall --ignore-errors`. Sequential commands retain foreground terminal input;
-parallel commands use closed stdin and temporary output files. Cleanup removes
+Ctrl-Z returns control to the shell, and `fg` resumes the child with terminal
+input restored. Parallel commands use closed stdin and temporary output files. Cleanup removes
 those files on success, failure, or handled interruption.
 
 This does not roll back Git operations already completed, handle SIGKILL, or

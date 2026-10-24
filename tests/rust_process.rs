@@ -56,11 +56,17 @@ fn workspace(names: &[&str]) -> TempDir {
 }
 
 fn signal(pid: i32, name: &str) {
-    let _ = Command::new("/bin/kill")
-        .args(["-s", name, "--", &pid.to_string()])
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status();
+    use nix::{
+        sys::signal::{Signal, kill},
+        unistd::Pid,
+    };
+    let signal = match name {
+        "INT" => Signal::SIGINT,
+        "TERM" => Signal::SIGTERM,
+        "KILL" => Signal::SIGKILL,
+        _ => unreachable!(),
+    };
+    let _ = kill(Pid::from_raw(pid), signal);
 }
 
 struct Running {
@@ -335,4 +341,168 @@ fn cancellation_also_stops_captured_git_commands() {
     });
     assert_eq!(status.unwrap().code(), Some(143));
     until(|| running.descendants.iter().all(|pid| !alive(*pid)));
+}
+
+#[test]
+fn terminal_ctrl_c_cancels_even_when_forall_ignores_command_errors() {
+    use std::io::Write;
+    let root = workspace(&["alpha", "beta"]);
+    let output = fs::File::create(root.path().join("terminal.log")).unwrap();
+    let executable = env!("CARGO_BIN_EXE_clowder");
+    let script = "echo $PPID > ../clowder.pid; echo $$ > ../shell.pid; touch terminal.ready; sleep 60; touch after-sleep";
+    let mut terminal = Command::new("script");
+    #[cfg(target_os = "macos")]
+    terminal.args([
+        "-q",
+        "/dev/null",
+        executable,
+        "forall",
+        "--ignore-errors",
+        script,
+    ]);
+    #[cfg(not(target_os = "macos"))]
+    {
+        let quote = |s: &str| format!("'{}'", s.replace('\'', "'\\''"));
+        terminal.args([
+            "-q",
+            "-e",
+            "-c",
+            &format!(
+                "{} forall --ignore-errors {}",
+                quote(executable),
+                quote(script)
+            ),
+            "/dev/null",
+        ]);
+    }
+    let child = terminal
+        .current_dir(root.path())
+        .stdin(Stdio::piped())
+        .stdout(output.try_clone().unwrap())
+        .stderr(output)
+        .process_group(0)
+        .spawn()
+        .unwrap();
+    let mut running = Running {
+        child,
+        descendants: Vec::new(),
+    };
+    until(|| root.path().join("alpha/terminal.ready").exists());
+    for file in ["clowder.pid", "shell.pid"] {
+        let pid: i32 = fs::read_to_string(root.path().join(file))
+            .unwrap()
+            .trim()
+            .parse()
+            .unwrap();
+        running.descendants.extend([pid, -pid]);
+    }
+    running
+        .child
+        .stdin
+        .as_mut()
+        .unwrap()
+        .write_all(&[3])
+        .unwrap();
+    let mut status = None;
+    until(|| {
+        status = running.child.try_wait().unwrap();
+        status.is_some()
+    });
+    assert_eq!(status.unwrap().code(), Some(130));
+    assert!(!root.path().join("beta/terminal.ready").exists());
+    assert!(!root.path().join("alpha/after-sleep").exists());
+}
+
+#[test]
+fn terminal_suspend_and_resume_preserve_foreground_input() {
+    use std::io::Write;
+    let root = workspace(&["alpha"]);
+    let output = fs::File::create(root.path().join("terminal.log")).unwrap();
+    let executable = env!("CARGO_BIN_EXE_clowder");
+    let script = "echo $PPID > ../clowder.pid; echo $$ > ../shell.pid; touch terminal.ready; read value; printf 'resumed:%s\\n' \"$value\"";
+    let mut terminal = Command::new("script");
+    #[cfg(target_os = "macos")]
+    terminal.args([
+        "-q",
+        "/dev/null",
+        executable,
+        "forall",
+        "--ignore-errors",
+        script,
+    ]);
+    #[cfg(not(target_os = "macos"))]
+    {
+        let quote = |s: &str| format!("'{}'", s.replace('\'', "'\\''"));
+        terminal.args([
+            "-q",
+            "-e",
+            "-c",
+            &format!(
+                "{} forall --ignore-errors {}",
+                quote(executable),
+                quote(script)
+            ),
+            "/dev/null",
+        ]);
+    }
+    let child = terminal
+        .current_dir(root.path())
+        .stdin(Stdio::piped())
+        .stdout(output.try_clone().unwrap())
+        .stderr(output)
+        .process_group(0)
+        .spawn()
+        .unwrap();
+    let mut running = Running {
+        child,
+        descendants: Vec::new(),
+    };
+    until(|| root.path().join("alpha/terminal.ready").exists());
+    for file in ["clowder.pid", "shell.pid"] {
+        let pid: i32 = fs::read_to_string(root.path().join(file))
+            .unwrap()
+            .trim()
+            .parse()
+            .unwrap();
+        running.descendants.extend([pid, -pid]);
+    }
+    running
+        .child
+        .stdin
+        .as_mut()
+        .unwrap()
+        .write_all(&[26])
+        .unwrap();
+    let clowder_pid = running.descendants[0];
+    until(|| {
+        let output = Command::new("ps")
+            .args(["-o", "stat=", "-p", &clowder_pid.to_string()])
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&output.stdout)
+            .trim()
+            .starts_with('T')
+    });
+    let _ = nix::sys::signal::kill(
+        nix::unistd::Pid::from_raw(clowder_pid),
+        nix::sys::signal::Signal::SIGCONT,
+    );
+    running
+        .child
+        .stdin
+        .as_mut()
+        .unwrap()
+        .write_all(b"hello resume\n")
+        .unwrap();
+    let mut status = None;
+    until(|| {
+        status = running.child.try_wait().unwrap();
+        status.is_some()
+    });
+    assert_eq!(status.unwrap().code(), Some(0));
+    assert!(
+        fs::read_to_string(root.path().join("terminal.log"))
+            .unwrap()
+            .contains("resumed:hello resume")
+    );
 }
