@@ -7,6 +7,11 @@ description = "Manage a clowder of Git repositories"
 license = "MIT"
 repository = "https://github.com/polka-dot-cat/clowder"
 publish = false
+include = [
+    "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "src/**",
+    "clowder/clowder.schema.json", "LICENSE", "README.md",
+    "docs/rust-*.md", "TODO.md", "tests/rust_cli.rs", "tests/data/rust/**",
+]
 
 [[bin]]
 name = "clowder"
@@ -16,7 +21,6 @@ path = "src/main.rs"
 anyhow = "1"
 jsonschema = { version = "0.60", default-features = false }
 rayon = "1.12"
-regex = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 serde_yaml_ng = "0.10"

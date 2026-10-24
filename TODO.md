@@ -20,11 +20,14 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   preserving the Python reference path and all Gherkin files.
 - [x] Capture representative Python output and add native regression tests for
   formatting, parallel process isolation, exit codes, and dirty-tree protection.
-- [ ] Pass the existing read-only functional suite against the Rust executable.
-- [ ] Validate schema/source inheritance, SSH, recursive submodules, and LFS;
-  retain the separate pending Beanstalk host-key check.
+- [x] Pass the existing read-only functional suite against the Rust executable:
+  681 unique cases pass across local runs after harness repairs.
+- [x] Validate schema/source inheritance, recursive submodules, and LFS in
+  disposable containers. See the [validation record](docs/rust-migration-validation.md)
+  for transport limits; retain the separate pending Beanstalk host-key check.
 - [ ] Validate remote-write behavior in isolation and through serialized CI.
-- [ ] Validate offline scenarios in a disposable environment.
+- [x] Validate all 63 offline scenarios in disposable environments. Repair the
+  Python harness gateway-output capture so these scenarios can run on Linux.
 - [ ] Build and test the native CLI on macOS and Linux in hosted CI.
 - [ ] Add native installation/release instructions and packaging; compare
   startup and parallel execution with the Python reference.

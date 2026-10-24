@@ -55,3 +55,21 @@ check that workers overlap, keep their own environment, and propagate exit codes
 Validation is ongoing; see [TODO.md](../TODO.md) for outstanding coverage. SSH
 fixtures can delete shared test branches. Offline and LFS scenarios can change
 host settings, so run those in disposable environments.
+
+The [validation record](rust-migration-validation.md) lists native test results,
+the isolation used for remote writes and offline checks, and startup measurements.
+
+## Install from source
+
+After checking out this branch, build an optimized binary or install it with Cargo:
+
+```sh
+cargo build --release --locked
+./target/release/clowder --version
+# Optional: install into Cargo's bin directory.
+cargo install --path . --locked
+```
+
+The executable requires Git on `PATH` and a shell for `forall` and `repo run`.
+It does not require the Python package or its dependencies. Keep the Python
+environment only when running the existing BDD harness or comparing behavior.
