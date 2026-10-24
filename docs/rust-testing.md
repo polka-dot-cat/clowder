@@ -48,3 +48,28 @@ the native CLI. No coverage command here sends a report to Qlty, Codecov, or any
 other service. Those integrations remain inactive.
 
 Tool reference: [cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov).
+
+## Differential parser cases
+
+`tests/data/rust/` contains the original hand-picked reference captures plus
+538 generated YAML cases and 531 generated INI cases (seed `20261024`). Native
+unit tests compare values, rejection of invalid input, YAML serialization round
+trips, INI interpolation errors, and INI serialization with those expectations.
+The Python oracle uses PyYAML 6.0 and ConfigParser from the retained test environment.
+
+```sh
+# Run with the existing Python 3.8–3.11 test environment, not system Python 3.14.
+python script/generate-rust-compatibility --check
+# To capture another bounded, deterministic sample without replacing the corpus:
+python script/generate-rust-compatibility --seed 42 --count 5000 \
+  --output build/compatibility/42
+CLOWDER_COMPATIBILITY_DIR="$PWD/build/compatibility/42" \
+  cargo test --locked --bin clowder matches_
+```
+
+A generated sample stays inside the documented manifest value contract. Dates,
+nonfinite values, oversized integers, non-string mapping keys, binary values,
+and recursive aliases are not counted as Python-compatible cases. The fixtures
+record how many generated values were outside that contract. Inputs are small
+and bounded; this is deterministic differential testing, not exhaustive fuzzing.
+

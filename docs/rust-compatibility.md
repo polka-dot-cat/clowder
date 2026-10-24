@@ -83,3 +83,9 @@ terminate programs that deliberately detach into a new session/process group.
 The local process tests cover stubborn grandchildren, queued work, captured Git
 commands, terminal input, an 8 MiB combined parallel log, and a failed fetch
 which preserves the checked-out branch, commit, and files.
+
+Generated reference cases also preserve PyYAML's duplicate-anchor rejection and
+explicit signed-integer conversion. INI section names use ConfigParser's greedy
+closing bracket rule, and interpolation retains its key syntax and ten-level
+recursion boundary. See [native testing](rust-testing.md) to regenerate or extend
+the deterministic corpus.

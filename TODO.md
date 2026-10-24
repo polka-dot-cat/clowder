@@ -51,7 +51,7 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
 - [x] Harden native interruption, child cleanup, failed Git commands, and large parallel output.
 - [x] Add reproducible local LLVM coverage for native Rust; keep Qlty/Codecov inactive.
 - [ ] Check isolated container and private fixture validation helpers into the repository.
-- [ ] Expand deterministic YAML/INI differential cases against the Python reference.
+- [x] Expand deterministic YAML/INI differential cases against the Python reference.
 
 ## Before the backlog: transfer the repository
 

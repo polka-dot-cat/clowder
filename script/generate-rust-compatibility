@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""Capture deterministic YAML/INI expectations from the retained Python reference."""
+import argparse
+import configparser
+import io
+import json
+import math
+import random
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--seed", type=int, default=20261024)
+parser.add_argument("--count", type=int, default=512, help="random cases per format, plus fixed boundary cases")
+parser.add_argument("--output", type=Path, default=ROOT / "tests/data/rust")
+parser.add_argument("--check", action="store_true", help="compare regenerated fixtures without changing files")
+args = parser.parse_args()
+if yaml.__version__ != "6.0":
+    raise SystemExit("Use the reference environment with PyYAML 6.0")
+if args.count < 1 or args.count > 10000:
+    raise SystemExit("--count must be between 1 and 10000")
+rng = random.Random(args.seed)
+
+
+def in_domain(value):
+    if value is None or isinstance(value, (str, bool)):
+        return True
+    if isinstance(value, int):
+        return -(2 ** 63) <= value < 2 ** 64
+    if isinstance(value, float):
+        return math.isfinite(value)
+    if isinstance(value, list):
+        return all(in_domain(item) for item in value)
+    if isinstance(value, dict):
+        return all(isinstance(key, str) and in_domain(item) for key, item in value.items())
+    return False
+
+
+def yaml_cases():
+    # Keep the supported JSON-shaped, finite, bounded YAML contract. Dates,
+    # binary objects, recursive aliases, and non-string map keys are separate
+    # documented limits, not inputs silently counted as compatible here.
+    fixed = [
+        "value: !!int nonsense", "value: !!bool maybe", "value: !!float nope",
+        "value: [1, 2", "value: *missing", "a: &x 1\nb: &x 2\n", "---\na: 1\n---\nb: 2\n",
+        "a: {x: 1, x: 2}\n", "a: &base {x: 1, y: 2}\nb: {<<: *base, x: 3}\n",
+        "a: &a {x: 1}\nb: &b {x: 2, y: 3}\nc: {<<: [*a, *b]}\n",
+        "a: |+\n  one\n\n  two\n\n", "a: >-\n  one\n  two\n\n  three\n",
+        "a: \"\\u0000\\u263a\\U0001F408\"", "%YAML 1.1\n---\na: on\n",
+        "a: !!str 012\nb: !!int 0x10\nc: !!float 1\n",
+        "a: {<<: 4}\n", "a: !!seq [1, 2]\n", "a: !!map {x: 1}\n",
+        "value: ! on\n", "value: ! 012\n", "value: !!int --1\n",
+        "value: !!int +0\n", "value: !!float +.5\n", "value: !!int 1:99\n",
+        "value: !!float 1:99.0\n", "value: !!int 0o10\n",
+    ]
+    scalars = ["null", "~", "yes", "No", "ON", "off", "yEs", "0", "-0", "+012", "08",
+               "0x1f", "-0b101", "1_234", "1:20", "-1:02:03", "1.25", ".5", "1e3", "1.0e+3",
+               "'2026-10-24'", "'yes'", '"猫"', '"a\\nb"', "''", "'a: b # c'", "!!str no"]
+    for _ in range(args.count):
+        values = rng.sample(scalars, rng.randint(1, 7))
+        mode = rng.randrange(7)
+        if mode == 0:
+            text = "value: [" + ", ".join(values) + "]\n"
+        elif mode == 1:
+            text = "\n".join("key%d: %s" % (i, value) for i, value in enumerate(values)) + "\n"
+        elif mode == 2:
+            text = "base: &base {left: %s, right: %s}\nvalue: {<<: *base, left: %s}\n" % (values[0], values[-1], rng.choice(scalars))
+        elif mode == 3:
+            text = "value: " + rng.choice(["|", "|-", "|+", ">", ">-", ">+"]) + "\n  " + "\n  ".join(values) + "\n" * rng.randint(1, 3)
+        elif mode == 4:
+            text = "value: " + rng.choice(["!!str", "!!int", "!!bool", "!!float"]) + " " + rng.choice(scalars) + "\n"
+        elif mode == 5:
+            text = "a: &a [%s]\nb: [*a, *a]\n" % ", ".join(values)
+        else:
+            data = {"value": values, "nested": {"flag": bool(rng.randrange(2)), "number": rng.randint(-100000, 100000)}}
+            text = yaml.safe_dump(data, default_flow_style=bool(rng.randrange(2)), allow_unicode=True)
+        fixed.append(text)
+    cases = []
+    excluded = 0
+    for text in fixed:
+        case = {"yaml": text}
+        try:
+            value = yaml.safe_load(text)
+        except (yaml.YAMLError, ValueError, KeyError, IndexError, OverflowError):
+            case["error"] = True
+        else:
+            if not in_domain(value):
+                excluded += 1
+                continue
+            case["value"] = value
+        cases.append(case)
+    return cases, excluded
+
+
+def ini_cases():
+    fixed = [
+        "[a]b]\nkey=value\n", "[git] comment\nRebase: Yes\n", "[DEFAULT]\na=1\n[DEFAULT]\nb=2\n",
+        "[git]\nkey=one\n KEY=continued\nkey=duplicate\n", "[git]\nkey=one\n\n  two\n",
+        "[git]\nkey=one\n  # comment\n  two\n", "[git]\nkey=bad %(missing)s\n",
+        "[git]\nkey=%(bad)x)s\nbad)x=value\n", "[git]\nkey=%(KEY)s\n",
+        "[git]\nkey = 100%%\n", "[git]\nkey=bare%\n", "outside=section\n", "[]\nkey=value\n",
+        "[git]\n=empty\n", "[git]\nkey=one\n[git]\nother=two\n",
+    ]
+    for count in [9, 10, 11, 12]:
+        fixed.append("[git]\n" + "".join("k%d=%%(k%d)s\n" % (i, i+1) for i in range(count)) + "k%d=end\n" % count)
+    for _ in range(args.count):
+        text = rng.choice(["", "# header\n", "; header\n\n"])
+        sections = rng.sample(["DEFAULT", "git", "command", "extra", " spaced ", "a]b"], rng.randint(1, 5))
+        for section in sections:
+            text += "[" + section + "]" + rng.choice(["\n", " ignored\n", "\r\n"])
+            for index in range(rng.randint(1, 5)):
+                key = rng.choice(["key", "KEY", "項目"]) + str(index)
+                value = rng.choice(["", "yes", "value # literal", "value ; literal", "100%%", "%(key0)s", "%(absent)s", "no%", "猫"])
+                text += rng.choice(["", "  ", "\t"]) + key + rng.choice(["=", " : ", " = "]) + value + "\n"
+                if rng.randrange(4) == 0:
+                    text += rng.choice(["    continued\n", "\n    second\n", "    ; comment\n"])
+        fixed.append(text)
+    cases = []
+    for text in fixed:
+        case = {"ini": text}
+        config = configparser.ConfigParser()
+        try:
+            config.read_string(text)
+        except configparser.Error:
+            case["parse_error"] = True
+        else:
+            for section in ("git", "command"):
+                if not config.has_section(section):
+                    config.add_section(section)
+            queries = []
+            for section in config.sections():
+                for key in sorted(set(config[section]) | {"absent"}):
+                    query = {"section": section, "key": key}
+                    try:
+                        query["value"] = config.get(section, key, fallback=None)
+                    except configparser.Error:
+                        query["error"] = True
+                    queries.append(query)
+            output = io.StringIO()
+            config.write(output)
+            case.update(queries=queries, saved=output.getvalue())
+        cases.append(case)
+    return cases
+
+
+cases, excluded = yaml_cases()
+outputs = {"yaml-generated.json": {"cases": cases, "excluded_outside_contract": excluded},
+           "config-generated.json": {"cases": ini_cases()}}
+args.output.mkdir(parents=True, exist_ok=True)
+for name, data in outputs.items():
+    data = {"generator": "script/generate-rust-compatibility", "seed": args.seed,
+            "random_cases_requested": args.count, "reference": "PyYAML 6.0 / Python ConfigParser", **data}
+    content = json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    path = args.output / name
+    if args.check:
+        if not path.is_file() or path.read_text() != content:
+            raise SystemExit("Fixture differs: " + str(path))
+    else:
+        path.write_text(content)
+    print("%s: %d cases" % (path.name, len(data["cases"])))

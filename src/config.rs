@@ -44,7 +44,7 @@ impl Config {
                 continue;
             }
             if let Some(header) = trimmed.strip_prefix('[')
-                && let Some((name, _)) = header.split_once(']')
+                && let Some((name, _)) = header.rsplit_once(']')
                 && !name.is_empty()
             {
                 section = name.to_owned();
@@ -117,12 +117,18 @@ impl Config {
                 output.push('%');
                 text = rest;
             } else if let Some(rest) = text.strip_prefix('(')
-                && let Some((key, rest)) = rest.split_once(")s")
+                && let Some((key, rest)) = rest.split_once(')')
+                && !key.is_empty()
+                && let Some(rest) = rest.strip_prefix('s')
             {
                 let value = self.raw(section, &key.to_lowercase()).ok_or_else(|| {
                     anyhow::anyhow!("Unknown clowder.config interpolation key: {key}")
                 })?;
-                output.push_str(&self.interpolate(section, value, depth + 1)?);
+                if value.contains('%') {
+                    output.push_str(&self.interpolate(section, value, depth + 1)?);
+                } else {
+                    output.push_str(value);
+                }
                 text = rest;
             } else {
                 bail!("Invalid clowder.config interpolation; use %% for a literal percent sign");

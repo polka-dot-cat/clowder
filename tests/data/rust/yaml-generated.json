@@ -1,0 +1,6306 @@
+{
+  "generator": "script/generate-rust-compatibility",
+  "seed": 20261024,
+  "random_cases_requested": 512,
+  "reference": "PyYAML 6.0 / Python ConfigParser",
+  "cases": [
+    {
+      "yaml": "value: !!int nonsense",
+      "error": true
+    },
+    {
+      "yaml": "value: !!bool maybe",
+      "error": true
+    },
+    {
+      "yaml": "value: !!float nope",
+      "error": true
+    },
+    {
+      "yaml": "value: [1, 2",
+      "error": true
+    },
+    {
+      "yaml": "value: *missing",
+      "error": true
+    },
+    {
+      "yaml": "a: &x 1\nb: &x 2\n",
+      "error": true
+    },
+    {
+      "yaml": "---\na: 1\n---\nb: 2\n",
+      "error": true
+    },
+    {
+      "yaml": "a: {x: 1, x: 2}\n",
+      "value": {
+        "a": {
+          "x": 2
+        }
+      }
+    },
+    {
+      "yaml": "a: &base {x: 1, y: 2}\nb: {<<: *base, x: 3}\n",
+      "value": {
+        "a": {
+          "x": 1,
+          "y": 2
+        },
+        "b": {
+          "x": 3,
+          "y": 2
+        }
+      }
+    },
+    {
+      "yaml": "a: &a {x: 1}\nb: &b {x: 2, y: 3}\nc: {<<: [*a, *b]}\n",
+      "value": {
+        "a": {
+          "x": 1
+        },
+        "b": {
+          "x": 2,
+          "y": 3
+        },
+        "c": {
+          "x": 1,
+          "y": 3
+        }
+      }
+    },
+    {
+      "yaml": "a: |+\n  one\n\n  two\n\n",
+      "value": {
+        "a": "one\n\ntwo\n\n"
+      }
+    },
+    {
+      "yaml": "a: >-\n  one\n  two\n\n  three\n",
+      "value": {
+        "a": "one two\nthree"
+      }
+    },
+    {
+      "yaml": "a: \"\\u0000\\u263a\\U0001F408\"",
+      "value": {
+        "a": "\u0000☺🐈"
+      }
+    },
+    {
+      "yaml": "%YAML 1.1\n---\na: on\n",
+      "value": {
+        "a": true
+      }
+    },
+    {
+      "yaml": "a: !!str 012\nb: !!int 0x10\nc: !!float 1\n",
+      "value": {
+        "a": "012",
+        "b": 16,
+        "c": 1.0
+      }
+    },
+    {
+      "yaml": "a: {<<: 4}\n",
+      "error": true
+    },
+    {
+      "yaml": "a: !!seq [1, 2]\n",
+      "value": {
+        "a": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "yaml": "a: !!map {x: 1}\n",
+      "value": {
+        "a": {
+          "x": 1
+        }
+      }
+    },
+    {
+      "yaml": "value: ! on\n",
+      "value": {
+        "value": true
+      }
+    },
+    {
+      "yaml": "value: ! 012\n",
+      "value": {
+        "value": 10
+      }
+    },
+    {
+      "yaml": "value: !!int --1\n",
+      "value": {
+        "value": 1
+      }
+    },
+    {
+      "yaml": "value: !!int +0\n",
+      "value": {
+        "value": 0
+      }
+    },
+    {
+      "yaml": "value: !!float +.5\n",
+      "value": {
+        "value": 0.5
+      }
+    },
+    {
+      "yaml": "value: !!int 1:99\n",
+      "value": {
+        "value": 159
+      }
+    },
+    {
+      "yaml": "value: !!float 1:99.0\n",
+      "value": {
+        "value": 159.0
+      }
+    },
+    {
+      "yaml": "value: !!int 0o10\n",
+      "value": {
+        "value": 8
+      }
+    },
+    {
+      "yaml": "value: [off, \"a\\nb\", yes, +012, '2026-10-24']\n",
+      "value": {
+        "value": [
+          false,
+          "a\nb",
+          true,
+          10,
+          "2026-10-24"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [1.25, '']\n",
+      "value": {
+        "value": [
+          1.25,
+          ""
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool -0b101\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -33395}, value: ['off', '''''', '-1:02:03', '1_234',\n    1e3]}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -33395
+        },
+        "value": [
+          "off",
+          "''",
+          "-1:02:03",
+          "1_234",
+          "1e3"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [+012, yes, !!str no]\n",
+      "value": {
+        "value": [
+          10,
+          true,
+          "no"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1_234, right: ''}\nvalue: {<<: *base, left: yes}\n",
+      "value": {
+        "base": {
+          "left": 1234,
+          "right": ""
+        },
+        "value": {
+          "left": true,
+          "right": ""
+        }
+      }
+    },
+    {
+      "yaml": "value: [0, 'yes', 1e3]\n",
+      "value": {
+        "value": [
+          0,
+          "yes",
+          "1e3"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: .5\nkey1: +012\nkey2: 08\nkey3: 1:20\nkey4: ~\nkey5: \"猫\"\nkey6: -0b101\n",
+      "value": {
+        "key0": 0.5,
+        "key1": 10,
+        "key2": "08",
+        "key3": 80,
+        "key4": null,
+        "key5": "猫",
+        "key6": -5
+      }
+    },
+    {
+      "yaml": "value: >+\n  -1:02:03\n\n\n",
+      "value": {
+        "value": "-1:02:03\n\n\n"
+      }
+    },
+    {
+      "yaml": "value: [.5]\n",
+      "value": {
+        "value": [
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-1:02:03, off, 0x1f, \"猫\", \"a\\nb\", 0]\n",
+      "value": {
+        "value": [
+          -3723,
+          false,
+          31,
+          "猫",
+          "a\nb",
+          0
+        ]
+      }
+    },
+    {
+      "yaml": "value: [1.25]\n",
+      "value": {
+        "value": [
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: +012\nkey2: 'a: b # c'\nkey3: 1.25\n",
+      "value": {
+        "key0": true,
+        "key1": 10,
+        "key2": "a: b # c",
+        "key3": 1.25
+      }
+    },
+    {
+      "yaml": "a: &a [~, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          null,
+          80
+        ],
+        "b": [
+          [
+            null,
+            80
+          ],
+          [
+            null,
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str '2026-10-24'\n",
+      "value": {
+        "value": "2026-10-24"
+      }
+    },
+    {
+      "yaml": "a: &a [+012, off]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          10,
+          false
+        ],
+        "b": [
+          [
+            10,
+            false
+          ],
+          [
+            10,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int 'yes'\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: 'yes', right: -0}\nvalue: {<<: *base, left: 'a: b # c'}\n",
+      "value": {
+        "base": {
+          "left": "yes",
+          "right": 0
+        },
+        "value": {
+          "left": "a: b # c",
+          "right": 0
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [yEs, !!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yEs",
+          "no"
+        ],
+        "b": [
+          [
+            "yEs",
+            "no"
+          ],
+          [
+            "yEs",
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [ON, 'yes', 1.25, .5, 'a: b # c', \"a\\nb\", -0b101]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          true,
+          "yes",
+          1.25,
+          0.5,
+          "a: b # c",
+          "a\nb",
+          -5
+        ],
+        "b": [
+          [
+            true,
+            "yes",
+            1.25,
+            0.5,
+            "a: b # c",
+            "a\nb",
+            -5
+          ],
+          [
+            true,
+            "yes",
+            1.25,
+            0.5,
+            "a: b # c",
+            "a\nb",
+            -5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float 0\n",
+      "value": {
+        "value": 0.0
+      }
+    },
+    {
+      "yaml": "value: |-\n  08\n  1.25\n  \"a\\nb\"\n  1:20\n\n\n",
+      "value": {
+        "value": "08\n1.25\n\"a\\nb\"\n1:20"
+      }
+    },
+    {
+      "yaml": "base: &base {left: -0, right: 0x1f}\nvalue: {<<: *base, left: !!str no}\n",
+      "value": {
+        "base": {
+          "left": 0,
+          "right": 31
+        },
+        "value": {
+          "left": "no",
+          "right": 31
+        }
+      }
+    },
+    {
+      "yaml": "key0: -0\nkey1: .5\nkey2: 08\nkey3: '2026-10-24'\nkey4: +012\nkey5: No\n",
+      "value": {
+        "key0": 0,
+        "key1": 0.5,
+        "key2": "08",
+        "key3": "2026-10-24",
+        "key4": 10,
+        "key5": false
+      }
+    },
+    {
+      "yaml": "a: &a ['a: b # c', 0, '', 1.25, .5, 'yes']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "a: b # c",
+          0,
+          "",
+          1.25,
+          0.5,
+          "yes"
+        ],
+        "b": [
+          [
+            "a: b # c",
+            0,
+            "",
+            1.25,
+            0.5,
+            "yes"
+          ],
+          [
+            "a: b # c",
+            0,
+            "",
+            1.25,
+            0.5,
+            "yes"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [\"a\\nb\"]\n",
+      "value": {
+        "value": [
+          "a\nb"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 82584\nvalue:\n- '-1:02:03'\n- '-0b101'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 82584
+        },
+        "value": [
+          "-1:02:03",
+          "-0b101"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  1.25\n  1:20\n  yes\n  0\n  'a: b # c'\n  null\n  +012\n\n",
+      "value": {
+        "value": "1.25\n1:20\nyes\n0\n'a: b # c'\nnull\n+012\n"
+      }
+    },
+    {
+      "yaml": "value: [-0, null, \"猫\", No, '', 0, 1:20]\n",
+      "value": {
+        "value": [
+          0,
+          null,
+          "猫",
+          false,
+          "",
+          0,
+          80
+        ]
+      }
+    },
+    {
+      "yaml": "value: [~, .5]\n",
+      "value": {
+        "value": [
+          null,
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  1_234\n\n\n",
+      "value": {
+        "value": "1_234\n"
+      }
+    },
+    {
+      "yaml": "value: !!float 0\n",
+      "value": {
+        "value": 0.0
+      }
+    },
+    {
+      "yaml": "base: &base {left: 0x1f, right: !!str no}\nvalue: {<<: *base, left: No}\n",
+      "value": {
+        "base": {
+          "left": 31,
+          "right": "no"
+        },
+        "value": {
+          "left": false,
+          "right": "no"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -27421}, value: ['1_234', '0x1f', '1:20', '1.0e+3',\n    '!!str no']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -27421
+        },
+        "value": [
+          "1_234",
+          "0x1f",
+          "1:20",
+          "1.0e+3",
+          "!!str no"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a ['yes']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yes"
+        ],
+        "b": [
+          [
+            "yes"
+          ],
+          [
+            "yes"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -36721\nvalue:\n- '-0b101'\n- '+012'\n- '!!str no'\n- 'off'\n- '\"猫\"'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -36721
+        },
+        "value": [
+          "-0b101",
+          "+012",
+          "!!str no",
+          "off",
+          "\"猫\""
+        ]
+      }
+    },
+    {
+      "yaml": "value: [off]\n",
+      "value": {
+        "value": [
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "key0: '2026-10-24'\nkey1: No\nkey2: ~\nkey3: 'yes'\nkey4: 08\nkey5: 0\nkey6: -0\n",
+      "value": {
+        "key0": "2026-10-24",
+        "key1": false,
+        "key2": null,
+        "key3": "yes",
+        "key4": "08",
+        "key5": 0,
+        "key6": 0
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: null\nkey2: 0\nkey3: 1.25\nkey4: 1_234\nkey5: +012\nkey6: 'yes'\n",
+      "value": {
+        "key0": "08",
+        "key1": null,
+        "key2": 0,
+        "key3": 1.25,
+        "key4": 1234,
+        "key5": 10,
+        "key6": "yes"
+      }
+    },
+    {
+      "yaml": "value: !!bool 0x1f\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: 1e3, right: ON}\nvalue: {<<: *base, left: 1:20}\n",
+      "value": {
+        "base": {
+          "left": "1e3",
+          "right": true
+        },
+        "value": {
+          "left": 80,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "value: [1.25]\n",
+      "value": {
+        "value": [
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "value: [No, yEs, null, 1e3, \"a\\nb\", 'a: b # c']\n",
+      "value": {
+        "value": [
+          false,
+          "yEs",
+          null,
+          "1e3",
+          "a\nb",
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [\"猫\"]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "猫"
+        ],
+        "b": [
+          [
+            "猫"
+          ],
+          [
+            "猫"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24', +012, yEs, 1.25, ON, 08, !!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24",
+          10,
+          "yEs",
+          1.25,
+          true,
+          "08",
+          "no"
+        ],
+        "b": [
+          [
+            "2026-10-24",
+            10,
+            "yEs",
+            1.25,
+            true,
+            "08",
+            "no"
+          ],
+          [
+            "2026-10-24",
+            10,
+            "yEs",
+            1.25,
+            true,
+            "08",
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [.5, 1e3, 'a: b # c', !!str no, +012, 0x1f, No]\n",
+      "value": {
+        "value": [
+          0.5,
+          "1e3",
+          "a: b # c",
+          "no",
+          10,
+          31,
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: yEs, right: yEs}\nvalue: {<<: *base, left: 1.25}\n",
+      "value": {
+        "base": {
+          "left": "yEs",
+          "right": "yEs"
+        },
+        "value": {
+          "left": 1.25,
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "key0: -0\nkey1: \"猫\"\nkey2: '2026-10-24'\n",
+      "value": {
+        "key0": 0,
+        "key1": "猫",
+        "key2": "2026-10-24"
+      }
+    },
+    {
+      "yaml": "a: &a [-0, yEs]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0,
+          "yEs"
+        ],
+        "b": [
+          [
+            0,
+            "yEs"
+          ],
+          [
+            0,
+            "yEs"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [-1:02:03, 1_234, yes, '']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -3723,
+          1234,
+          true,
+          ""
+        ],
+        "b": [
+          [
+            -3723,
+            1234,
+            true,
+            ""
+          ],
+          [
+            -3723,
+            1234,
+            true,
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int No\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -10497}, value: ['''''', 1e3, 'off', '1.25', '''2026-10-24''',\n    '.5', '-0']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -10497
+        },
+        "value": [
+          "''",
+          "1e3",
+          "off",
+          "1.25",
+          "'2026-10-24'",
+          ".5",
+          "-0"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: 1.25}\nvalue: {<<: *base, left: -0}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": 1.25
+        },
+        "value": {
+          "left": 0,
+          "right": 1.25
+        }
+      }
+    },
+    {
+      "yaml": "value: [1:20, +012, ~, '2026-10-24', 0]\n",
+      "value": {
+        "value": [
+          80,
+          10,
+          null,
+          "2026-10-24",
+          0
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [No, !!str no, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          "no",
+          0
+        ],
+        "b": [
+          [
+            false,
+            "no",
+            0
+          ],
+          [
+            false,
+            "no",
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: \"猫\", right: 1.25}\nvalue: {<<: *base, left: ''}\n",
+      "value": {
+        "base": {
+          "left": "猫",
+          "right": 1.25
+        },
+        "value": {
+          "left": "",
+          "right": 1.25
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -11532}, value: ['1.25', yEs, '\"a\\nb\"', 'ON', '''''']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -11532
+        },
+        "value": [
+          "1.25",
+          "yEs",
+          "\"a\\nb\"",
+          "ON",
+          "''"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1.25, right: 1.25}\nvalue: {<<: *base, left: -0}\n",
+      "value": {
+        "base": {
+          "left": 1.25,
+          "right": 1.25
+        },
+        "value": {
+          "left": 0,
+          "right": 1.25
+        }
+      }
+    },
+    {
+      "yaml": "value: [08, 1.0e+3, 1:20, '', 'a: b # c', No, .5]\n",
+      "value": {
+        "value": [
+          "08",
+          1000.0,
+          80,
+          "",
+          "a: b # c",
+          false,
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -64478\nvalue:\n- '.5'\n- 1e3\n- '1_234'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -64478
+        },
+        "value": [
+          ".5",
+          "1e3",
+          "1_234"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [off, 'a: b # c', 1:20, -0, '', 1_234]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          "a: b # c",
+          80,
+          0,
+          "",
+          1234
+        ],
+        "b": [
+          [
+            false,
+            "a: b # c",
+            80,
+            0,
+            "",
+            1234
+          ],
+          [
+            false,
+            "a: b # c",
+            80,
+            0,
+            "",
+            1234
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [1.0e+3, 'yes', ON, 0x1f]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1000.0,
+          "yes",
+          true,
+          31
+        ],
+        "b": [
+          [
+            1000.0,
+            "yes",
+            true,
+            31
+          ],
+          [
+            1000.0,
+            "yes",
+            true,
+            31
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -1:02:03, right: 0}\nvalue: {<<: *base, left: !!str no}\n",
+      "value": {
+        "base": {
+          "left": -3723,
+          "right": 0
+        },
+        "value": {
+          "left": "no",
+          "right": 0
+        }
+      }
+    },
+    {
+      "yaml": "value: [1:20, yes, yEs, 'yes', 0x1f]\n",
+      "value": {
+        "value": [
+          80,
+          true,
+          "yEs",
+          "yes",
+          31
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: null, right: 1e3}\nvalue: {<<: *base, left: .5}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": "1e3"
+        },
+        "value": {
+          "left": 0.5,
+          "right": "1e3"
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: '2026-10-24', right: 'a: b # c'}\nvalue: {<<: *base, left: -1:02:03}\n",
+      "value": {
+        "base": {
+          "left": "2026-10-24",
+          "right": "a: b # c"
+        },
+        "value": {
+          "left": -3723,
+          "right": "a: b # c"
+        }
+      }
+    },
+    {
+      "yaml": "key0: \"a\\nb\"\nkey1: -1:02:03\nkey2: ''\nkey3: 08\nkey4: ~\nkey5: 1_234\nkey6: off\n",
+      "value": {
+        "key0": "a\nb",
+        "key1": -3723,
+        "key2": "",
+        "key3": "08",
+        "key4": null,
+        "key5": 1234,
+        "key6": false
+      }
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: 'a: b # c'}\nvalue: {<<: *base, left: off}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": "a: b # c"
+        },
+        "value": {
+          "left": false,
+          "right": "a: b # c"
+        }
+      }
+    },
+    {
+      "yaml": "value: |\n  08\n  1.25\n  +012\n  yes\n  1:20\n",
+      "value": {
+        "value": "08\n1.25\n+012\nyes\n1:20\n"
+      }
+    },
+    {
+      "yaml": "key0: 0x1f\nkey1: 1:20\n",
+      "value": {
+        "key0": 31,
+        "key1": 80
+      }
+    },
+    {
+      "yaml": "value: !!float 0\n",
+      "value": {
+        "value": 0.0
+      }
+    },
+    {
+      "yaml": "base: &base {left: '', right: ON}\nvalue: {<<: *base, left: 'yes'}\n",
+      "value": {
+        "base": {
+          "left": "",
+          "right": true
+        },
+        "value": {
+          "left": "yes",
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "key0: .5\nkey1: No\nkey2: off\nkey3: ''\nkey4: 'yes'\nkey5: 0x1f\n",
+      "value": {
+        "key0": 0.5,
+        "key1": false,
+        "key2": false,
+        "key3": "",
+        "key4": "yes",
+        "key5": 31
+      }
+    },
+    {
+      "yaml": "value: |-\n  -0\n  1_234\n  +012\n  yes\n  null\n\n",
+      "value": {
+        "value": "-0\n1_234\n+012\nyes\nnull"
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -19348\nvalue:\n- '~'\n- '0'\n- 'No'\n- 'off'\n- '''a: b # c'''\n- '''2026-10-24'''\n- '-1:02:03'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -19348
+        },
+        "value": [
+          "~",
+          "0",
+          "No",
+          "off",
+          "'a: b # c'",
+          "'2026-10-24'",
+          "-1:02:03"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int ~\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -65323}, value: ['1.25', '+012', 'null', '1:20']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -65323
+        },
+        "value": [
+          "1.25",
+          "+012",
+          "null",
+          "1:20"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  'yes'\n  +012\n  1:20\n  08\n  ~\n  null\n  off\n\n",
+      "value": {
+        "value": "'yes'\n+012\n1:20\n08\n~\nnull\noff\n"
+      }
+    },
+    {
+      "yaml": "a: &a [1_234, No, yes, 1e3, 0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1234,
+          false,
+          true,
+          "1e3",
+          0
+        ],
+        "b": [
+          [
+            1234,
+            false,
+            true,
+            "1e3",
+            0
+          ],
+          [
+            1234,
+            false,
+            true,
+            "1e3",
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 48605}, value: ['''2026-10-24''', '1_234', 'yes', '-0',\n    'off']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 48605
+        },
+        "value": [
+          "'2026-10-24'",
+          "1_234",
+          "yes",
+          "-0",
+          "off"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 08\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: 0x1f\n",
+      "value": {
+        "key0": 31
+      }
+    },
+    {
+      "yaml": "value: !!float 1:20\n",
+      "value": {
+        "value": 80.0
+      }
+    },
+    {
+      "yaml": "key0: !!str no\nkey1: 0\nkey2: null\nkey3: \"猫\"\nkey4: \"a\\nb\"\nkey5: 'yes'\nkey6: +012\n",
+      "value": {
+        "key0": "no",
+        "key1": 0,
+        "key2": null,
+        "key3": "猫",
+        "key4": "a\nb",
+        "key5": "yes",
+        "key6": 10
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 67809}, value: ['''''', '+012', '0x1f', '~', '1_234',\n    '''2026-10-24''', '0']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 67809
+        },
+        "value": [
+          "''",
+          "+012",
+          "0x1f",
+          "~",
+          "1_234",
+          "'2026-10-24'",
+          "0"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int 1e3\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: 1.25\nkey1: -1:02:03\n",
+      "value": {
+        "key0": 1.25,
+        "key1": -3723
+      }
+    },
+    {
+      "yaml": "key0: 0x1f\nkey1: ''\nkey2: -0b101\nkey3: +012\n",
+      "value": {
+        "key0": 31,
+        "key1": "",
+        "key2": -5,
+        "key3": 10
+      }
+    },
+    {
+      "yaml": "value: !!float -0\n",
+      "value": {
+        "value": -0.0
+      }
+    },
+    {
+      "yaml": "a: &a [1e3, 0x1f]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "1e3",
+          31
+        ],
+        "b": [
+          [
+            "1e3",
+            31
+          ],
+          [
+            "1e3",
+            31
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |-\n  08\n  1.25\n  off\n  '2026-10-24'\n\n\n",
+      "value": {
+        "value": "08\n1.25\noff\n'2026-10-24'"
+      }
+    },
+    {
+      "yaml": "value: [!!str no, -0b101, .5, 0x1f, yEs, 1e3, ON]\n",
+      "value": {
+        "value": [
+          "no",
+          -5,
+          0.5,
+          31,
+          "yEs",
+          "1e3",
+          true
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  1:20\n  -0b101\n  1e3\n  ~\n",
+      "value": {
+        "value": "1:20 -0b101 1e3 ~\n"
+      }
+    },
+    {
+      "yaml": "a: &a [+012, yes, -0, ~, ON, 'a: b # c']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          10,
+          true,
+          0,
+          null,
+          true,
+          "a: b # c"
+        ],
+        "b": [
+          [
+            10,
+            true,
+            0,
+            null,
+            true,
+            "a: b # c"
+          ],
+          [
+            10,
+            true,
+            0,
+            null,
+            true,
+            "a: b # c"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 08, right: -0b101}\nvalue: {<<: *base, left: off}\n",
+      "value": {
+        "base": {
+          "left": "08",
+          "right": -5
+        },
+        "value": {
+          "left": false,
+          "right": -5
+        }
+      }
+    },
+    {
+      "yaml": "value: >+\n  'a: b # c'\n  No\n  -0b101\n\n",
+      "value": {
+        "value": "'a: b # c' No -0b101\n\n"
+      }
+    },
+    {
+      "yaml": "value: !!float -0\n",
+      "value": {
+        "value": -0.0
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24"
+        ],
+        "b": [
+          [
+            "2026-10-24"
+          ],
+          [
+            "2026-10-24"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 76757\nvalue:\n- 08\n- '.5'\n- '''a: b # c'''\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 76757
+        },
+        "value": [
+          "08",
+          ".5",
+          "'a: b # c'"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |+\n  '2026-10-24'\n  off\n  -1:02:03\n  ~\n  \"a\\nb\"\n  ON\n",
+      "value": {
+        "value": "'2026-10-24'\noff\n-1:02:03\n~\n\"a\\nb\"\nON\n"
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: 1e3\nkey2: 1:20\nkey3: 1.0e+3\n",
+      "value": {
+        "key0": "08",
+        "key1": "1e3",
+        "key2": 80,
+        "key3": 1000.0
+      }
+    },
+    {
+      "yaml": "a: &a [0x1f, 1_234, 1e3, 08, 'a: b # c', .5]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          31,
+          1234,
+          "1e3",
+          "08",
+          "a: b # c",
+          0.5
+        ],
+        "b": [
+          [
+            31,
+            1234,
+            "1e3",
+            "08",
+            "a: b # c",
+            0.5
+          ],
+          [
+            31,
+            1234,
+            "1e3",
+            "08",
+            "a: b # c",
+            0.5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str '2026-10-24'\n",
+      "value": {
+        "value": "2026-10-24"
+      }
+    },
+    {
+      "yaml": "key0: 'a: b # c'\n",
+      "value": {
+        "key0": "a: b # c"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 45100}, value: ['1_234']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 45100
+        },
+        "value": [
+          "1_234"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int 1.0e+3\n",
+      "error": true
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 11541\nvalue:\n- '1:20'\n- '~'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 11541
+        },
+        "value": [
+          "1:20",
+          "~"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: +012, right: -1:02:03}\nvalue: {<<: *base, left: 1e3}\n",
+      "value": {
+        "base": {
+          "left": 10,
+          "right": -3723
+        },
+        "value": {
+          "left": "1e3",
+          "right": -3723
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [1_234, -0b101, 'a: b # c', 0x1f, 08]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1234,
+          -5,
+          "a: b # c",
+          31,
+          "08"
+        ],
+        "b": [
+          [
+            1234,
+            -5,
+            "a: b # c",
+            31,
+            "08"
+          ],
+          [
+            1234,
+            -5,
+            "a: b # c",
+            31,
+            "08"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 08\n",
+      "error": true
+    },
+    {
+      "yaml": "value: |\n  -1:02:03\n\n\n",
+      "value": {
+        "value": "-1:02:03\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 'a: b # c', right: 1.0e+3}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": "a: b # c",
+          "right": 1000.0
+        },
+        "value": {
+          "left": 1000.0,
+          "right": 1000.0
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: ON, right: ON}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": true,
+          "right": true
+        },
+        "value": {
+          "left": 1000.0,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 26268}, value: ['No', '1.0e+3']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 26268
+        },
+        "value": [
+          "No",
+          "1.0e+3"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [null]\n",
+      "value": {
+        "value": [
+          null
+        ]
+      }
+    },
+    {
+      "yaml": "key0: yEs\n",
+      "value": {
+        "key0": "yEs"
+      }
+    },
+    {
+      "yaml": "a: &a [-1:02:03, '2026-10-24', 'a: b # c', ~, .5]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -3723,
+          "2026-10-24",
+          "a: b # c",
+          null,
+          0.5
+        ],
+        "b": [
+          [
+            -3723,
+            "2026-10-24",
+            "a: b # c",
+            null,
+            0.5
+          ],
+          [
+            -3723,
+            "2026-10-24",
+            "a: b # c",
+            null,
+            0.5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: 1:20\nkey2: off\nkey3: ~\n",
+      "value": {
+        "key0": 0,
+        "key1": 80,
+        "key2": false,
+        "key3": null
+      }
+    },
+    {
+      "yaml": "value: !!int 08\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [0, .5, 1_234, null, -0b101, 1.0e+3, -1:02:03]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0,
+          0.5,
+          1234,
+          null,
+          -5,
+          1000.0,
+          -3723
+        ],
+        "b": [
+          [
+            0,
+            0.5,
+            1234,
+            null,
+            -5,
+            1000.0,
+            -3723
+          ],
+          [
+            0,
+            0.5,
+            1234,
+            null,
+            -5,
+            1000.0,
+            -3723
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [1.25, '']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1.25,
+          ""
+        ],
+        "b": [
+          [
+            1.25,
+            ""
+          ],
+          [
+            1.25,
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: \"猫\", right: 1.25}\nvalue: {<<: *base, left: -0}\n",
+      "value": {
+        "base": {
+          "left": "猫",
+          "right": 1.25
+        },
+        "value": {
+          "left": 0,
+          "right": 1.25
+        }
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -82973\nvalue:\n- '0x1f'\n- '\"猫\"'\n- 1e3\n- 'null'\n- '1.25'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -82973
+        },
+        "value": [
+          "0x1f",
+          "\"猫\"",
+          "1e3",
+          "null",
+          "1.25"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str 08\n",
+      "value": {
+        "value": "08"
+      }
+    },
+    {
+      "yaml": "value: >+\n  '2026-10-24'\n  ON\n  off\n  \"a\\nb\"\n",
+      "value": {
+        "value": "'2026-10-24' ON off \"a\\nb\"\n"
+      }
+    },
+    {
+      "yaml": "value: [1:20]\n",
+      "value": {
+        "value": [
+          80
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: '', right: +012}\nvalue: {<<: *base, left: off}\n",
+      "value": {
+        "base": {
+          "left": "",
+          "right": 10
+        },
+        "value": {
+          "left": false,
+          "right": 10
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: \"a\\nb\", right: ~}\nvalue: {<<: *base, left: 1:20}\n",
+      "value": {
+        "base": {
+          "left": "a\nb",
+          "right": null
+        },
+        "value": {
+          "left": 80,
+          "right": null
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 55929}, value: ['~', '+012', '0x1f', '\"a\\nb\"', '''2026-10-24''',\n    '''''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 55929
+        },
+        "value": [
+          "~",
+          "+012",
+          "0x1f",
+          "\"a\\nb\"",
+          "'2026-10-24'",
+          "''"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 0\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: yes\nkey1: .5\n",
+      "value": {
+        "key0": true,
+        "key1": 0.5
+      }
+    },
+    {
+      "yaml": "a: &a [No]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false
+        ],
+        "b": [
+          [
+            false
+          ],
+          [
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  yes\n",
+      "value": {
+        "value": "yes\n"
+      }
+    },
+    {
+      "yaml": "value: [08, -0b101]\n",
+      "value": {
+        "value": [
+          "08",
+          -5
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 91945}, value: ['1.0e+3', '-0b101', '1:20']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 91945
+        },
+        "value": [
+          "1.0e+3",
+          "-0b101",
+          "1:20"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [0, 'a: b # c', -0b101, 08, 'yes', 1:20, '']\n",
+      "value": {
+        "value": [
+          0,
+          "a: b # c",
+          -5,
+          "08",
+          "yes",
+          80,
+          ""
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  'yes'\n  0x1f\n  1:20\n  -1:02:03\n",
+      "value": {
+        "value": "'yes' 0x1f 1:20 -1:02:03\n"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 88180}, value: ['1:20', '''yes''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 88180
+        },
+        "value": [
+          "1:20",
+          "'yes'"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: off\nkey2: ''\nkey3: 'yes'\n",
+      "value": {
+        "key0": "08",
+        "key1": false,
+        "key2": "",
+        "key3": "yes"
+      }
+    },
+    {
+      "yaml": "value: |+\n  0\n  1.25\n  yEs\n  ON\n\n",
+      "value": {
+        "value": "0\n1.25\nyEs\nON\n\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: No, right: 1.25}\nvalue: {<<: *base, left: 1_234}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": 1.25
+        },
+        "value": {
+          "left": 1234,
+          "right": 1.25
+        }
+      }
+    },
+    {
+      "yaml": "value: !!float \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "value: !!int 1.0e+3\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -61011}, value: ['1.0e+3', '1:20', '-1:02:03', '0',\n    '~']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -61011
+        },
+        "value": [
+          "1.0e+3",
+          "1:20",
+          "-1:02:03",
+          "0",
+          "~"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [yEs, ~, 0, \"a\\nb\", -0b101]\n",
+      "value": {
+        "value": [
+          "yEs",
+          null,
+          0,
+          "a\nb",
+          -5
+        ]
+      }
+    },
+    {
+      "yaml": "value: [yEs, -0b101, 1e3, -1:02:03, '2026-10-24', 'a: b # c']\n",
+      "value": {
+        "value": [
+          "yEs",
+          -5,
+          "1e3",
+          -3723,
+          "2026-10-24",
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 19323\nvalue:\n- 08\n- yEs\n- '0'\n- '-1:02:03'\n- '!!str no'\n- '\"a\\nb\"'\n- '.5'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 19323
+        },
+        "value": [
+          "08",
+          "yEs",
+          "0",
+          "-1:02:03",
+          "!!str no",
+          "\"a\\nb\"",
+          ".5"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [1.25, !!str no, \"a\\nb\", ~, 1_234, yes, +012]\n",
+      "value": {
+        "value": [
+          1.25,
+          "no",
+          "a\nb",
+          null,
+          1234,
+          true,
+          10
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [-0, 0, 1:20, ON, off, -0b101]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0,
+          0,
+          80,
+          true,
+          false,
+          -5
+        ],
+        "b": [
+          [
+            0,
+            0,
+            80,
+            true,
+            false,
+            -5
+          ],
+          [
+            0,
+            0,
+            80,
+            true,
+            false,
+            -5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: 1e3\nkey1: \"猫\"\nkey2: 1_234\nkey3: 1:20\nkey4: .5\nkey5: null\n",
+      "value": {
+        "key0": "1e3",
+        "key1": "猫",
+        "key2": 1234,
+        "key3": 80,
+        "key4": 0.5,
+        "key5": null
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 22877}, value: ['yes', '\"a\\nb\"', 'off']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 22877
+        },
+        "value": [
+          "yes",
+          "\"a\\nb\"",
+          "off"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool yes\n",
+      "value": {
+        "value": true
+      }
+    },
+    {
+      "yaml": "value: !!bool yes\n",
+      "value": {
+        "value": true
+      }
+    },
+    {
+      "yaml": "base: &base {left: ~, right: .5}\nvalue: {<<: *base, left: ON}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": 0.5
+        },
+        "value": {
+          "left": true,
+          "right": 0.5
+        }
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: \"猫\"\nkey2: -1:02:03\n",
+      "value": {
+        "key0": true,
+        "key1": "猫",
+        "key2": -3723
+      }
+    },
+    {
+      "yaml": "a: &a [-0b101, yEs, .5, off, 0x1f, 1e3, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -5,
+          "yEs",
+          0.5,
+          false,
+          31,
+          "1e3",
+          80
+        ],
+        "b": [
+          [
+            -5,
+            "yEs",
+            0.5,
+            false,
+            31,
+            "1e3",
+            80
+          ],
+          [
+            -5,
+            "yEs",
+            0.5,
+            false,
+            31,
+            "1e3",
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 0, right: off}\nvalue: {<<: *base, left: 1e3}\n",
+      "value": {
+        "base": {
+          "left": 0,
+          "right": false
+        },
+        "value": {
+          "left": "1e3",
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "key0: ON\nkey1: 0x1f\nkey2: 1.25\nkey3: \"a\\nb\"\nkey4: +012\n",
+      "value": {
+        "key0": true,
+        "key1": 31,
+        "key2": 1.25,
+        "key3": "a\nb",
+        "key4": 10
+      }
+    },
+    {
+      "yaml": "value: >\n  1.25\n  -0b101\n  .5\n  null\n",
+      "value": {
+        "value": "1.25 -0b101 .5 null\n"
+      }
+    },
+    {
+      "yaml": "a: &a ['yes', ~, -0b101, 1_234]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yes",
+          null,
+          -5,
+          1234
+        ],
+        "b": [
+          [
+            "yes",
+            null,
+            -5,
+            1234
+          ],
+          [
+            "yes",
+            null,
+            -5,
+            1234
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [ON, 0, !!str no, off, 'yes', 1.25]\n",
+      "value": {
+        "value": [
+          true,
+          0,
+          "no",
+          false,
+          "yes",
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "key0: \"猫\"\nkey1: 1.0e+3\n",
+      "value": {
+        "key0": "猫",
+        "key1": 1000.0
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -24978\nvalue:\n- '''yes'''\n- '+012'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -24978
+        },
+        "value": [
+          "'yes'",
+          "+012"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: ON, right: null}\nvalue: {<<: *base, left: 1_234}\n",
+      "value": {
+        "base": {
+          "left": true,
+          "right": null
+        },
+        "value": {
+          "left": 1234,
+          "right": null
+        }
+      }
+    },
+    {
+      "yaml": "value: [08, 'yes', yEs, -0]\n",
+      "value": {
+        "value": [
+          "08",
+          "yes",
+          "yEs",
+          0
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: yes, right: 1_234}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": true,
+          "right": 1234
+        },
+        "value": {
+          "left": 1000.0,
+          "right": 1234
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: 'yes', right: ON}\nvalue: {<<: *base, left: 1:20}\n",
+      "value": {
+        "base": {
+          "left": "yes",
+          "right": true
+        },
+        "value": {
+          "left": 80,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: 'a: b # c', right: yEs}\nvalue: {<<: *base, left: yEs}\n",
+      "value": {
+        "base": {
+          "left": "a: b # c",
+          "right": "yEs"
+        },
+        "value": {
+          "left": "yEs",
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -41574}, value: ['ON', '1_234', 1e3, '1.25', '!!str\n      no']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -41574
+        },
+        "value": [
+          "ON",
+          "1_234",
+          "1e3",
+          "1.25",
+          "!!str no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: ['a: b # c', -1:02:03, 'yes', .5]\n",
+      "value": {
+        "value": [
+          "a: b # c",
+          -3723,
+          "yes",
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-0b101]\n",
+      "value": {
+        "value": [
+          -5
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: ON, right: yEs}\nvalue: {<<: *base, left: ''}\n",
+      "value": {
+        "base": {
+          "left": true,
+          "right": "yEs"
+        },
+        "value": {
+          "left": "",
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "key0: No\nkey1: ON\nkey2: 'a: b # c'\nkey3: \"a\\nb\"\nkey4: \"猫\"\n",
+      "value": {
+        "key0": false,
+        "key1": true,
+        "key2": "a: b # c",
+        "key3": "a\nb",
+        "key4": "猫"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1_234, right: null}\nvalue: {<<: *base, left: null}\n",
+      "value": {
+        "base": {
+          "left": 1234,
+          "right": null
+        },
+        "value": {
+          "left": null,
+          "right": null
+        }
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24', .5, 1.0e+3, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24",
+          0.5,
+          1000.0,
+          0
+        ],
+        "b": [
+          [
+            "2026-10-24",
+            0.5,
+            1000.0,
+            0
+          ],
+          [
+            "2026-10-24",
+            0.5,
+            1000.0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-0, null]\n",
+      "value": {
+        "value": [
+          0,
+          null
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str 1_234\n",
+      "value": {
+        "value": "1_234"
+      }
+    },
+    {
+      "yaml": "value: [1.0e+3, ~, 0x1f, yes]\n",
+      "value": {
+        "value": [
+          1000.0,
+          null,
+          31,
+          true
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [off, '2026-10-24']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          "2026-10-24"
+        ],
+        "b": [
+          [
+            false,
+            "2026-10-24"
+          ],
+          [
+            false,
+            "2026-10-24"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -1:02:03, right: No}\nvalue: {<<: *base, left: null}\n",
+      "value": {
+        "base": {
+          "left": -3723,
+          "right": false
+        },
+        "value": {
+          "left": null,
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "key0: 1.25\nkey1: No\nkey2: 0\nkey3: \"猫\"\nkey4: !!str no\nkey5: 'yes'\n",
+      "value": {
+        "key0": 1.25,
+        "key1": false,
+        "key2": 0,
+        "key3": "猫",
+        "key4": "no",
+        "key5": "yes"
+      }
+    },
+    {
+      "yaml": "value: >\n  'yes'\n",
+      "value": {
+        "value": "'yes'\n"
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: 'yes'\nkey2: ON\n",
+      "value": {
+        "key0": 0,
+        "key1": "yes",
+        "key2": true
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: ~\nkey2: 1:20\nkey3: 'a: b # c'\nkey4: 1_234\nkey5: 08\n",
+      "value": {
+        "key0": 0,
+        "key1": null,
+        "key2": 80,
+        "key3": "a: b # c",
+        "key4": 1234,
+        "key5": "08"
+      }
+    },
+    {
+      "yaml": "a: &a [yEs, !!str no, \"a\\nb\"]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yEs",
+          "no",
+          "a\nb"
+        ],
+        "b": [
+          [
+            "yEs",
+            "no",
+            "a\nb"
+          ],
+          [
+            "yEs",
+            "no",
+            "a\nb"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-0b101, yes, \"猫\", +012, 0]\n",
+      "value": {
+        "value": [
+          -5,
+          true,
+          "猫",
+          10,
+          0
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: null, right: +012}\nvalue: {<<: *base, left: 08}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": 10
+        },
+        "value": {
+          "left": "08",
+          "right": 10
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [!!str no, +012, \"猫\", 0, '', -0, yes]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "no",
+          10,
+          "猫",
+          0,
+          "",
+          0,
+          true
+        ],
+        "b": [
+          [
+            "no",
+            10,
+            "猫",
+            0,
+            "",
+            0,
+            true
+          ],
+          [
+            "no",
+            10,
+            "猫",
+            0,
+            "",
+            0,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [ON]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          true
+        ],
+        "b": [
+          [
+            true
+          ],
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [\"a\\nb\"]\n",
+      "value": {
+        "value": [
+          "a\nb"
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  No\n  \"a\\nb\"\n  1e3\n  '2026-10-24'\n  off\n",
+      "value": {
+        "value": "No \"a\\nb\" 1e3 '2026-10-24' off\n"
+      }
+    },
+    {
+      "yaml": "value: ['a: b # c', -0, 1:20, 0x1f, 'yes', 0]\n",
+      "value": {
+        "value": [
+          "a: b # c",
+          0,
+          80,
+          31,
+          "yes",
+          0
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 53727\nvalue:\n- '.5'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 53727
+        },
+        "value": [
+          ".5"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 1e3\n",
+      "value": {
+        "key0": "1e3"
+      }
+    },
+    {
+      "yaml": "value: ['a: b # c']\n",
+      "value": {
+        "value": [
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -92963}, value: ['!!str no', '''yes''', '0x1f', '1.0e+3',\n    '''a: b # c''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -92963
+        },
+        "value": [
+          "!!str no",
+          "'yes'",
+          "0x1f",
+          "1.0e+3",
+          "'a: b # c'"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 37594\nvalue:\n- '1.25'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 37594
+        },
+        "value": [
+          "1.25"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool -1:02:03\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: .5}\nvalue: {<<: *base, left: off}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": 0.5
+        },
+        "value": {
+          "left": false,
+          "right": 0.5
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -52384}, value: ['\"a\\nb\"', '1.25', '-0', '~', 'yes',\n    '0']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -52384
+        },
+        "value": [
+          "\"a\\nb\"",
+          "1.25",
+          "-0",
+          "~",
+          "yes",
+          "0"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [off, -0b101, -1:02:03, .5, 'a: b # c']\n",
+      "value": {
+        "value": [
+          false,
+          -5,
+          -3723,
+          0.5,
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [\"猫\", 1_234]\n",
+      "value": {
+        "value": [
+          "猫",
+          1234
+        ]
+      }
+    },
+    {
+      "yaml": "value: >-\n  08\n  +012\n  ON\n  1_234\n  yes\n",
+      "value": {
+        "value": "08 +012 ON 1_234 yes"
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: off\nkey2: -0\nkey3: 1:20\nkey4: \"a\\nb\"\nkey5: +012\n",
+      "value": {
+        "key0": 0,
+        "key1": false,
+        "key2": 0,
+        "key3": 80,
+        "key4": "a\nb",
+        "key5": 10
+      }
+    },
+    {
+      "yaml": "a: &a [yEs, +012, 1.25, \"a\\nb\", yes, 1e3, 1.0e+3]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yEs",
+          10,
+          1.25,
+          "a\nb",
+          true,
+          "1e3",
+          1000.0
+        ],
+        "b": [
+          [
+            "yEs",
+            10,
+            1.25,
+            "a\nb",
+            true,
+            "1e3",
+            1000.0
+          ],
+          [
+            "yEs",
+            10,
+            1.25,
+            "a\nb",
+            true,
+            "1e3",
+            1000.0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [null, 1e3, '', 1.25, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          null,
+          "1e3",
+          "",
+          1.25,
+          80
+        ],
+        "b": [
+          [
+            null,
+            "1e3",
+            "",
+            1.25,
+            80
+          ],
+          [
+            null,
+            "1e3",
+            "",
+            1.25,
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 91302\nvalue:\n- '''a: b # c'''\n- ''''''\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 91302
+        },
+        "value": [
+          "'a: b # c'",
+          "''"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -59593\nvalue:\n- '1_234'\n- '-0'\n- 'ON'\n- '1:20'\n- 08\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -59593
+        },
+        "value": [
+          "1_234",
+          "-0",
+          "ON",
+          "1:20",
+          "08"
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  -1:02:03\n  +012\n",
+      "value": {
+        "value": "-1:02:03 +012\n"
+      }
+    },
+    {
+      "yaml": "key0: +012\nkey1: !!str no\nkey2: yes\nkey3: 'yes'\nkey4: 1.25\nkey5: -0\n",
+      "value": {
+        "key0": 10,
+        "key1": "no",
+        "key2": true,
+        "key3": "yes",
+        "key4": 1.25,
+        "key5": 0
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1.25, right: 1_234}\nvalue: {<<: *base, left: ~}\n",
+      "value": {
+        "base": {
+          "left": 1.25,
+          "right": 1234
+        },
+        "value": {
+          "left": null,
+          "right": 1234
+        }
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: \"猫\"\nkey2: -0\nkey3: yEs\nkey4: ''\nkey5: null\n",
+      "value": {
+        "key0": 0,
+        "key1": "猫",
+        "key2": 0,
+        "key3": "yEs",
+        "key4": "",
+        "key5": null
+      }
+    },
+    {
+      "yaml": "value: |-\n  'yes'\n  1e3\n  1:20\n  \"a\\nb\"\n",
+      "value": {
+        "value": "'yes'\n1e3\n1:20\n\"a\\nb\""
+      }
+    },
+    {
+      "yaml": "value: >\n  1e3\n  -0\n  !!str no\n",
+      "value": {
+        "value": "1e3 -0 !!str no\n"
+      }
+    },
+    {
+      "yaml": "a: &a [08, 1.0e+3, ON]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "08",
+          1000.0,
+          true
+        ],
+        "b": [
+          [
+            "08",
+            1000.0,
+            true
+          ],
+          [
+            "08",
+            1000.0,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |-\n  off\n  ON\n  '2026-10-24'\n  0\n  'yes'\n  -1:02:03\n\n\n",
+      "value": {
+        "value": "off\nON\n'2026-10-24'\n0\n'yes'\n-1:02:03"
+      }
+    },
+    {
+      "yaml": "base: &base {left: '2026-10-24', right: \"a\\nb\"}\nvalue: {<<: *base, left: yEs}\n",
+      "value": {
+        "base": {
+          "left": "2026-10-24",
+          "right": "a\nb"
+        },
+        "value": {
+          "left": "yEs",
+          "right": "a\nb"
+        }
+      }
+    },
+    {
+      "yaml": "key0: 1e3\nkey1: yEs\nkey2: 1.0e+3\nkey3: null\n",
+      "value": {
+        "key0": "1e3",
+        "key1": "yEs",
+        "key2": 1000.0,
+        "key3": null
+      }
+    },
+    {
+      "yaml": "value: !!str 1_234\n",
+      "value": {
+        "value": "1_234"
+      }
+    },
+    {
+      "yaml": "value: [0, 1:20, -0b101]\n",
+      "value": {
+        "value": [
+          0,
+          80,
+          -5
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -97167\nvalue:\n- '.5'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -97167
+        },
+        "value": [
+          ".5"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  off\n  08\n",
+      "value": {
+        "value": "off\n08\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: off, right: \"a\\nb\"}\nvalue: {<<: *base, left: yes}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": "a\nb"
+        },
+        "value": {
+          "left": true,
+          "right": "a\nb"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 13746}, value: ['off', '-1:02:03']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 13746
+        },
+        "value": [
+          "off",
+          "-1:02:03"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  ON\n  ~\n\n",
+      "value": {
+        "value": "ON\n~\n"
+      }
+    },
+    {
+      "yaml": "value: ['yes', +012, 1:20, \"猫\", ON, -0, 1.0e+3]\n",
+      "value": {
+        "value": [
+          "yes",
+          10,
+          80,
+          "猫",
+          true,
+          0,
+          1000.0
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str \"猫\"\n",
+      "value": {
+        "value": "猫"
+      }
+    },
+    {
+      "yaml": "value: !!int -0b101\n",
+      "value": {
+        "value": -5
+      }
+    },
+    {
+      "yaml": "value: >-\n  yes\n  'a: b # c'\n  1:20\n  1_234\n\n\n",
+      "value": {
+        "value": "yes 'a: b # c' 1:20 1_234"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1.0e+3, right: ~}\nvalue: {<<: *base, left: 08}\n",
+      "value": {
+        "base": {
+          "left": 1000.0,
+          "right": null
+        },
+        "value": {
+          "left": "08",
+          "right": null
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [!!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "no"
+        ],
+        "b": [
+          [
+            "no"
+          ],
+          [
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a ['yes', 1:20, No, \"a\\nb\", yes]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yes",
+          80,
+          false,
+          "a\nb",
+          true
+        ],
+        "b": [
+          [
+            "yes",
+            80,
+            false,
+            "a\nb",
+            true
+          ],
+          [
+            "yes",
+            80,
+            false,
+            "a\nb",
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: '', right: off}\nvalue: {<<: *base, left: +012}\n",
+      "value": {
+        "base": {
+          "left": "",
+          "right": false
+        },
+        "value": {
+          "left": 10,
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "key0: 1_234\n",
+      "value": {
+        "key0": 1234
+      }
+    },
+    {
+      "yaml": "value: !!str 0\n",
+      "value": {
+        "value": "0"
+      }
+    },
+    {
+      "yaml": "value: >-\n  No\n  yEs\n  1e3\n  1.25\n  1_234\n  -1:02:03\n",
+      "value": {
+        "value": "No yEs 1e3 1.25 1_234 -1:02:03"
+      }
+    },
+    {
+      "yaml": "value: [off]\n",
+      "value": {
+        "value": [
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int yEs\n",
+      "error": true
+    },
+    {
+      "yaml": "value: !!float '2026-10-24'\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [No, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          80
+        ],
+        "b": [
+          [
+            false,
+            80
+          ],
+          [
+            false,
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [!!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "no"
+        ],
+        "b": [
+          [
+            "no"
+          ],
+          [
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-0b101, 1.25, 1:20, -0, 0x1f]\n",
+      "value": {
+        "value": [
+          -5,
+          1.25,
+          80,
+          0,
+          31
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  0x1f\n  yEs\n  yes\n  ON\n  'a: b # c'\n  No\n  1:20\n\n\n",
+      "value": {
+        "value": "0x1f yEs yes ON 'a: b # c' No 1:20\n\n\n"
+      }
+    },
+    {
+      "yaml": "value: |\n  1_234\n",
+      "value": {
+        "value": "1_234\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 0x1f, right: 'a: b # c'}\nvalue: {<<: *base, left: 1_234}\n",
+      "value": {
+        "base": {
+          "left": 31,
+          "right": "a: b # c"
+        },
+        "value": {
+          "left": 1234,
+          "right": "a: b # c"
+        }
+      }
+    },
+    {
+      "yaml": "key0: yEs\nkey1: 1:20\nkey2: .5\nkey3: +012\nkey4: yes\nkey5: 1_234\n",
+      "value": {
+        "key0": "yEs",
+        "key1": 80,
+        "key2": 0.5,
+        "key3": 10,
+        "key4": true,
+        "key5": 1234
+      }
+    },
+    {
+      "yaml": "value: !!int ~\n",
+      "error": true
+    },
+    {
+      "yaml": "value: >-\n  1_234\n  1.0e+3\n  ~\n  ''\n  -1:02:03\n\n\n",
+      "value": {
+        "value": "1_234 1.0e+3 ~ '' -1:02:03"
+      }
+    },
+    {
+      "yaml": "value: |-\n  ~\n  \"a\\nb\"\n  .5\n  'a: b # c'\n\n\n",
+      "value": {
+        "value": "~\n\"a\\nb\"\n.5\n'a: b # c'"
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -63338\nvalue:\n- '1.0e+3'\n- '\"猫\"'\n- 'null'\n- '1.25'\n- 'yes'\n- '''2026-10-24'''\n- yEs\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -63338
+        },
+        "value": [
+          "1.0e+3",
+          "\"猫\"",
+          "null",
+          "1.25",
+          "yes",
+          "'2026-10-24'",
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24', ~]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24",
+          null
+        ],
+        "b": [
+          [
+            "2026-10-24",
+            null
+          ],
+          [
+            "2026-10-24",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float .5\n",
+      "value": {
+        "value": 0.5
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: 1.0e+3\nkey2: 'a: b # c'\nkey3: off\nkey4: 1.25\nkey5: \"a\\nb\"\n",
+      "value": {
+        "key0": true,
+        "key1": 1000.0,
+        "key2": "a: b # c",
+        "key3": false,
+        "key4": 1.25,
+        "key5": "a\nb"
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -16128\nvalue:\n- '-0b101'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -16128
+        },
+        "value": [
+          "-0b101"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -1:02:03, right: -1:02:03}\nvalue: {<<: *base, left: 0x1f}\n",
+      "value": {
+        "base": {
+          "left": -3723,
+          "right": -3723
+        },
+        "value": {
+          "left": 31,
+          "right": -3723
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: -0b101, right: 0x1f}\nvalue: {<<: *base, left: 1:20}\n",
+      "value": {
+        "base": {
+          "left": -5,
+          "right": 31
+        },
+        "value": {
+          "left": 80,
+          "right": 31
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: yEs, right: yEs}\nvalue: {<<: *base, left: \"a\\nb\"}\n",
+      "value": {
+        "base": {
+          "left": "yEs",
+          "right": "yEs"
+        },
+        "value": {
+          "left": "a\nb",
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "value: [0, .5, ON, -1:02:03, '2026-10-24', null, !!str no]\n",
+      "value": {
+        "value": [
+          0,
+          0.5,
+          true,
+          -3723,
+          "2026-10-24",
+          null,
+          "no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: ['2026-10-24', null, off]\n",
+      "value": {
+        "value": [
+          "2026-10-24",
+          null,
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "value: [off, yEs, 'a: b # c']\n",
+      "value": {
+        "value": [
+          false,
+          "yEs",
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 'yes'\n",
+      "value": {
+        "value": true
+      }
+    },
+    {
+      "yaml": "value: !!int \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [-1:02:03, 1.25, yes, null]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -3723,
+          1.25,
+          true,
+          null
+        ],
+        "b": [
+          [
+            -3723,
+            1.25,
+            true,
+            null
+          ],
+          [
+            -3723,
+            1.25,
+            true,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [0x1f, \"猫\"]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          31,
+          "猫"
+        ],
+        "b": [
+          [
+            31,
+            "猫"
+          ],
+          [
+            31,
+            "猫"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 96447\nvalue:\n- '1_234'\n- 'null'\n- '~'\n- 'ON'\n- '0x1f'\n- '1.25'\n- 'No'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 96447
+        },
+        "value": [
+          "1_234",
+          "null",
+          "~",
+          "ON",
+          "0x1f",
+          "1.25",
+          "No"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: +012\nkey2: null\nkey3: ''\nkey4: 1:20\nkey5: 1e3\n",
+      "value": {
+        "key0": true,
+        "key1": 10,
+        "key2": null,
+        "key3": "",
+        "key4": 80,
+        "key5": "1e3"
+      }
+    },
+    {
+      "yaml": "value: |+\n  ''\n  \"猫\"\n  0x1f\n  yEs\n  No\n  .5\n",
+      "value": {
+        "value": "''\n\"猫\"\n0x1f\nyEs\nNo\n.5\n"
+      }
+    },
+    {
+      "yaml": "a: &a [1e3, 1.25, 1_234, '', \"a\\nb\", 08]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "1e3",
+          1.25,
+          1234,
+          "",
+          "a\nb",
+          "08"
+        ],
+        "b": [
+          [
+            "1e3",
+            1.25,
+            1234,
+            "",
+            "a\nb",
+            "08"
+          ],
+          [
+            "1e3",
+            1.25,
+            1234,
+            "",
+            "a\nb",
+            "08"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool null\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [No, null, +012, 1_234, \"猫\", ~, !!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          null,
+          10,
+          1234,
+          "猫",
+          null,
+          "no"
+        ],
+        "b": [
+          [
+            false,
+            null,
+            10,
+            1234,
+            "猫",
+            null,
+            "no"
+          ],
+          [
+            false,
+            null,
+            10,
+            1234,
+            "猫",
+            null,
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [.5, ~, ON, 0, '', 1.25]\n",
+      "value": {
+        "value": [
+          0.5,
+          null,
+          true,
+          0,
+          "",
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "value: |-\n  \"猫\"\n  -0\n  08\n  ON\n  +012\n  0x1f\n",
+      "value": {
+        "value": "\"猫\"\n-0\n08\nON\n+012\n0x1f"
+      }
+    },
+    {
+      "yaml": "a: &a [0x1f, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          31,
+          0
+        ],
+        "b": [
+          [
+            31,
+            0
+          ],
+          [
+            31,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  ~\n  No\n  -1:02:03\n  'a: b # c'\n",
+      "value": {
+        "value": "~ No -1:02:03 'a: b # c'\n"
+      }
+    },
+    {
+      "yaml": "value: !!bool ~\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: null, right: \"猫\"}\nvalue: {<<: *base, left: -1:02:03}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": "猫"
+        },
+        "value": {
+          "left": -3723,
+          "right": "猫"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 3179}, value: ['-0', '''''', '0', 08, '\"a\\nb\"', '''yes''',\n    '''a: b # c''']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 3179
+        },
+        "value": [
+          "-0",
+          "''",
+          "0",
+          "08",
+          "\"a\\nb\"",
+          "'yes'",
+          "'a: b # c'"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [ON, 1:20, 1_234]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          true,
+          80,
+          1234
+        ],
+        "b": [
+          [
+            true,
+            80,
+            1234
+          ],
+          [
+            true,
+            80,
+            1234
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -35407}, value: ['\"a\\nb\"']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -35407
+        },
+        "value": [
+          "\"a\\nb\""
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float \"a\\nb\"\n",
+      "error": true
+    },
+    {
+      "yaml": "value: |+\n  'yes'\n\n",
+      "value": {
+        "value": "'yes'\n\n"
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: 0x1f\nkey2: No\nkey3: 1:20\nkey4: null\n",
+      "value": {
+        "key0": true,
+        "key1": 31,
+        "key2": false,
+        "key3": 80,
+        "key4": null
+      }
+    },
+    {
+      "yaml": "a: &a [.5, '', 1.0e+3, off, null]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0.5,
+          "",
+          1000.0,
+          false,
+          null
+        ],
+        "b": [
+          [
+            0.5,
+            "",
+            1000.0,
+            false,
+            null
+          ],
+          [
+            0.5,
+            "",
+            1000.0,
+            false,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  yes\n  1e3\n  08\n  yEs\n",
+      "value": {
+        "value": "yes\n1e3\n08\nyEs\n"
+      }
+    },
+    {
+      "yaml": "value: >\n  ~\n  !!str no\n  yEs\n  1.0e+3\n  ON\n  null\n\n",
+      "value": {
+        "value": "~ !!str no yEs 1.0e+3 ON null\n"
+      }
+    },
+    {
+      "yaml": "value: !!str 'yes'\n",
+      "value": {
+        "value": "yes"
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -89925\nvalue:\n- ''''''\n- '~'\n- '-0'\n- 'yes'\n- '\"a\\nb\"'\n- '0'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -89925
+        },
+        "value": [
+          "''",
+          "~",
+          "-0",
+          "yes",
+          "\"a\\nb\"",
+          "0"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool off\n",
+      "value": {
+        "value": false
+      }
+    },
+    {
+      "yaml": "base: &base {left: No, right: No}\nvalue: {<<: *base, left: No}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": false
+        },
+        "value": {
+          "left": false,
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [1:20, -0, !!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          80,
+          0,
+          "no"
+        ],
+        "b": [
+          [
+            80,
+            0,
+            "no"
+          ],
+          [
+            80,
+            0,
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: ['2026-10-24']\n",
+      "value": {
+        "value": [
+          "2026-10-24"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str ~\n",
+      "value": {
+        "value": "~"
+      }
+    },
+    {
+      "yaml": "a: &a [1_234, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1234,
+          0
+        ],
+        "b": [
+          [
+            1234,
+            0
+          ],
+          [
+            1234,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |-\n  '2026-10-24'\n  1.25\n  0x1f\n\n\n",
+      "value": {
+        "value": "'2026-10-24'\n1.25\n0x1f"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -66979}, value: ['''2026-10-24''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -66979
+        },
+        "value": [
+          "'2026-10-24'"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: 'yes'\nkey2: yEs\nkey3: 1_234\nkey4: 1e3\nkey5: !!str no\nkey6: 0x1f\n",
+      "value": {
+        "key0": 0,
+        "key1": "yes",
+        "key2": "yEs",
+        "key3": 1234,
+        "key4": "1e3",
+        "key5": "no",
+        "key6": 31
+      }
+    },
+    {
+      "yaml": "base: &base {left: null, right: yes}\nvalue: {<<: *base, left: 0}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": true
+        },
+        "value": {
+          "left": 0,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: -1:02:03, right: 08}\nvalue: {<<: *base, left: ''}\n",
+      "value": {
+        "base": {
+          "left": -3723,
+          "right": "08"
+        },
+        "value": {
+          "left": "",
+          "right": "08"
+        }
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: ~\nkey2: -1:02:03\nkey3: off\n",
+      "value": {
+        "key0": 0,
+        "key1": null,
+        "key2": -3723,
+        "key3": false
+      }
+    },
+    {
+      "yaml": "value: |\n  -1:02:03\n  1:20\n  -0b101\n  08\n  1.0e+3\n  yEs\n  ON\n",
+      "value": {
+        "value": "-1:02:03\n1:20\n-0b101\n08\n1.0e+3\nyEs\nON\n"
+      }
+    },
+    {
+      "yaml": "key0: 1e3\nkey1: 1:20\n",
+      "value": {
+        "key0": "1e3",
+        "key1": 80
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 81441}, value: [08, '0x1f', '~']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 81441
+        },
+        "value": [
+          "08",
+          "0x1f",
+          "~"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: 0\nkey2: 0x1f\nkey3: .5\nkey4: \"a\\nb\"\nkey5: '2026-10-24'\n",
+      "value": {
+        "key0": "08",
+        "key1": 0,
+        "key2": 31,
+        "key3": 0.5,
+        "key4": "a\nb",
+        "key5": "2026-10-24"
+      }
+    },
+    {
+      "yaml": "a: &a [null, 1_234, 0, 1e3, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          null,
+          1234,
+          0,
+          "1e3",
+          0
+        ],
+        "b": [
+          [
+            null,
+            1234,
+            0,
+            "1e3",
+            0
+          ],
+          [
+            null,
+            1234,
+            0,
+            "1e3",
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str ''\n",
+      "value": {
+        "value": ""
+      }
+    },
+    {
+      "yaml": "value: [1:20, yes, 0x1f, yEs]\n",
+      "value": {
+        "value": [
+          80,
+          true,
+          31,
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [No, yes, 'a: b # c', '2026-10-24', yEs, 1.25, ~]\n",
+      "value": {
+        "value": [
+          false,
+          true,
+          "a: b # c",
+          "2026-10-24",
+          "yEs",
+          1.25,
+          null
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str -1:02:03\n",
+      "value": {
+        "value": "-1:02:03"
+      }
+    },
+    {
+      "yaml": "a: &a [-0, -0b101, No]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0,
+          -5,
+          false
+        ],
+        "b": [
+          [
+            0,
+            -5,
+            false
+          ],
+          [
+            0,
+            -5,
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: 'yes'\nkey2: yes\nkey3: ''\n",
+      "value": {
+        "key0": "08",
+        "key1": "yes",
+        "key2": true,
+        "key3": ""
+      }
+    },
+    {
+      "yaml": "value: !!int \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "value: >+\n  No\n  1.25\n  -1:02:03\n  -0\n\n\n",
+      "value": {
+        "value": "No 1.25 -1:02:03 -0\n\n\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: -1:02:03}\nvalue: {<<: *base, left: \"猫\"}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": -3723
+        },
+        "value": {
+          "left": "猫",
+          "right": -3723
+        }
+      }
+    },
+    {
+      "yaml": "key0: 1_234\n",
+      "value": {
+        "key0": 1234
+      }
+    },
+    {
+      "yaml": "key0: 0x1f\n",
+      "value": {
+        "key0": 31
+      }
+    },
+    {
+      "yaml": "value: ['2026-10-24', 1.25, !!str no, -1:02:03]\n",
+      "value": {
+        "value": [
+          "2026-10-24",
+          1.25,
+          "no",
+          -3723
+        ]
+      }
+    },
+    {
+      "yaml": "key0: -0\nkey1: 1e3\nkey2: .5\nkey3: -1:02:03\nkey4: -0b101\n",
+      "value": {
+        "key0": 0,
+        "key1": "1e3",
+        "key2": 0.5,
+        "key3": -3723,
+        "key4": -5
+      }
+    },
+    {
+      "yaml": "a: &a [+012, yes, -1:02:03, 1:20, 0, 1.0e+3, -0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          10,
+          true,
+          -3723,
+          80,
+          0,
+          1000.0,
+          0
+        ],
+        "b": [
+          [
+            10,
+            true,
+            -3723,
+            80,
+            0,
+            1000.0,
+            0
+          ],
+          [
+            10,
+            true,
+            -3723,
+            80,
+            0,
+            1000.0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "key0: -1:02:03\n",
+      "value": {
+        "key0": -3723
+      }
+    },
+    {
+      "yaml": "value: >\n  -0\n  \"猫\"\n  0\n  08\n  -1:02:03\n  1:20\n",
+      "value": {
+        "value": "-0 \"猫\" 0 08 -1:02:03 1:20\n"
+      }
+    },
+    {
+      "yaml": "a: &a ['yes', 0x1f, .5, 08, '2026-10-24']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "yes",
+          31,
+          0.5,
+          "08",
+          "2026-10-24"
+        ],
+        "b": [
+          [
+            "yes",
+            31,
+            0.5,
+            "08",
+            "2026-10-24"
+          ],
+          [
+            "yes",
+            31,
+            0.5,
+            "08",
+            "2026-10-24"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [1_234]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1234
+        ],
+        "b": [
+          [
+            1234
+          ],
+          [
+            1234
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  08\n\n",
+      "value": {
+        "value": "08\n\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 'a: b # c', right: yEs}\nvalue: {<<: *base, left: '2026-10-24'}\n",
+      "value": {
+        "base": {
+          "left": "a: b # c",
+          "right": "yEs"
+        },
+        "value": {
+          "left": "2026-10-24",
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [.5, -0b101, 1_234, 0, 0x1f, 08, yEs]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0.5,
+          -5,
+          1234,
+          0,
+          31,
+          "08",
+          "yEs"
+        ],
+        "b": [
+          [
+            0.5,
+            -5,
+            1234,
+            0,
+            31,
+            "08",
+            "yEs"
+          ],
+          [
+            0.5,
+            -5,
+            1234,
+            0,
+            31,
+            "08",
+            "yEs"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 85947}, value: ['ON', '!!str no', '''''', '1.0e+3',\n    '-0b101', '\"a\\nb\"', 08]}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 85947
+        },
+        "value": [
+          "ON",
+          "!!str no",
+          "''",
+          "1.0e+3",
+          "-0b101",
+          "\"a\\nb\"",
+          "08"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [-1:02:03, .5, +012, '2026-10-24', 08, 1e3, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -3723,
+          0.5,
+          10,
+          "2026-10-24",
+          "08",
+          "1e3",
+          80
+        ],
+        "b": [
+          [
+            -3723,
+            0.5,
+            10,
+            "2026-10-24",
+            "08",
+            "1e3",
+            80
+          ],
+          [
+            -3723,
+            0.5,
+            10,
+            "2026-10-24",
+            "08",
+            "1e3",
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [08, No]\n",
+      "value": {
+        "value": [
+          "08",
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [0x1f, 1.25, .5, 1e3, off]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          31,
+          1.25,
+          0.5,
+          "1e3",
+          false
+        ],
+        "b": [
+          [
+            31,
+            1.25,
+            0.5,
+            "1e3",
+            false
+          ],
+          [
+            31,
+            1.25,
+            0.5,
+            "1e3",
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -0b101, right: 0}\nvalue: {<<: *base, left: 1_234}\n",
+      "value": {
+        "base": {
+          "left": -5,
+          "right": 0
+        },
+        "value": {
+          "left": 1234,
+          "right": 0
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: .5, right: yEs}\nvalue: {<<: *base, left: -0b101}\n",
+      "value": {
+        "base": {
+          "left": 0.5,
+          "right": "yEs"
+        },
+        "value": {
+          "left": -5,
+          "right": "yEs"
+        }
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24', off, 08, 1e3]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24",
+          false,
+          "08",
+          "1e3"
+        ],
+        "b": [
+          [
+            "2026-10-24",
+            false,
+            "08",
+            "1e3"
+          ],
+          [
+            "2026-10-24",
+            false,
+            "08",
+            "1e3"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [1.0e+3, 1e3, yes, !!str no]\n",
+      "value": {
+        "value": [
+          1000.0,
+          "1e3",
+          true,
+          "no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float 1e3\n",
+      "value": {
+        "value": 1000.0
+      }
+    },
+    {
+      "yaml": "a: &a [-0b101, '2026-10-24', off, ~]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -5,
+          "2026-10-24",
+          false,
+          null
+        ],
+        "b": [
+          [
+            -5,
+            "2026-10-24",
+            false,
+            null
+          ],
+          [
+            -5,
+            "2026-10-24",
+            false,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [No, null, ~, '2026-10-24', yEs, -0b101]\n",
+      "value": {
+        "value": [
+          false,
+          null,
+          null,
+          "2026-10-24",
+          "yEs",
+          -5
+        ]
+      }
+    },
+    {
+      "yaml": "value: |-\n  0x1f\n  'yes'\n  -0b101\n  1.0e+3\n\n\n",
+      "value": {
+        "value": "0x1f\n'yes'\n-0b101\n1.0e+3"
+      }
+    },
+    {
+      "yaml": "value: [\"a\\nb\", 1e3, 1.25, off, yEs]\n",
+      "value": {
+        "value": [
+          "a\nb",
+          "1e3",
+          1.25,
+          false,
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -59881\nvalue:\n- '1.25'\n- '''a: b # c'''\n- '+012'\n- '-0b101'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -59881
+        },
+        "value": [
+          "1.25",
+          "'a: b # c'",
+          "+012",
+          "-0b101"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: -0b101\nkey1: null\nkey2: off\n",
+      "value": {
+        "key0": -5,
+        "key1": null,
+        "key2": false
+      }
+    },
+    {
+      "yaml": "value: >-\n  ''\n\n",
+      "value": {
+        "value": "''"
+      }
+    },
+    {
+      "yaml": "base: &base {left: off, right: yes}\nvalue: {<<: *base, left: -1:02:03}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": true
+        },
+        "value": {
+          "left": -3723,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -35310\nvalue:\n- '\"猫\"'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -35310
+        },
+        "value": [
+          "\"猫\""
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -0b101, right: 1.0e+3}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": -5,
+          "right": 1000.0
+        },
+        "value": {
+          "left": 1000.0,
+          "right": 1000.0
+        }
+      }
+    },
+    {
+      "yaml": "value: |\n  ON\n\n",
+      "value": {
+        "value": "ON\n"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -70160}, value: [08, '''2026-10-24''', yEs]}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -70160
+        },
+        "value": [
+          "08",
+          "'2026-10-24'",
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 1.0e+3\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: 08, right: ON}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": "08",
+          "right": true
+        },
+        "value": {
+          "left": 1000.0,
+          "right": true
+        }
+      }
+    },
+    {
+      "yaml": "value: ['yes', 0, \"猫\", '', \"a\\nb\"]\n",
+      "value": {
+        "value": [
+          "yes",
+          0,
+          "猫",
+          "",
+          "a\nb"
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  'a: b # c'\n  'yes'\n  -1:02:03\n  0x1f\n\n\n",
+      "value": {
+        "value": "'a: b # c' 'yes' -1:02:03 0x1f\n"
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: 'yes'\nkey2: 0x1f\nkey3: .5\nkey4: ''\nkey5: No\nkey6: 1.0e+3\n",
+      "value": {
+        "key0": true,
+        "key1": "yes",
+        "key2": 31,
+        "key3": 0.5,
+        "key4": "",
+        "key5": false,
+        "key6": 1000.0
+      }
+    },
+    {
+      "yaml": "key0: ~\nkey1: ON\nkey2: 0x1f\nkey3: yes\nkey4: off\n",
+      "value": {
+        "key0": null,
+        "key1": true,
+        "key2": 31,
+        "key3": true,
+        "key4": false
+      }
+    },
+    {
+      "yaml": "value: |\n  yEs\n",
+      "value": {
+        "value": "yEs\n"
+      }
+    },
+    {
+      "yaml": "value: !!str 1.0e+3\n",
+      "value": {
+        "value": "1.0e+3"
+      }
+    },
+    {
+      "yaml": "a: &a ['']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          ""
+        ],
+        "b": [
+          [
+            ""
+          ],
+          [
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 'a: b # c'\n",
+      "value": {
+        "key0": "a: b # c"
+      }
+    },
+    {
+      "yaml": "value: >\n  !!str no\n  ~\n  +012\n  1e3\n  1.0e+3\n  '2026-10-24'\n  ON\n",
+      "value": {
+        "value": "!!str no ~ +012 1e3 1.0e+3 '2026-10-24' ON\n"
+      }
+    },
+    {
+      "yaml": "value: [~, 0, 'a: b # c', '', \"a\\nb\"]\n",
+      "value": {
+        "value": [
+          null,
+          0,
+          "a: b # c",
+          "",
+          "a\nb"
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [null]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          null
+        ],
+        "b": [
+          [
+            null
+          ],
+          [
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [off, .5, 1.25]\n",
+      "value": {
+        "value": [
+          false,
+          0.5,
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [1.0e+3, \"猫\", .5, 1e3]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1000.0,
+          "猫",
+          0.5,
+          "1e3"
+        ],
+        "b": [
+          [
+            1000.0,
+            "猫",
+            0.5,
+            "1e3"
+          ],
+          [
+            1000.0,
+            "猫",
+            0.5,
+            "1e3"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int null\n",
+      "error": true
+    },
+    {
+      "yaml": "value: |-\n  yEs\n  !!str no\n  ''\n  off\n\n\n",
+      "value": {
+        "value": "yEs\n!!str no\n''\noff"
+      }
+    },
+    {
+      "yaml": "a: &a ['']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          ""
+        ],
+        "b": [
+          [
+            ""
+          ],
+          [
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float '2026-10-24'\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [yes]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          true
+        ],
+        "b": [
+          [
+            true
+          ],
+          [
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 44807}, value: ['-0b101', '''2026-10-24''', '0x1f',\n    '1_234', 'null', '1.0e+3', '-0']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 44807
+        },
+        "value": [
+          "-0b101",
+          "'2026-10-24'",
+          "0x1f",
+          "1_234",
+          "null",
+          "1.0e+3",
+          "-0"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [ON, null, !!str no]\n",
+      "value": {
+        "value": [
+          true,
+          null,
+          "no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float '2026-10-24'\n",
+      "error": true
+    },
+    {
+      "yaml": "value: [!!str no, -0, .5]\n",
+      "value": {
+        "value": [
+          "no",
+          0,
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -74358}, value: [yEs, '.5', '!!str no', 'No', '1_234',\n    '''a: b # c''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -74358
+        },
+        "value": [
+          "yEs",
+          ".5",
+          "!!str no",
+          "No",
+          "1_234",
+          "'a: b # c'"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  off\n  .5\n  yes\n  +012\n  -1:02:03\n\n",
+      "value": {
+        "value": "off\n.5\nyes\n+012\n-1:02:03\n"
+      }
+    },
+    {
+      "yaml": "value: [0, -1:02:03, off, null, 1.25]\n",
+      "value": {
+        "value": [
+          0,
+          -3723,
+          false,
+          null,
+          1.25
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [1.25, .5, null, ~, '2026-10-24', 1.0e+3, yes]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1.25,
+          0.5,
+          null,
+          null,
+          "2026-10-24",
+          1000.0,
+          true
+        ],
+        "b": [
+          [
+            1.25,
+            0.5,
+            null,
+            null,
+            "2026-10-24",
+            1000.0,
+            true
+          ],
+          [
+            1.25,
+            0.5,
+            null,
+            null,
+            "2026-10-24",
+            1000.0,
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: 53447\nvalue:\n- 'null'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 53447
+        },
+        "value": [
+          "null"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str -0\n",
+      "value": {
+        "value": "-0"
+      }
+    },
+    {
+      "yaml": "value: [1:20, +012]\n",
+      "value": {
+        "value": [
+          80,
+          10
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  \"猫\"\n  1.0e+3\n",
+      "value": {
+        "value": "\"猫\"\n1.0e+3\n"
+      }
+    },
+    {
+      "yaml": "a: &a [!!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "no"
+        ],
+        "b": [
+          [
+            "no"
+          ],
+          [
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: No, right: null}\nvalue: {<<: *base, left: ~}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": null
+        },
+        "value": {
+          "left": null,
+          "right": null
+        }
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 85281\nvalue:\n- 'No'\n- '''a: b # c'''\n- 1e3\n- '!!str no'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 85281
+        },
+        "value": [
+          "No",
+          "'a: b # c'",
+          "1e3",
+          "!!str no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 1_234\n",
+      "error": true
+    },
+    {
+      "yaml": "value: [yEs]\n",
+      "value": {
+        "value": [
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: -1:02:03, right: No}\nvalue: {<<: *base, left: yEs}\n",
+      "value": {
+        "base": {
+          "left": -3723,
+          "right": false
+        },
+        "value": {
+          "left": "yEs",
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "key0: '2026-10-24'\nkey1: -0\nkey2: \"猫\"\nkey3: 1e3\nkey4: off\n",
+      "value": {
+        "key0": "2026-10-24",
+        "key1": 0,
+        "key2": "猫",
+        "key3": "1e3",
+        "key4": false
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 13400}, value: ['yes', '1:20', '1_234', '0x1f']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 13400
+        },
+        "value": [
+          "yes",
+          "1:20",
+          "1_234",
+          "0x1f"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: ON\nkey1: +012\nkey2: yes\n",
+      "value": {
+        "key0": true,
+        "key1": 10,
+        "key2": true
+      }
+    },
+    {
+      "yaml": "value: [1e3, +012, \"a\\nb\", !!str no]\n",
+      "value": {
+        "value": [
+          "1e3",
+          10,
+          "a\nb",
+          "no"
+        ]
+      }
+    },
+    {
+      "yaml": "value: >+\n  yes\n  No\n  \"猫\"\n  1e3\n  08\n  'a: b # c'\n\n",
+      "value": {
+        "value": "yes No \"猫\" 1e3 08 'a: b # c'\n\n"
+      }
+    },
+    {
+      "yaml": "value: >-\n  -1:02:03\n  No\n  -0\n  1_234\n  1.0e+3\n\n\n",
+      "value": {
+        "value": "-1:02:03 No -0 1_234 1.0e+3"
+      }
+    },
+    {
+      "yaml": "a: &a ['a: b # c', 'yes', 1_234]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "a: b # c",
+          "yes",
+          1234
+        ],
+        "b": [
+          [
+            "a: b # c",
+            "yes",
+            1234
+          ],
+          [
+            "a: b # c",
+            "yes",
+            1234
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [off, yes, -1:02:03, 1.25, +012, yEs, .5]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false,
+          true,
+          -3723,
+          1.25,
+          10,
+          "yEs",
+          0.5
+        ],
+        "b": [
+          [
+            false,
+            true,
+            -3723,
+            1.25,
+            10,
+            "yEs",
+            0.5
+          ],
+          [
+            false,
+            true,
+            -3723,
+            1.25,
+            10,
+            "yEs",
+            0.5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  \"猫\"\n  ~\n  -0\n  -1:02:03\n  0\n  \"a\\nb\"\n  1:20\n",
+      "value": {
+        "value": "\"猫\" ~ -0 -1:02:03 0 \"a\\nb\" 1:20\n"
+      }
+    },
+    {
+      "yaml": "value: !!float '2026-10-24'\n",
+      "error": true
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 22919\nvalue:\n- '~'\n- ''''''\n- '.5'\n- yEs\n- 1e3\n- '1.25'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 22919
+        },
+        "value": [
+          "~",
+          "''",
+          ".5",
+          "yEs",
+          "1e3",
+          "1.25"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: No, right: 0x1f}\nvalue: {<<: *base, left: 1e3}\n",
+      "value": {
+        "base": {
+          "left": false,
+          "right": 31
+        },
+        "value": {
+          "left": "1e3",
+          "right": 31
+        }
+      }
+    },
+    {
+      "yaml": "value: !!str -0\n",
+      "value": {
+        "value": "-0"
+      }
+    },
+    {
+      "yaml": "key0: ~\nkey1: 0\nkey2: null\n",
+      "value": {
+        "key0": null,
+        "key1": 0,
+        "key2": null
+      }
+    },
+    {
+      "yaml": "base: &base {left: null, right: No}\nvalue: {<<: *base, left: ON}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": false
+        },
+        "value": {
+          "left": true,
+          "right": false
+        }
+      }
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: !!str no}\nvalue: {<<: *base, left: off}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": "no"
+        },
+        "value": {
+          "left": false,
+          "right": "no"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -76234}, value: ['0', '''a: b # c''', 'ON', 'yes',\n    'No']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -76234
+        },
+        "value": [
+          "0",
+          "'a: b # c'",
+          "ON",
+          "yes",
+          "No"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [1:20, \"猫\", .5, 0, 1.0e+3, 1_234]\n",
+      "value": {
+        "value": [
+          80,
+          "猫",
+          0.5,
+          0,
+          1000.0,
+          1234
+        ]
+      }
+    },
+    {
+      "yaml": "value: >-\n  1:20\n  ON\n  'yes'\n  0x1f\n\n\n",
+      "value": {
+        "value": "1:20 ON 'yes' 0x1f"
+      }
+    },
+    {
+      "yaml": "value: >+\n  0x1f\n  1.0e+3\n  -0b101\n  'a: b # c'\n  \"猫\"\n  No\n  ON\n\n\n",
+      "value": {
+        "value": "0x1f 1.0e+3 -0b101 'a: b # c' \"猫\" No ON\n\n\n"
+      }
+    },
+    {
+      "yaml": "value: !!str 1.0e+3\n",
+      "value": {
+        "value": "1.0e+3"
+      }
+    },
+    {
+      "yaml": "value: !!int off\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: -0b101, right: -1:02:03}\nvalue: {<<: *base, left: No}\n",
+      "value": {
+        "base": {
+          "left": -5,
+          "right": -3723
+        },
+        "value": {
+          "left": false,
+          "right": -3723
+        }
+      }
+    },
+    {
+      "yaml": "key0: yes\nkey1: 1.25\nkey2: ~\nkey3: 'a: b # c'\nkey4: ''\n",
+      "value": {
+        "key0": true,
+        "key1": 1.25,
+        "key2": null,
+        "key3": "a: b # c",
+        "key4": ""
+      }
+    },
+    {
+      "yaml": "a: &a [~, No, .5, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          null,
+          false,
+          0.5,
+          80
+        ],
+        "b": [
+          [
+            null,
+            false,
+            0.5,
+            80
+          ],
+          [
+            null,
+            false,
+            0.5,
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: >-\n  -0\n  1.25\n  'yes'\n  0x1f\n  1.0e+3\n  null\n\n",
+      "value": {
+        "value": "-0 1.25 'yes' 0x1f 1.0e+3 null"
+      }
+    },
+    {
+      "yaml": "value: |-\n  1_234\n  -1:02:03\n  -0b101\n  ON\n  -0\n\n\n",
+      "value": {
+        "value": "1_234\n-1:02:03\n-0b101\nON\n-0"
+      }
+    },
+    {
+      "yaml": "a: &a [1.25, '', \"a\\nb\", -0, +012, 0]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1.25,
+          "",
+          "a\nb",
+          0,
+          10,
+          0
+        ],
+        "b": [
+          [
+            1.25,
+            "",
+            "a\nb",
+            0,
+            10,
+            0
+          ],
+          [
+            1.25,
+            "",
+            "a\nb",
+            0,
+            10,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |+\n  1.0e+3\n  0x1f\n  .5\n  0\n  \"猫\"\n  'yes'\n\n",
+      "value": {
+        "value": "1.0e+3\n0x1f\n.5\n0\n\"猫\"\n'yes'\n\n"
+      }
+    },
+    {
+      "yaml": "value: !!str 1e3\n",
+      "value": {
+        "value": "1e3"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 40852}, value: ['\"猫\"', '.5', '''a: b # c''', 'ON', '1.0e+3',\n    '''''', 08]}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 40852
+        },
+        "value": [
+          "\"猫\"",
+          ".5",
+          "'a: b # c'",
+          "ON",
+          "1.0e+3",
+          "''",
+          "08"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 1:20\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: true, number: -84944}, value: ['-0b101', 'No', '1.0e+3', '0x1f']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -84944
+        },
+        "value": [
+          "-0b101",
+          "No",
+          "1.0e+3",
+          "0x1f"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -48837\nvalue:\n- 'ON'\n- '1:20'\n- '-0'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -48837
+        },
+        "value": [
+          "ON",
+          "1:20",
+          "-0"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: '', right: \"猫\"}\nvalue: {<<: *base, left: ~}\n",
+      "value": {
+        "base": {
+          "left": "",
+          "right": "猫"
+        },
+        "value": {
+          "left": null,
+          "right": "猫"
+        }
+      }
+    },
+    {
+      "yaml": "a: &a [1.0e+3, '', 1e3, 1:20]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          1000.0,
+          "",
+          "1e3",
+          80
+        ],
+        "b": [
+          [
+            1000.0,
+            "",
+            "1e3",
+            80
+          ],
+          [
+            1000.0,
+            "",
+            "1e3",
+            80
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -90199}, value: ['1:20', '.5', '-0', 'off']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -90199
+        },
+        "value": [
+          "1:20",
+          ".5",
+          "-0",
+          "off"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 1.0e+3\nkey1: 0x1f\nkey2: \"猫\"\nkey3: null\nkey4: -0b101\n",
+      "value": {
+        "key0": 1000.0,
+        "key1": 31,
+        "key2": "猫",
+        "key3": null,
+        "key4": -5
+      }
+    },
+    {
+      "yaml": "value: !!bool -0b101\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: 'a: b # c'\nkey1: ''\n",
+      "value": {
+        "key0": "a: b # c",
+        "key1": ""
+      }
+    },
+    {
+      "yaml": "value: !!bool 1e3\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: 1.0e+3, right: +012}\nvalue: {<<: *base, left: yEs}\n",
+      "value": {
+        "base": {
+          "left": 1000.0,
+          "right": 10
+        },
+        "value": {
+          "left": "yEs",
+          "right": 10
+        }
+      }
+    },
+    {
+      "yaml": "key0: -1:02:03\nkey1: +012\nkey2: 1_234\nkey3: null\nkey4: yEs\n",
+      "value": {
+        "key0": -3723,
+        "key1": 10,
+        "key2": 1234,
+        "key3": null,
+        "key4": "yEs"
+      }
+    },
+    {
+      "yaml": "value: |+\n  -0b101\n  08\n  ''\n  1.0e+3\n  -0\n  0x1f\n  -1:02:03\n",
+      "value": {
+        "value": "-0b101\n08\n''\n1.0e+3\n-0\n0x1f\n-1:02:03\n"
+      }
+    },
+    {
+      "yaml": "a: &a ['2026-10-24']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "2026-10-24"
+        ],
+        "b": [
+          [
+            "2026-10-24"
+          ],
+          [
+            "2026-10-24"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: '', right: 'a: b # c'}\nvalue: {<<: *base, left: -1:02:03}\n",
+      "value": {
+        "base": {
+          "left": "",
+          "right": "a: b # c"
+        },
+        "value": {
+          "left": -3723,
+          "right": "a: b # c"
+        }
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 4384}, value: ['-0b101', '!!str no', '1.25', yEs, '''2026-10-24''',\n    'null', '~']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 4384
+        },
+        "value": [
+          "-0b101",
+          "!!str no",
+          "1.25",
+          "yEs",
+          "'2026-10-24'",
+          "null",
+          "~"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [ON, -0, '2026-10-24', 1.0e+3, yEs, !!str no, 1e3]\n",
+      "value": {
+        "value": [
+          true,
+          0,
+          "2026-10-24",
+          1000.0,
+          "yEs",
+          "no",
+          "1e3"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: !!str no, right: !!str no}\nvalue: {<<: *base, left: 'yes'}\n",
+      "value": {
+        "base": {
+          "left": "no",
+          "right": "no"
+        },
+        "value": {
+          "left": "yes",
+          "right": "no"
+        }
+      }
+    },
+    {
+      "yaml": "a: &a ['a: b # c', ~, .5, 1.0e+3]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "a: b # c",
+          null,
+          0.5,
+          1000.0
+        ],
+        "b": [
+          [
+            "a: b # c",
+            null,
+            0.5,
+            1000.0
+          ],
+          [
+            "a: b # c",
+            null,
+            0.5,
+            1000.0
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str 08\n",
+      "value": {
+        "value": "08"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -75649}, value: ['\"a\\nb\"', '+012', '''a: b # c''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -75649
+        },
+        "value": [
+          "\"a\\nb\"",
+          "+012",
+          "'a: b # c'"
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: 26840\nvalue:\n- '''a: b # c'''\n- '1_234'\n- '\"猫\"'\n- '-1:02:03'\n- 'ON'\n- '\"a\\nb\"'\n- '.5'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 26840
+        },
+        "value": [
+          "'a: b # c'",
+          "1_234",
+          "\"猫\"",
+          "-1:02:03",
+          "ON",
+          "\"a\\nb\"",
+          ".5"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!float 08\n",
+      "value": {
+        "value": 8.0
+      }
+    },
+    {
+      "yaml": "key0: 08\nkey1: yes\nkey2: 0\nkey3: !!str no\nkey4: yEs\nkey5: No\nkey6: -1:02:03\n",
+      "value": {
+        "key0": "08",
+        "key1": true,
+        "key2": 0,
+        "key3": "no",
+        "key4": "yEs",
+        "key5": false,
+        "key6": -3723
+      }
+    },
+    {
+      "yaml": "value: [\"a\\nb\", !!str no, .5, 1_234, 1:20, 'a: b # c']\n",
+      "value": {
+        "value": [
+          "a\nb",
+          "no",
+          0.5,
+          1234,
+          80,
+          "a: b # c"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!int .5\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: -0b101\nkey1: ~\nkey2: 1.25\nkey3: 1e3\n",
+      "value": {
+        "key0": -5,
+        "key1": null,
+        "key2": 1.25,
+        "key3": "1e3"
+      }
+    },
+    {
+      "yaml": "value: |+\n  \"a\\nb\"\n  \"猫\"\n\n",
+      "value": {
+        "value": "\"a\\nb\"\n\"猫\"\n\n"
+      }
+    },
+    {
+      "yaml": "key0: null\nkey1: 1.0e+3\nkey2: -0b101\nkey3: 1:20\nkey4: yEs\n",
+      "value": {
+        "key0": null,
+        "key1": 1000.0,
+        "key2": -5,
+        "key3": 80,
+        "key4": "yEs"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: false, number: -87684}, value: ['+012']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -87684
+        },
+        "value": [
+          "+012"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool \"a\\nb\"\n",
+      "error": true
+    },
+    {
+      "yaml": "value: [1.25, \"a\\nb\"]\n",
+      "value": {
+        "value": [
+          1.25,
+          "a\nb"
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str 1_234\n",
+      "value": {
+        "value": "1_234"
+      }
+    },
+    {
+      "yaml": "value: |+\n  !!str no\n\n",
+      "value": {
+        "value": "!!str no\n\n"
+      }
+    },
+    {
+      "yaml": "a: &a [+012, 'yes', yEs, -0b101]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          10,
+          "yes",
+          "yEs",
+          -5
+        ],
+        "b": [
+          [
+            10,
+            "yes",
+            "yEs",
+            -5
+          ],
+          [
+            10,
+            "yes",
+            "yEs",
+            -5
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "key0: 0\nkey1: 'a: b # c'\nkey2: 1.25\nkey3: \"a\\nb\"\nkey4: -0b101\nkey5: ~\n",
+      "value": {
+        "key0": 0,
+        "key1": "a: b # c",
+        "key2": 1.25,
+        "key3": "a\nb",
+        "key4": -5,
+        "key5": null
+      }
+    },
+    {
+      "yaml": "value: !!str 08\n",
+      "value": {
+        "value": "08"
+      }
+    },
+    {
+      "yaml": "value: >+\n  No\n  !!str no\n  +012\n  ''\n  1e3\n\n\n",
+      "value": {
+        "value": "No !!str no +012 '' 1e3\n\n\n"
+      }
+    },
+    {
+      "yaml": "value: [\"a\\nb\", null]\n",
+      "value": {
+        "value": [
+          "a\nb",
+          null
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool 1.25\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: No\nkey1: \"a\\nb\"\n",
+      "value": {
+        "key0": false,
+        "key1": "a\nb"
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: true\n  number: -32506\nvalue:\n- 'off'\n- 08\n- '''yes'''\n- '1.0e+3'\n- 'No'\n- '+012'\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": -32506
+        },
+        "value": [
+          "off",
+          "08",
+          "'yes'",
+          "1.0e+3",
+          "No",
+          "+012"
+        ]
+      }
+    },
+    {
+      "yaml": "value: |\n  .5\n",
+      "value": {
+        "value": ".5\n"
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 77044}, value: ['1:20', '1.0e+3', '1_234', '!!str no',\n    'ON', 08, '''2026-10-24''']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 77044
+        },
+        "value": [
+          "1:20",
+          "1.0e+3",
+          "1_234",
+          "!!str no",
+          "ON",
+          "08",
+          "'2026-10-24'"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: .5\nkey1: No\nkey2: ~\n",
+      "value": {
+        "key0": 0.5,
+        "key1": false,
+        "key2": null
+      }
+    },
+    {
+      "yaml": "a: &a [-0b101, yes, 1:20, 'yes']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -5,
+          true,
+          80,
+          "yes"
+        ],
+        "b": [
+          [
+            -5,
+            true,
+            80,
+            "yes"
+          ],
+          [
+            -5,
+            true,
+            80,
+            "yes"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: |+\n  \"猫\"\n  ~\n  1:20\n  '2026-10-24'\n  -1:02:03\n  yEs\n  1.25\n\n",
+      "value": {
+        "value": "\"猫\"\n~\n1:20\n'2026-10-24'\n-1:02:03\nyEs\n1.25\n\n"
+      }
+    },
+    {
+      "yaml": "base: &base {left: 08, right: 'yes'}\nvalue: {<<: *base, left: No}\n",
+      "value": {
+        "base": {
+          "left": "08",
+          "right": "yes"
+        },
+        "value": {
+          "left": false,
+          "right": "yes"
+        }
+      }
+    },
+    {
+      "yaml": "value: |+\n  1e3\n  'a: b # c'\n\n",
+      "value": {
+        "value": "1e3\n'a: b # c'\n\n"
+      }
+    },
+    {
+      "yaml": "key0: 1_234\n",
+      "value": {
+        "key0": 1234
+      }
+    },
+    {
+      "yaml": "value: !!int \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "{nested: {flag: false, number: 76561}, value: ['No', 'null', '1_234', 'yes', '-0',\n    '''2026-10-24''']}\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": 76561
+        },
+        "value": [
+          "No",
+          "null",
+          "1_234",
+          "yes",
+          "-0",
+          "'2026-10-24'"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [-0, \"a\\nb\", yes, 'a: b # c', 1e3, .5]\n",
+      "value": {
+        "value": [
+          0,
+          "a\nb",
+          true,
+          "a: b # c",
+          "1e3",
+          0.5
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str -0\n",
+      "value": {
+        "value": "-0"
+      }
+    },
+    {
+      "yaml": "value: >+\n  +012\n  \"猫\"\n  'yes'\n  ''\n  -0\n",
+      "value": {
+        "value": "+012 \"猫\" 'yes' '' -0\n"
+      }
+    },
+    {
+      "yaml": "value: >+\n  yes\n  ~\n  yEs\n  1.0e+3\n  -1:02:03\n  \"猫\"\n\n",
+      "value": {
+        "value": "yes ~ yEs 1.0e+3 -1:02:03 \"猫\"\n\n"
+      }
+    },
+    {
+      "yaml": "a: &a ['']\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          ""
+        ],
+        "b": [
+          [
+            ""
+          ],
+          [
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 1.0e+3, right: 1e3}\nvalue: {<<: *base, left: 0x1f}\n",
+      "value": {
+        "base": {
+          "left": 1000.0,
+          "right": "1e3"
+        },
+        "value": {
+          "left": 31,
+          "right": "1e3"
+        }
+      }
+    },
+    {
+      "yaml": "key0: -0\n",
+      "value": {
+        "key0": 0
+      }
+    },
+    {
+      "yaml": "a: &a [-0, ~, 'yes', 08]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          0,
+          null,
+          "yes",
+          "08"
+        ],
+        "b": [
+          [
+            0,
+            null,
+            "yes",
+            "08"
+          ],
+          [
+            0,
+            null,
+            "yes",
+            "08"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [0x1f, 08, -0, 1:20, !!str no, \"猫\", ON]\n",
+      "value": {
+        "value": [
+          31,
+          "08",
+          0,
+          80,
+          "no",
+          "猫",
+          true
+        ]
+      }
+    },
+    {
+      "yaml": "a: &a [-1:02:03, !!str no, 1.25, null, yEs]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          -3723,
+          "no",
+          1.25,
+          null,
+          "yEs"
+        ],
+        "b": [
+          [
+            -3723,
+            "no",
+            1.25,
+            null,
+            "yEs"
+          ],
+          [
+            -3723,
+            "no",
+            1.25,
+            null,
+            "yEs"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool \"猫\"\n",
+      "error": true
+    },
+    {
+      "yaml": "key0: 0x1f\nkey1: null\nkey2: '2026-10-24'\nkey3: \"a\\nb\"\nkey4: 1e3\nkey5: ON\n",
+      "value": {
+        "key0": 31,
+        "key1": null,
+        "key2": "2026-10-24",
+        "key3": "a\nb",
+        "key4": "1e3",
+        "key5": true
+      }
+    },
+    {
+      "yaml": "key0: ~\nkey1: yEs\nkey2: ON\nkey3: -0\nkey4: \"a\\nb\"\n",
+      "value": {
+        "key0": null,
+        "key1": "yEs",
+        "key2": true,
+        "key3": 0,
+        "key4": "a\nb"
+      }
+    },
+    {
+      "yaml": "key0: yEs\nkey1: 1.0e+3\nkey2: -1:02:03\nkey3: \"a\\nb\"\nkey4: 08\n",
+      "value": {
+        "key0": "yEs",
+        "key1": 1000.0,
+        "key2": -3723,
+        "key3": "a\nb",
+        "key4": "08"
+      }
+    },
+    {
+      "yaml": "value: [0x1f, '2026-10-24', 08, 1.0e+3, yEs, +012]\n",
+      "value": {
+        "value": [
+          31,
+          "2026-10-24",
+          "08",
+          1000.0,
+          "yEs",
+          10
+        ]
+      }
+    },
+    {
+      "yaml": "key0: ''\n",
+      "value": {
+        "key0": ""
+      }
+    },
+    {
+      "yaml": "a: &a [+012, \"猫\", 1:20, 1.25, '2026-10-24', .5, ~]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          10,
+          "猫",
+          80,
+          1.25,
+          "2026-10-24",
+          0.5,
+          null
+        ],
+        "b": [
+          [
+            10,
+            "猫",
+            80,
+            1.25,
+            "2026-10-24",
+            0.5,
+            null
+          ],
+          [
+            10,
+            "猫",
+            80,
+            1.25,
+            "2026-10-24",
+            0.5,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "value: [!!str no, No, -0, 0, ON]\n",
+      "value": {
+        "value": [
+          "no",
+          false,
+          0,
+          0,
+          true
+        ]
+      }
+    },
+    {
+      "yaml": "{nested: {flag: true, number: 22565}, value: ['1.0e+3', 'yes', '-0b101']}\n",
+      "value": {
+        "nested": {
+          "flag": true,
+          "number": 22565
+        },
+        "value": [
+          "1.0e+3",
+          "yes",
+          "-0b101"
+        ]
+      }
+    },
+    {
+      "yaml": "key0: '2026-10-24'\nkey1: 1.0e+3\nkey2: ''\n",
+      "value": {
+        "key0": "2026-10-24",
+        "key1": 1000.0,
+        "key2": ""
+      }
+    },
+    {
+      "yaml": "value: !!str 08\n",
+      "value": {
+        "value": "08"
+      }
+    },
+    {
+      "yaml": "value: ['2026-10-24', 1.0e+3, yes, 'a: b # c', No]\n",
+      "value": {
+        "value": [
+          "2026-10-24",
+          1000.0,
+          true,
+          "a: b # c",
+          false
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!bool \"a\\nb\"\n",
+      "error": true
+    },
+    {
+      "yaml": "base: &base {left: 1_234, right: '2026-10-24'}\nvalue: {<<: *base, left: -0b101}\n",
+      "value": {
+        "base": {
+          "left": 1234,
+          "right": "2026-10-24"
+        },
+        "value": {
+          "left": -5,
+          "right": "2026-10-24"
+        }
+      }
+    },
+    {
+      "yaml": "key0: .5\nkey1: ''\n",
+      "value": {
+        "key0": 0.5,
+        "key1": ""
+      }
+    },
+    {
+      "yaml": "value: !!float null\n",
+      "error": true
+    },
+    {
+      "yaml": "value: |\n  null\n  yEs\n  ~\n\n\n",
+      "value": {
+        "value": "null\nyEs\n~\n"
+      }
+    },
+    {
+      "yaml": "value: |+\n  1:20\n  -1:02:03\n  1.0e+3\n  \"猫\"\n  1_234\n  ON\n\n",
+      "value": {
+        "value": "1:20\n-1:02:03\n1.0e+3\n\"猫\"\n1_234\nON\n\n"
+      }
+    },
+    {
+      "yaml": "value: [~, No, 0, 1:20]\n",
+      "value": {
+        "value": [
+          null,
+          false,
+          0,
+          80
+        ]
+      }
+    },
+    {
+      "yaml": "key0: yEs\nkey1: null\nkey2: ''\n",
+      "value": {
+        "key0": "yEs",
+        "key1": null,
+        "key2": ""
+      }
+    },
+    {
+      "yaml": "value: !!int ''\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [off]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          false
+        ],
+        "b": [
+          [
+            false
+          ],
+          [
+            false
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: null, right: 0}\nvalue: {<<: *base, left: -1:02:03}\n",
+      "value": {
+        "base": {
+          "left": null,
+          "right": 0
+        },
+        "value": {
+          "left": -3723,
+          "right": 0
+        }
+      }
+    },
+    {
+      "yaml": "value: [1.0e+3, ON, +012, null, 1_234, yEs]\n",
+      "value": {
+        "value": [
+          1000.0,
+          true,
+          10,
+          null,
+          1234,
+          "yEs"
+        ]
+      }
+    },
+    {
+      "yaml": "value: ['yes', ON, \"猫\"]\n",
+      "value": {
+        "value": [
+          "yes",
+          true,
+          "猫"
+        ]
+      }
+    },
+    {
+      "yaml": "value: [yEs, 0, 08, 1:20, off, yes]\n",
+      "value": {
+        "value": [
+          "yEs",
+          0,
+          "08",
+          80,
+          false,
+          true
+        ]
+      }
+    },
+    {
+      "yaml": "value: !!str 1e3\n",
+      "value": {
+        "value": "1e3"
+      }
+    },
+    {
+      "yaml": "value: !!bool \"a\\nb\"\n",
+      "error": true
+    },
+    {
+      "yaml": "a: &a [08, \"a\\nb\", ~, -0, !!str no]\nb: [*a, *a]\n",
+      "value": {
+        "a": [
+          "08",
+          "a\nb",
+          null,
+          0,
+          "no"
+        ],
+        "b": [
+          [
+            "08",
+            "a\nb",
+            null,
+            0,
+            "no"
+          ],
+          [
+            "08",
+            "a\nb",
+            null,
+            0,
+            "no"
+          ]
+        ]
+      }
+    },
+    {
+      "yaml": "nested:\n  flag: false\n  number: -41087\nvalue:\n- '\"a\\nb\"'\n",
+      "value": {
+        "nested": {
+          "flag": false,
+          "number": -41087
+        },
+        "value": [
+          "\"a\\nb\""
+        ]
+      }
+    },
+    {
+      "yaml": "value: >\n  -1:02:03\n  08\n  '2026-10-24'\n  1_234\n  null\n  'yes'\n  -0b101\n",
+      "value": {
+        "value": "-1:02:03 08 '2026-10-24' 1_234 null 'yes' -0b101\n"
+      }
+    },
+    {
+      "yaml": "value: |-\n  null\n  yEs\n  ~\n  No\n",
+      "value": {
+        "value": "null\nyEs\n~\nNo"
+      }
+    },
+    {
+      "yaml": "value: [\"猫\", 'yes']\n",
+      "value": {
+        "value": [
+          "猫",
+          "yes"
+        ]
+      }
+    },
+    {
+      "yaml": "base: &base {left: 'yes', right: 'a: b # c'}\nvalue: {<<: *base, left: 1.0e+3}\n",
+      "value": {
+        "base": {
+          "left": "yes",
+          "right": "a: b # c"
+        },
+        "value": {
+          "left": 1000.0,
+          "right": "a: b # c"
+        }
+      }
+    }
+  ],
+  "excluded_outside_contract": 0
+}

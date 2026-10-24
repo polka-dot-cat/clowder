@@ -1,4 +1,3 @@
-
 use super::*;
 use serde_json::json;
 
@@ -42,17 +41,28 @@ fn saved_strings_keep_their_type_with_python_scalar_rules() {
 
 #[test]
 fn matches_captured_python_yaml_values() {
-    let fixture: Value =
-        serde_json::from_str(include_str!("../data/rust/yaml-compatibility.json")).unwrap();
-    for case in fixture["cases"].as_array().unwrap() {
-        let text = case["yaml"].as_str().unwrap();
-        let result = parse(text);
-        if case["error"] == true {
-            assert!(result.is_err(), "Accepted invalid YAML: {text}");
-        } else {
-            let value = result.unwrap_or_else(|error| panic!("{text:?}: {error}"));
-            assert_eq!(value, case["value"], "YAML: {text}");
-            assert_eq!(parse(&stringify(&value).unwrap()).unwrap(), value);
+    let generated = std::env::var_os("CLOWDER_COMPATIBILITY_DIR")
+        .map(|path| {
+            std::fs::read_to_string(std::path::PathBuf::from(path).join("yaml-generated.json"))
+                .unwrap()
+        })
+        .unwrap_or_else(|| include_str!("../data/rust/yaml-generated.json").to_owned());
+    let fixtures = [
+        include_str!("../data/rust/yaml-compatibility.json"),
+        &generated,
+    ];
+    for source in fixtures {
+        let fixture: Value = serde_json::from_str(source).unwrap();
+        for case in fixture["cases"].as_array().unwrap() {
+            let text = case["yaml"].as_str().unwrap();
+            let result = parse(text);
+            if case["error"] == true {
+                assert!(result.is_err(), "Accepted invalid YAML: {text}");
+            } else {
+                let value = result.unwrap_or_else(|error| panic!("{text:?}: {error}"));
+                assert_eq!(value, case["value"], "YAML: {text}");
+                assert_eq!(parse(&stringify(&value).unwrap()).unwrap(), value);
+            }
         }
     }
 }

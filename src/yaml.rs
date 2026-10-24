@@ -3,10 +3,10 @@
 use anyhow::{Context, Result, anyhow, bail};
 use regex::Regex;
 use serde_json::{Map, Number, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 use yaml_rust2::parser::{Event, MarkedEventReceiver, Parser, Tag};
-use yaml_rust2::scanner::{Marker, TScalarStyle};
+use yaml_rust2::scanner::{Marker, Scanner, TScalarStyle, Token, TokenType};
 
 #[derive(Default)]
 struct Events(Vec<(Event, Marker)>);
@@ -25,6 +25,17 @@ fn events(text: &str) -> Result<Vec<(Event, Marker)>> {
 }
 
 pub fn parse(text: &str) -> Result<Value> {
+    // The event parser replaces duplicate anchor names with fresh numeric IDs.
+    // Check lexical names first to preserve PyYAML's duplicate-anchor error.
+    let mut anchors = HashSet::new();
+    let mut scanner = Scanner::new(text.chars());
+    while let Some(Token(marker, token)) = scanner.next_token().context("Invalid YAML syntax")? {
+        if let TokenType::Anchor(name) = token
+            && !anchors.insert(name.clone())
+        {
+            bail!("Duplicate YAML anchor {name} at line {}", marker.line());
+        }
+    }
     let events = events(text)?;
     if events
         .iter()
@@ -208,12 +219,12 @@ fn scalar(text: &str, style: TScalarStyle, tag: Option<&Tag>) -> Result<Value> {
     if explicit == Some("int") || (explicit.is_none() && patterns()[0].is_match(text)) {
         let text = text.replace('_', "");
         let negative = text.starts_with('-');
-        let digits = text.trim_start_matches(['+', '-']);
+        let digits = text.strip_prefix(['+', '-']).unwrap_or(&text);
         let integer = if digits.contains(':') {
             digits
                 .split(':')
-                .try_fold(0u64, |n, part| {
-                    n.checked_mul(60)?.checked_add(part.parse::<u64>().ok()?)
+                .try_fold(0i128, |n, part| {
+                    n.checked_mul(60)?.checked_add(part.parse::<i128>().ok()?)
                 })
                 .ok_or_else(|| anyhow!("YAML integer is out of range"))?
         } else {
@@ -226,15 +237,20 @@ fn scalar(text: &str, style: TScalarStyle, tag: Option<&Tag>) -> Result<Value> {
             } else {
                 (10, digits)
             };
-            u64::from_str_radix(digits, radix).context("Invalid YAML integer")?
+            i128::from_str_radix(digits, radix).context("Invalid YAML integer")?
         };
-        return Ok(if negative {
-            Value::Number(Number::from(
-                i64::try_from(-(i128::from(integer))).context("YAML integer is out of range")?,
-            ))
+        let integer = if negative {
+            integer
+                .checked_neg()
+                .context("YAML integer is out of range")?
         } else {
-            Value::Number(Number::from(integer))
-        });
+            integer
+        };
+        return Ok(Value::Number(if integer < 0 {
+            Number::from(i64::try_from(integer).context("YAML integer is out of range")?)
+        } else {
+            Number::from(u64::try_from(integer).context("YAML integer is out of range")?)
+        }));
     }
     if explicit == Some("float") || (explicit.is_none() && patterns()[1].is_match(text)) {
         let text = text.replace('_', "");
