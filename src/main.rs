@@ -8,7 +8,18 @@ mod workspace;
 mod yaml;
 
 fn main() {
-    match cli::parse(std::env::args().skip(1).collect()) {
+    let tokens: Vec<String> = std::env::args().skip(1).collect();
+    if std::env::var("CLOWDER_COMPLETE").as_deref() == Ok("probe") {
+        println!("clowder-native-completion-v1");
+        return;
+    }
+    if std::env::var("CLOWDER_COMPLETE").as_deref() == Ok("1") {
+        for candidate in cli::complete(&tokens) {
+            println!("{candidate}");
+        }
+        return;
+    }
+    match cli::parse(tokens) {
         Ok(Some(args)) => {
             if let Err(error) = commands::run(&args) {
                 eprintln!("{error:#}");

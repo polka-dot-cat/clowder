@@ -5,6 +5,12 @@ use serde_json::Value;
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::OnceLock;
 
+mod completion;
+
+pub fn complete(tokens: &[String]) -> Vec<String> {
+    completion::candidates(tokens)
+}
+
 #[derive(Debug, Deserialize)]
 struct Action {
     name: String,

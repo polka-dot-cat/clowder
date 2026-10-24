@@ -307,3 +307,99 @@ fn sequential_forall_preserves_standard_input_and_error() {
     assert_eq!(String::from_utf8_lossy(&result.stderr), "child stderr\n");
     assert!(success(result).contains("owner/alpha:from stdin\n"));
 }
+
+#[test]
+fn completion_uses_local_commands_options_groups_versions_and_refs() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    project(root, "alpha");
+    fs::write(root.join("clowder.yml"), "name: local\ndefaults: {branch: main}\nclowder:\n  - name: owner/alpha\n    groups: [cats]\n").unwrap();
+    fs::create_dir_all(root.join(".clowder/versions")).unwrap();
+    fs::write(
+        root.join(".clowder/versions/release.clowder.yaml"),
+        "name: saved",
+    )
+    .unwrap();
+    let complete = |args: &[&str]| -> Vec<String> {
+        let output = Command::new(env!("CARGO_BIN_EXE_clowder"))
+            .args(args)
+            .env("CLOWDER_COMPLETE", "1")
+            .current_dir(root)
+            .output()
+            .unwrap();
+        success(output).lines().map(str::to_owned).collect()
+    };
+    for (args, expected) in [
+        (vec!["he"], vec!["herd"]),
+        (vec!["config", "set", "p"], vec!["projects", "protocol"]),
+        (vec!["herd", "--pro"], vec!["--protocol"]),
+        (vec!["herd", "-p", "h"], vec!["https"]),
+        (vec!["herd", "--protocol=h"], vec!["--protocol=https"]),
+        (vec!["herd", "-rj", "2", "ca"], vec!["cats"]),
+        (vec!["herd", "--exclude", "ow"], vec!["owner/alpha"]),
+        (vec!["checkout", "ma"], vec!["main"]),
+        (vec!["link", "rel"], vec!["release"]),
+        (
+            vec!["forall", "touch should-not-execute", "ca"],
+            vec!["cats"],
+        ),
+    ] {
+        assert_eq!(complete(&args), expected, "arguments: {args:?}");
+    }
+    assert!(!root.join("alpha/should-not-execute").exists());
+    fs::write(root.join("clowder.yml"), "not valid: [").unwrap();
+    assert_eq!(complete(&["herd", "--pro"]), ["--protocol"]);
+}
+
+#[test]
+fn bash_completion_passes_the_current_word_without_splitting() {
+    let directory = TempDir::new().unwrap();
+    fs::write(
+        directory.path().join("clowder.yml"),
+        "name: local\nclowder:\n  - name: owner/alpha\n    path: cat space\n",
+    )
+    .unwrap();
+    let output = Command::new("bash")
+        .args(["-c", r#"source "$1"; COMP_WORDS=("$2" herd 'cat '); COMP_CWORD=2; _clowder_native_complete; printf '<%s>\n' "${COMPREPLY[@]}""#, "bash"])
+        .arg(concat!(env!("CARGO_MANIFEST_DIR"), "/completions/clowder.bash"))
+        .arg(env!("CARGO_BIN_EXE_clowder"))
+        .current_dir(directory.path()).output().unwrap();
+    assert_eq!(success(output), "<cat space>\n");
+}
+
+#[cfg(unix)]
+#[test]
+fn completion_does_not_run_commands_with_an_older_executable() {
+    use std::os::unix::fs::PermissionsExt;
+    let directory = TempDir::new().unwrap();
+    let legacy = directory.path().join("clowder");
+    fs::write(
+        &legacy,
+        "#!/bin/sh\n[ \"$1\" = --_clowder-completion-probe ] && exit 2\ntouch should-not-execute\n",
+    )
+    .unwrap();
+    fs::set_permissions(&legacy, fs::Permissions::from_mode(0o700)).unwrap();
+    let output = Command::new("bash")
+        .args(["-c", r#"source "$1"; COMP_WORDS=("$2" herd alpha); COMP_CWORD=2; _clowder_native_complete; test ${#COMPREPLY[@]} = 0"#, "bash"])
+        .arg(concat!(env!("CARGO_MANIFEST_DIR"), "/completions/clowder.bash"))
+        .arg(&legacy).current_dir(directory.path()).output().unwrap();
+    success(output);
+    assert!(!directory.path().join("should-not-execute").exists());
+}
+
+#[cfg(target_os = "macos")]
+#[test]
+fn zsh_completion_passes_the_current_word_without_splitting() {
+    let directory = TempDir::new().unwrap();
+    fs::write(
+        directory.path().join("clowder.yml"),
+        "name: local\nclowder:\n  - name: owner/alpha\n    path: cat space\n",
+    )
+    .unwrap();
+    let output = Command::new("zsh")
+        .args(["-fc", r#"compdef() { :; }; compadd() { shift; printf '<%s>\n' "$@"; }; source "$1"; words=("$2" herd 'cat '); CURRENT=3; _clowder_native_complete"#, "zsh"])
+        .arg(concat!(env!("CARGO_MANIFEST_DIR"), "/completions/clowder.zsh"))
+        .arg(env!("CARGO_BIN_EXE_clowder"))
+        .current_dir(directory.path()).output().unwrap();
+    assert_eq!(success(output), "<cat space>\n");
+}

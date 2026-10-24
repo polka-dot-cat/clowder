@@ -48,9 +48,10 @@ numbers. Integers must fit signed or unsigned 64-bit values. Quote dates when
 using them as strings. Recursive YAML aliases are rejected; nesting and alias
 expansion have limits documented in the migration guide.
 
-Python `argcomplete` shell integration is not part of the native executable.
-Native shell completion remains a follow-up. Windows is not a validated target;
-the current migration targets macOS and Linux.
+Python `argcomplete` registration is replaced by native Bash and Zsh completion
+scripts; see the installation guide. Completion reads the local workspace and
+Git refs without running a command handler or contacting remotes. Windows is
+not a validated target; the current migration targets macOS and Linux.
 
 ## Existing limitations retained
 

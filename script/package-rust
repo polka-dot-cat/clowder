@@ -29,6 +29,7 @@ name="clowder-$version-$target"
 mkdir "$staging/$name"
 cp "$binary" LICENSE "$staging/$name/"
 cp docs/rust-installation.md "$staging/$name/README.md"
+cp -R completions "$staging/$name/"
 tar -czf "$output/$name.tar.gz" -C "$staging" "$name"
 (
     cd "$output"

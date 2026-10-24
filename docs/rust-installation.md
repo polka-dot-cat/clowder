@@ -25,6 +25,27 @@ use `command -v clowder` to check which executable your shell selects. During
 evaluation, use an absolute path to the native binary to avoid that ambiguity.
 The Python `register-python-argcomplete` setup does not apply to this executable.
 
+## Shell completion
+
+Native completion supports commands, flags, choices, workspace projects/groups,
+saved versions, and local Git refs. It does not contact remote repositories.
+Source the matching file from this checkout or an extracted archive in your
+shell profile, using its actual path:
+
+```sh
+# Bash (.bashrc or .bash_profile)
+source /path/to/clowder/completions/clowder.bash
+
+# Zsh (.zshrc), after your existing compinit setup
+autoload -Uz compinit
+compinit
+source /path/to/clowder/completions/clowder.zsh
+```
+
+Use the native `clowder` executable on `PATH`. These scripts replace the old
+Python argcomplete registration; they do not need Python. Shells retain normal
+file completion when the native helper has no candidates.
+
 ## Install a native archive
 
 Native archives are built separately for each operating system and architecture.
@@ -62,7 +83,7 @@ script/package-rust
 ```
 
 `script/package-rust` writes a `.tar.gz` and SHA-256 file under `dist/rust/`.
-The archive contains the binary, this guide, and the license. It does not upload
+The archive contains the binary, shell completion files, this guide, and the license. It does not upload
 files, create a tag, or publish a release. An optional target triple selects a
 different installed Rust target; its linker and system libraries must also be
 available. Build on each target platform unless a cross toolchain is configured.
