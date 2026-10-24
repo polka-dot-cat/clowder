@@ -257,7 +257,8 @@ jobs:
             # Save only the public key so account access can be restored if needed.
             ssh-keygen -y -P '' -f "$write_key" > build/circleci-write-key.pub
             for project in mu duke kishka kit sasha june; do
-              git push --dry-run \
+              # Hooks (including LFS uploads) can run even for a dry-run push.
+              git push --dry-run --no-verify \
                 "git@github.com:polka-dot-cat/$project.git" \
                 HEAD:refs/heads/pytest-ci-access-check
             done
