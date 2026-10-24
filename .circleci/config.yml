@@ -317,7 +317,10 @@ jobs:
             cargo test --locked
       - run:
           name: Build the native Linux archive
-          command: script/package-rust
+          command: |
+            script/package-rust
+            cargo package --locked
+            cp target/package/*.crate dist/rust/
       - run:
           name: Install the unchanged BDD harness
           command: |
