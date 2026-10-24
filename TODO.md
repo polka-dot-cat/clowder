@@ -49,7 +49,7 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   pass all 684 cases, including LFS, on `macos-15-intel`.
 
 - [x] Harden native interruption, child cleanup, failed Git commands, and large parallel output.
-- [ ] Add reproducible local LLVM coverage for native Rust; keep Qlty/Codecov inactive.
+- [x] Add reproducible local LLVM coverage for native Rust; keep Qlty/Codecov inactive.
 - [ ] Check isolated container and private fixture validation helpers into the repository.
 - [ ] Expand deterministic YAML/INI differential cases against the Python reference.
 

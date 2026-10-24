@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Local native coverage. An optional command can exercise the instrumented CLI.
+set -euo pipefail
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
+
+tool="${CARGO_LLVM_COV_BIN:-cargo-llvm-cov}"
+if [[ "$("$tool" llvm-cov --version)" != 'cargo-llvm-cov 0.9.1' ]]; then
+    echo 'Install cargo-llvm-cov: cargo install cargo-llvm-cov --version 0.9.1 --locked' >&2
+    exit 1
+fi
+# Select the repository toolchain even when Homebrew's cargo/rustc come first.
+# llvm-profdata and llvm-cov must match the compiler which emits the profiles.
+export RUSTC="${RUSTC:-$(rustup which rustc)}"
+export CARGO_TARGET_DIR="$PWD/target/rust-coverage"
+report="$PWD/build/coverage/rust"
+mkdir -p "$report"
+"$tool" llvm-cov clean --workspace
+# This is trusted shell output from the pinned local coverage tool.
+eval "$("$tool" llvm-cov show-env --sh)"
+cargo test --locked
+if [[ $# -gt 0 ]]; then
+    [[ "$1" != -- ]] || shift
+    cargo build --locked
+    export CLOWDER_EXECUTABLE="$CARGO_TARGET_DIR/debug/clowder"
+    export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
+    "$@"
+fi
+# Measure implementation files, not the Rust tests themselves. Never upload.
+report_args=(--ignore-filename-regex '/tests/')
+"$tool" llvm-cov report "${report_args[@]}" | tee "$report/summary.txt"
+"$tool" llvm-cov report "${report_args[@]}" --json --summary-only --output-path "$report/summary.json"
+"$tool" llvm-cov report "${report_args[@]}" --lcov --output-path "$report/lcov.info"
+"$tool" llvm-cov report "${report_args[@]}" --html --output-dir "$report"
+printf 'Native coverage: %s/html/index.html\n' "$report"

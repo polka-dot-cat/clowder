@@ -29,7 +29,7 @@ temporary local repositories and do not need credentials or Python.
 To compare behavior with Python, unset `CLOWDER_EXECUTABLE` and set
 `CLOWDER_IMPLEMENTATION=python`.
 
-See [the migration guide](docs/rust-migration.md) and
+See [native testing and coverage](docs/rust-testing.md), [the migration guide](docs/rust-migration.md) and
 [native packaging instructions](docs/rust-installation.md). The legacy setup
 below remains available for the Python behavior reference and published package.
 

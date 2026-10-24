@@ -14,7 +14,7 @@ include = [
     "/completions/**",
     "/about.toml", "/docs/rust-licenses.hbs", "/THIRD-PARTY-NOTICES.md",
     "/script/update-rust-licenses",
-    "/tests/rust_*.rs", "/tests/data/rust/**",
+    "/tests/rust_*.rs", "/tests/rust_unit/**", "/script/coverage-rust", "/tests/data/rust/**",
 ]
 
 [[bin]]
