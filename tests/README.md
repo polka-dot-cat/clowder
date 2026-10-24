@@ -1,5 +1,11 @@
 # Examples
 
+For the native CLI, first run `cargo build --locked`, then set
+`CLOWDER_EXECUTABLE="$PWD/target/debug/clowder"` when invoking pytest from the
+repository root. Without that variable the harness uses the Python reference
+with the same interpreter as pytest. `cargo test --locked` runs local native
+regressions without contacting the shared fixtures.
+
 The GitHub fixtures and Clowder assertions use `polka-dot-cat/...` project
 names. PR #641 is merged, and the Cats/clowder-examples manifest cutover is
 complete. See the [transfer record](../docs/clowder-repository-transfer-status.md).

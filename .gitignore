@@ -301,3 +301,6 @@ Config/secrets
 /*.gcno
 
 # End of https://www.gitignore.io/api/macos,swift,xcode,vapor,python,swiftpm,pycharm
+
+# Rust build output
+/target/

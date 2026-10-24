@@ -1,6 +1,9 @@
 """New syntax test file"""
 
+import os
 import re
+import shlex
+import sys
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import List
@@ -33,8 +36,12 @@ def run_command(command: str, cwd: Path, check: bool = False) -> CompletedProces
 
 def _process_clowder_commands(command: str) -> str:
 
-    pattern = r'^(clowder(.+?))'
-    replace = r'python -m clowder.app '
-    output = re.sub(pattern, replace, command)
+    pattern = r'^clowder(?=\s|$)'
+    executable = os.environ.get('CLOWDER_EXECUTABLE')
+    if executable:
+        replacement = shlex.quote(executable)
+    else:
+        replacement = f'{shlex.quote(sys.executable)} -m clowder.app'
+    output = re.sub(pattern, lambda match: replacement, command)
 
     return output

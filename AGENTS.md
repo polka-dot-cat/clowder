@@ -17,6 +17,27 @@ command or schema documentation before changing behavior.
 
 ## Repository map
 
+### Rust migration branch
+
+The native CLI is in `src/`, with its build in `Cargo.toml` and `Cargo.lock`.
+Follow [docs/rust-migration.md](docs/rust-migration.md). Keep the Python CLI as
+the behavior reference and test-support library during migration. The Rust
+executable must not invoke Python to implement commands. Preserve all current
+Gherkin feature files.
+
+Use `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
+`cargo test --locked`. Build with `cargo build --locked`, then set
+`CLOWDER_EXECUTABLE` to the absolute `target/debug/clowder` path when running
+pytest. The existing network, SSH, remote-write, and LFS precautions below
+still apply. `tests/rust_cli.rs` uses temporary repositories and captured Python
+output in `tests/data/rust/` for local regression checks.
+
+`src/cli_spec.json` embeds the legacy argument grammar and base help text;
+workspace-specific help tables are generated in Rust. Git remains an external
+runtime dependency. Each worker owns its subprocess working directory,
+environment, and output; do not change the process directory or environment
+inside parallel operations.
+
 | Location | Purpose |
 | --- | --- |
 | `clowder/app.py`, `clowder/cli/` | Command registration, arguments, and command handlers. |

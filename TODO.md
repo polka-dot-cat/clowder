@@ -9,6 +9,28 @@ Check an item off only after its completion criteria are met. Add regression
 coverage for behavior fixes. Abstract methods and pytest-bdd scenario bodies that
 contain `pass` are not automatically missing implementations.
 
+## Rust migration
+
+Follow [the migration plan](docs/rust-migration.md). Work in `rust-migration`
+and keep PR #642 as a draft until compatibility and distribution checks pass.
+
+- [x] Add the native Cargo binary, manifest schema validation and inheritance,
+  workspace discovery, and command dispatch without a Python runtime fallback.
+- [x] Route the existing Python harness to a selected native executable while
+  preserving the Python reference path and all Gherkin files.
+- [x] Capture representative Python output and add native regression tests for
+  formatting, parallel process isolation, exit codes, and dirty-tree protection.
+- [ ] Pass the existing read-only functional suite against the Rust executable.
+- [ ] Validate schema/source inheritance, SSH, recursive submodules, and LFS;
+  retain the separate pending Beanstalk host-key check.
+- [ ] Validate remote-write behavior in isolation and through serialized CI.
+- [ ] Validate offline scenarios in a disposable environment.
+- [ ] Build and test the native CLI on macOS and Linux in hosted CI.
+- [ ] Add native installation/release instructions and packaging; compare
+  startup and parallel execution with the Python reference.
+- [ ] Audit remaining behavior and output differences before removing the Python
+  CLI from the distribution. Keep Python support needed by the test harness.
+
 ## Before the backlog: transfer the repository
 
 Follow the [transfer plan](docs/clowder-repository-transfer-plan.md) and

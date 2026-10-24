@@ -1,0 +1,29 @@
+[package]
+name = "clowder-repo"
+version = "4.0.0-beta.7"
+edition = "2024"
+rust-version = "1.99"
+description = "Manage a clowder of Git repositories"
+license = "MIT"
+repository = "https://github.com/polka-dot-cat/clowder"
+publish = false
+
+[[bin]]
+name = "clowder"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+jsonschema = { version = "0.60", default-features = false }
+rayon = "1.12"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml_ng = "0.10"
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+lto = "thin"
+strip = true
