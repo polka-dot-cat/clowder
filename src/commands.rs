@@ -49,7 +49,8 @@ pub fn run(args: &Args) -> Result<()> {
     if args.command.starts_with("repo ") {
         return repo(args, &workspace);
     }
-    let protocol = config.get("git", "protocol").or(args.one("protocol"));
+    let config_protocol = config.get("git", "protocol")?;
+    let protocol = config_protocol.as_deref().or(args.one("protocol"));
     let manifest = Manifest::load(&workspace, protocol)?;
     if args.command == "yaml" {
         print!("{}", manifest.yaml(args.flag("resolved"))?);
@@ -117,7 +118,7 @@ pub fn run(args: &Args) -> Result<()> {
     }
     let projects = manifest.selected(
         &args.many("projects"),
-        &config.projects(),
+        &config.projects()?,
         &args.many("exclude"),
     )?;
     if args.command == "status" {

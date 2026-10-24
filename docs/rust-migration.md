@@ -60,6 +60,10 @@ keys must be strings; numbers must be finite and fit a 64-bit integer or float.
 Quote dates to use them as strings. Recursive aliases are rejected, nesting is
 limited to 128 levels, and alias expansion is limited to 64 MiB.
 
+The INI reader also keeps ConfigParser defaults, key interpolation, case-insensitive
+option names, multiline values, and duplicate-key errors. Captured cases in
+`tests/data/rust/config-compatibility.json` verify parsing and serialization.
+
 Validation is ongoing; see [TODO.md](../TODO.md) for outstanding coverage. SSH
 fixtures can delete shared test branches. Offline and LFS scenarios can change
 host settings, so run those in disposable environments.

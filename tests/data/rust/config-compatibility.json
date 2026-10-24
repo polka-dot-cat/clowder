@@ -1,0 +1,437 @@
+{
+  "source": "Captured from Python 3.10 ConfigParser with Clowder default sections",
+  "cases": [
+    {
+      "ini": "",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[git]\n\n[command]\n\n"
+    },
+    {
+      "ini": "# comment\n; another\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[git]\n\n[command]\n\n"
+    },
+    {
+      "ini": "[git]\nprotocol = https\nrebase = yes\n[command]\njobs: 2\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": "https"
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": "yes"
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "2"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[git]\nprotocol = https\nrebase = yes\n\n[command]\njobs = 2\n\n"
+    },
+    {
+      "ini": "[command]\nprojects: owner/a=b, owner/c\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": "owner/a=b, owner/c"
+        }
+      ],
+      "saved": "[command]\nprojects = owner/a=b, owner/c\n\n[git]\n\n"
+    },
+    {
+      "ini": "[DEFAULT]\nworkers = 2\nprotocol = https\n[command]\njobs = %(workers)s\n[git]\nrebase = %(enabled)s\nenabled = TRUE\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": "https"
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": "TRUE"
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "2"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[DEFAULT]\nworkers = 2\nprotocol = https\n\n[command]\njobs = %(workers)s\n\n[git]\nrebase = %(enabled)s\nenabled = TRUE\n\n"
+    },
+    {
+      "ini": "[command] # trailing comment\nJOBS = 4\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "4"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = 4\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\nprojects = owner/a,\n  owner/b\n\n  owner/c\n\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": "owner/a,\nowner/b\n\nowner/c"
+        }
+      ],
+      "saved": "[command]\nprojects = owner/a,\n\towner/b\n\t\n\towner/c\n\n[git]\n\n"
+    },
+    {
+      "ini": "[git]\nprotocol=https\n[git]\nrebase=true\n",
+      "parse_error": true
+    },
+    {
+      "ini": "[command]\nJOBS=2\njobs=4\n",
+      "parse_error": true
+    },
+    {
+      "ini": "jobs=2\n",
+      "parse_error": true
+    },
+    {
+      "ini": "[command]\nbadline\n",
+      "parse_error": true
+    },
+    {
+      "ini": "[command]\nprojects = owner/%%percent\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": "owner/%percent"
+        }
+      ],
+      "saved": "[command]\nprojects = owner/%%percent\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\njobs = %(missing)s\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "error": true
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = %(missing)s\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\njobs = %(jobs)s\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "error": true
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = %(jobs)s\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\njobs = %oops\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "error": true
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = %oops\n\n[git]\n\n"
+    },
+    {
+      "ini": "[DEFAULT]\njobs=2\n[DEFAULT]\nprotocol=https\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": "https"
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "2"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[DEFAULT]\njobs = 2\nprotocol = https\n\n[git]\n\n[command]\n\n"
+    },
+    {
+      "ini": "[command]\njobs = %(JOBS_COUNT)s\njobs_count = 3\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "3"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = %(JOBS_COUNT)s\njobs_count = 3\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\njobs = 1_0\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "1_0"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[command]\njobs = 1_0\n\n[git]\n\n"
+    },
+    {
+      "ini": "[DEFAULT]\nvalue=1\n[command]\njobs=%(value)s\nvalue=4\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": "4"
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": null
+        }
+      ],
+      "saved": "[DEFAULT]\nvalue = 1\n\n[command]\njobs = %(value)s\nvalue = 4\n\n[git]\n\n"
+    },
+    {
+      "ini": "[command]\nprojects = first\n  # comment\n  second\n",
+      "queries": [
+        {
+          "section": "git",
+          "key": "protocol",
+          "value": null
+        },
+        {
+          "section": "git",
+          "key": "rebase",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "jobs",
+          "value": null
+        },
+        {
+          "section": "command",
+          "key": "projects",
+          "value": "first\nsecond"
+        }
+      ],
+      "saved": "[command]\nprojects = first\n\tsecond\n\n[git]\n\n"
+    }
+  ]
+}
