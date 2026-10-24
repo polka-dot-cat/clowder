@@ -324,7 +324,7 @@ jobs:
           name: Run read-only BDD scenarios against the native CLI
           no_output_timeout: 15m
           command: |
-            mkdir -p build/junit build/cucumber
+            mkdir -p temp build/junit build/cucumber
             python -m pytest tests/functional -v -n 4 --tb=short \
               --basetemp=temp/rust -m 'not ssh and not offline and not write and not lfs' \
               --junitxml=build/junit/rust.xml --cucumberjson=build/cucumber/rust.json

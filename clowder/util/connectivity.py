@@ -57,7 +57,7 @@ def get_gateway_ip_address() -> Optional[str]:
     path = Path()
     from sys import platform
     if platform == "linux":
-        result = cmd.run("netstat -nr | awk '{print $2}' | head -n3 | tail -n1", path)
+        result = cmd.run("netstat -nr | awk '{print $2}' | head -n3 | tail -n1", path, print_output=False)
         return result.stdout.strip()
     elif platform == "darwin":
         return None
