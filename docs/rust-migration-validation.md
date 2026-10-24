@@ -1,19 +1,21 @@
 # Rust migration validation
 
-Validation on October 24, 2026 covers 1,083 unique cases from the unchanged
-1,111-case Gherkin suite. The 28 explicit Beanstalk source-URL cases remain
-deferred under the owner's existing host-key decision.
+Validation on October 24, 2026 covers all 1,111 unique cases from the unchanged
+Gherkin suite across the environments below. The 28 explicit custom source-URL
+cases use private fixture copies through an SSH-form transport, with networking
+disabled. Actual Beanstalk host trust and account authorization remain deferred
+under the owner's existing decision.
 
 ## Results
 
 | Selection | Cases passed | Environment and limits |
 | --- | ---: | --- |
-| Read-only cases excluding SSH, offline, and LFS | 681 | Native macOS executable and hosted Linux job 3011, public fixture URLs. The macOS YAML follow-up and hosted job each pass all 681 cases in a single run. |
-| Write cases excluding offline | 89 | Native Linux release executable, private local fixture copies, container network disabled. No public repository writes. |
-| Hosted write confirmation (same 89 cases) | 89 | CircleCI job [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), native executable at `408a2f4b`, published GitHub fixtures and the registered write key. All passed with no failures or skips in 33m34s. Counted once in the total above. |
+| Read-only cases excluding SSH, offline, and LFS | 681 | Local macOS and hosted Linux job 3022, using public fixture URLs. The Actions matrix also passes this selection on Ubuntu and Intel macOS. |
+| Write cases excluding offline | 89 | Native Linux release executable with private fixture copies and container networking disabled. Also confirmed against published GitHub fixtures by serialized native CircleCI job [3021](https://circleci.com/gh/polka-dot-cat/clowder/3021) at `0d8b2fe4`, with the registered write key. |
 | Main LFS command cases | 3 | Native Linux release executable, public HTTPS Git/LFS, disposable container. |
 | SSH-form schema cases excluding LFS and explicit Beanstalk URLs | 211 | Native Linux executable with a test SSH transport that serves private bare copies fetched over HTTPS. Validates URLs, refs, inheritance, and submodules; does not establish account SSH authorization. |
-| LFS schema cases | 17 | Same isolated transport, with read-only public HTTPS LFS downloads. |
+| Explicit project/upstream source-URL cases | 28 | Native Linux release executable at `5c68fc1a`, private GitHub Felidae mirror, read-only SSH-form transport, container network disabled. Checks the exact configured URLs and inheritance; does not contact Beanstalk. |
+| LFS schema cases | 17 | Private fixture transport with read-only public HTTPS LFS downloads. |
 | Other SSH-form command cases | 19 | Private fixture transport; temporary remote branches exist only inside the container. |
 | Offline cases excluding remote writes | 51 | Public HTTPS setup, then disable/re-enable the container's `eth0`. |
 | Offline remote-write cases | 12 | Private fixture transport rejects requests while container `eth0` is down. Verifies failure before local branch mutations. |
@@ -21,14 +23,9 @@ deferred under the owner's existing host-key decision.
 The first Linux runs used `8d7d9bb8`, with the offline harness repair in
 `8b9f3935`. The schema, LFS, SSH-form, and offline selections were repeated
 successfully at `ab1e9110`. Hosted job 3013 also passes all 89 write cases at
-`ab1e9110`. Each case is counted once across reports. Earlier failed runs remain
+`ab1e9110`; job 3018 passes all 89 again at `692d09e5` in 32m51s. Each case
+is counted once across reports. Earlier failed runs remain
 in the evidence directory and do not add to the passed count.
-
-Eight Rust tests pass on macOS and Linux at the original checkpoint: four unit
-tests and four native CLI integration tests. These check manifest inheritance, parsing, captured Python
-output, concurrent workers, exit codes, and validation before mutations.
-`cargo fmt --check` and strict Clippy validation pass. A Cargo source package
-builds successfully after extraction.
 
 The YAML compatibility follow-up passes all 681 read-only scenarios again in a
 single macOS run. It also matches 86 captured PyYAML examples. The current local
@@ -42,7 +39,10 @@ A separate Debian runtime image containing Git and the release executable,
 with no Python interpreter, passes all eleven native CLI integration tests at
 `5c68fc1a` with its network disabled. These include local Git mutations,
 concurrent workers, shell input, completion, and captured reference output.
-The Cargo source package contains 35 files and builds after extraction. Native
+The Cargo source package contains 35 files, builds after extraction, and passes
+all 21 native tests on macOS from that extracted source. `cargo install --path`
+from the extracted package also produces a working executable in an isolated
+installation directory. Native
 archives include the shell scripts and dependency notices tied to `Cargo.lock`.
 
 ## Evidence
@@ -53,7 +53,10 @@ On the development workstation, logs and JUnit/Cucumber reports are stored under
 /Users/jrgoodle/projects/clowder-projects/clowder-transfer-backups/20261024T023608Z/service-preflight-uds_8n9d/
 ```
 
-`rust-validation-summary.json` lists reports and unique case counts.
+`rust-validation-summary-current.json` lists the all-passing reports and 1,111
+unique case keys. The earlier `rust-validation-summary.json` retains the initial
+1,083-case checkpoint. `rust-source-url-reports/` contains the 28 isolated
+custom-URL reports; `rust-source-url-fixtures/` contains their transport and mirror.
 `rust-isolated-reports/` contains container reports. Local read-only reports are
 also in `build/junit/rust-*.xml`. The container transport helpers and build
 snapshot are in `rust-container/`; they are test infrastructure, not part of
@@ -89,20 +92,33 @@ this workload. These measurements include command startup and status output;
 they do not predict network performance. `rust-forall-benchmark.json` contains
 the samples and `benchmark-rust-forall.py` contains the local fixture setup.
 
-## Remaining checks
+## Hosted CI
 
-Hosted native write CI has passed. At `692d09e5`, CircleCI Linux job
-[3015](https://circleci.com/gh/polka-dot-cat/clowder/3015) passes all 681 read-only
+At `0d8b2fe4`, CircleCI Linux job
+[3022](https://circleci.com/gh/polka-dot-cat/clowder/3022) passes all 681 read-only
 cases with no failures or skips. Apple Silicon macOS job
-[3016](https://circleci.com/gh/polka-dot-cat/clowder/3016) passes native unit and
+[3023](https://circleci.com/gh/polka-dot-cat/clowder/3023) passes native unit and
 integration tests, formatting, Clippy, and archive extraction. Both jobs publish
 archives with SHA-256 files; the Linux job also verifies a Cargo source package.
-The downloaded macOS archive passes its checksum and runs on this workstation.
+Downloaded archives pass their checksums, include completion files and dependency
+notices, and execute on macOS and an x86_64 Debian container respectively.
 
-The BDD harness now builds/selects Rust by default, including in the existing
-Actions matrix; Python comparison requires `CLOWDER_IMPLEMENTATION=python`.
-Local checks pass for automatic native builds with xdist, explicit Python
-comparison, and Python Git aliases. Collection still finds all 1,111 cases.
-Hosted verification of that default, including Intel macOS runtime tests, is
-pending. Keep the PR in draft until the remaining checks in [TODO.md](../TODO.md)
-are complete.
+All four jobs in Actions run
+[40106198988](https://github.com/polka-dot-cat/clowder/actions/runs/40106198988)
+pass at the same commit. Each job runs 14 initialization, 667 other read-only,
+and three LFS scenarios against Rust. The matrix covers Ubuntu and Intel macOS
+with Python 3.8 and 3.11 for the harness. The documentation build also passes.
+The logs identify the native executable in each test stage.
+
+The BDD harness builds/selects Rust by default; Python comparison requires
+`CLOWDER_IMPLEMENTATION=python`. Local checks pass for automatic native builds
+with xdist, explicit Python comparison, and Python Git aliases. Collection still
+finds all 1,111 cases. Harness coverage reports do not measure the Rust CLI;
+collect native coverage separately before reactivating reporting integrations.
+
+The same commit passes all 89 serialized write cases in CircleCI job
+[3021](https://circleci.com/gh/polka-dot-cat/clowder/3021), with no failures or
+skips in 33m16s. All required PR checks are successful at this implementation
+checkpoint. Actual Beanstalk host trust and access, native release
+publication/signing, and the unrelated deferred integrations remain separate
+tasks in [TODO.md](../TODO.md).

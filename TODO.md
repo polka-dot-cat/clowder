@@ -24,15 +24,17 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   681 unique cases pass across local runs after harness repairs.
 - [x] Validate schema/source inheritance, recursive submodules, and LFS in
   disposable containers. See the [validation record](docs/rust-migration-validation.md)
-  for transport limits; retain the separate pending Beanstalk host-key check.
+  for transport limits. All 1,111 cases pass across the selected environments,
+  including 28 custom-URL cases against private mirrors. Retain the separate
+  pending Beanstalk host-key and live-service check.
 - [x] Validate remote-write behavior in isolation and through serialized CI.
   All 89 cases pass in the isolated Linux environment and native CircleCI job
-  [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), with no skips.
+  [3021](https://circleci.com/gh/polka-dot-cat/clowder/3021), with no skips.
 - [x] Validate all 63 offline scenarios in disposable environments. Repair the
   Python harness gateway-output capture so these scenarios can run on Linux.
 - [x] Build and test the native CLI on macOS and Linux in hosted CI. Jobs
-  [3015](https://circleci.com/gh/polka-dot-cat/clowder/3015) and
-  [3016](https://circleci.com/gh/polka-dot-cat/clowder/3016) pass and publish native archives.
+  [3022](https://circleci.com/gh/polka-dot-cat/clowder/3022) and
+  [3023](https://circleci.com/gh/polka-dot-cat/clowder/3023) pass and publish native archives.
 - [x] Add native installation/release instructions and local archive packaging;
   compare startup and parallel execution with the Python reference. See the
   [native installation guide](docs/rust-installation.md) and validation record.
@@ -42,8 +44,9 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   The [compatibility notes](docs/rust-compatibility.md) record the current audit.
 - [x] Add native Bash and Zsh completion to replace Python `argcomplete`
   integration, including local project/group/version/ref candidates.
-- [ ] Validate Intel macOS runtime behavior. The cross-compiled archive builds;
-  this workstation has no Rosetta runtime, so it cannot execute that binary.
+- [x] Validate Intel macOS runtime behavior. Both native Actions jobs in
+  [run 40106198988](https://github.com/polka-dot-cat/clowder/actions/runs/40106198988)
+  pass all 684 cases, including LFS, on `macos-15-intel`.
 
 ## Before the backlog: transfer the repository
 
@@ -75,7 +78,7 @@ are separate from the initial review and were updated on 2026-10-24.
   `ab1e9110` in [run 40100795242](https://github.com/polka-dot-cat/clowder/actions/runs/40100795242);
   CircleCI native read-only and write checks also pass.
 - [ ] Verify Beanstalk's server host key, then check SSH access and run the 28
-  explicit source-URL cases. Retain Beanstalk; the owner confirmed the account
+  explicit source-URL cases against the actual service. Retain Beanstalk; the owner confirmed the account
   public key is already registered and chose to leave host verification pending.
 - [x] Validate the repaired Actions baseline. At `6607ba77`, all four Ubuntu/macOS
   and Python 3.8/3.11 jobs pass all 684 cases, including LFS. The documentation
