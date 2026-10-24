@@ -167,3 +167,50 @@ fn tracking_start_checks_remote_access_before_creating_a_local_branch() {
         ""
     );
 }
+
+#[test]
+fn git_herd_alias_quotes_paths_and_forwards_options() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    let name = "-猫's $(touch escaped); project";
+    fs::write(
+        root.join("clowder.yml"),
+        serde_json::json!({
+            "name": "local",
+            "defaults": {"branch": "main"},
+            "clowder": [{"name": "owner/project", "path": name}]
+        })
+        .to_string(),
+    )
+    .unwrap();
+    project(root, name);
+    let path = root.join(name);
+    let remote = root.join("remote.git");
+    git(
+        root,
+        &[
+            "clone",
+            "--bare",
+            path.to_str().unwrap(),
+            remote.to_str().unwrap(),
+        ],
+    );
+    git(
+        &path,
+        &["remote", "add", "origin", remote.to_str().unwrap()],
+    );
+    success(clowder(root, &["herd"]));
+    let executable = Path::new(env!("CARGO_BIN_EXE_clowder"));
+    let paths = std::iter::once(executable.parent().unwrap().to_path_buf())
+        .chain(std::env::split_paths(&std::env::var_os("PATH").unwrap()))
+        .collect::<Vec<_>>();
+    let result = Command::new("git")
+        .args(["herd", "--rebase"])
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .current_dir(&path)
+        .output()
+        .unwrap();
+    assert!(success(result).contains("Pull with rebase"));
+    assert!(!path.join("escaped").exists());
+    assert_eq!(git(&path, &["branch", "--show-current"]), "main");
+}

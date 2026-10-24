@@ -378,15 +378,12 @@ fn herd(args: &Args, project: &Project, rebase: bool, log: &mut Log) -> Result<(
         }
     }
     log.line(" - Update git herd alias");
-    log.git(
-        path,
-        [
-            "config",
-            "--local",
-            "alias.herd",
-            &format!("!clowder herd {}", project.relative.display()),
-        ],
-    )?;
+    // Git runs aliases beginning with '!' through a shell. Keep the manifest path
+    // as one literal argument, and put it after '--' so leading '-' is harmless.
+    // Forward user flags before that separator (for example, git herd --rebase).
+    let selector = project.relative.to_string_lossy().replace('\'', "'\\''");
+    let alias = format!("!f() {{ clowder herd \"$@\" -- '{selector}'; }}; f");
+    log.git(path, ["config", "--local", "alias.herd", &alias])?;
     for (key, value) in &project.git.config {
         let value = value
             .as_str()
