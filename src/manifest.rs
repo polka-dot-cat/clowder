@@ -153,7 +153,7 @@ impl Manifest {
         let path = workspace.manifest()?;
         let contents =
             fs::read_to_string(&path).with_context(|| format!("Cannot read {}", path.display()))?;
-        let raw: Value = serde_yaml_ng::from_str(&contents).context("Invalid YAML")?;
+        let raw = crate::yaml::parse(&contents).context("Invalid YAML")?;
         Self::from_value(workspace, raw, protocol)
     }
 
@@ -420,7 +420,7 @@ impl Manifest {
                 }
             }
         }
-        Ok(serde_yaml_ng::to_string(&canonical("root", &raw))?)
+        crate::yaml::stringify(&canonical("root", &raw))
     }
 }
 

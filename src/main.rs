@@ -5,6 +5,7 @@ mod git;
 mod manifest;
 mod operations;
 mod workspace;
+mod yaml;
 
 fn main() {
     match cli::parse(std::env::args().skip(1).collect()) {

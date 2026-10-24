@@ -52,6 +52,14 @@ covers help, version, status, YAML, and configuration output. Parallel operation
 use bounded worker pools and collect each project's output separately. Tests
 check that workers overlap, keep their own environment, and propagate exit codes.
 
+Manifest parsing retains PyYAML's YAML 1.1 booleans, octal numbers, aliases,
+and merge keys. Saved manifests quote strings that would otherwise change type
+when read by Python. Captured Python cases in
+`tests/data/rust/yaml-compatibility.json` check this behavior. Manifest mapping
+keys must be strings; numbers must be finite and fit a 64-bit integer or float.
+Quote dates to use them as strings. Recursive aliases are rejected, nesting is
+limited to 128 levels, and alias expansion is limited to 64 MiB.
+
 Validation is ongoing; see [TODO.md](../TODO.md) for outstanding coverage. SSH
 fixtures can delete shared test branches. Offline and LFS scenarios can change
 host settings, so run those in disposable environments.
