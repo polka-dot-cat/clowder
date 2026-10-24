@@ -31,6 +31,34 @@ pub fn normalize(path: &Path) -> PathBuf {
     result
 }
 
+/// Resolve existing symlinks, including those before missing path components.
+/// Resolve parents before applying '..' so a symlink cannot change its meaning.
+pub fn resolve(path: &Path) -> Result<PathBuf> {
+    fn inner(path: &Path, links: usize) -> Result<PathBuf> {
+        if links > 40 {
+            bail!("Too many symbolic links in {}", path.display());
+        }
+        match fs::canonicalize(path) {
+            Ok(path) => return Ok(path),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(error).with_context(|| format!("Cannot resolve {}", path.display()));
+            }
+        }
+        if let Ok(target) = fs::read_link(path) {
+            return inner(&path.parent().unwrap().join(target), links + 1);
+        }
+        let parent = path
+            .parent()
+            .context("Cannot resolve path without a parent")?;
+        let component = path.components().next_back().context("Empty path")?;
+        Ok(normalize(
+            &inner(parent, links)?.join(component.as_os_str()),
+        ))
+    }
+    inner(path, 0)
+}
+
 impl Workspace {
     pub fn discover() -> Result<Self> {
         let cwd = std::env::current_dir()?;

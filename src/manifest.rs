@@ -1,6 +1,6 @@
 //! Manifest validation and inheritance are pure; loading a manifest never fetches Git refs.
 use crate::git;
-use crate::workspace::{Workspace, normalize};
+use crate::workspace::{Workspace, resolve};
 use anyhow::{Context, Result, anyhow, bail};
 use serde_json::{Map, Value, json};
 use std::collections::{BTreeSet, HashMap, HashSet};
@@ -204,9 +204,11 @@ impl Manifest {
             let path_name = project["path"]
                 .as_str()
                 .unwrap_or_else(|| name.rsplit('/').next().unwrap());
-            let relative =
-                normalize(&PathBuf::from(section["path"].as_str().unwrap_or("")).join(path_name));
-            let path = normalize(&workspace.root.join(&relative));
+            let relative: PathBuf = PathBuf::from(section["path"].as_str().unwrap_or(""))
+                .join(path_name)
+                .components()
+                .collect();
+            let path = resolve(&workspace.root.join(&relative))?;
             if !paths.insert(path.clone()) {
                 bail!("Multiple projects with path '{}'", path.display());
             }
@@ -370,13 +372,14 @@ impl Manifest {
                 result.insert("path".into(), path.clone());
             }
             if resolved {
-                let relative = normalize(
-                    &PathBuf::from(section_path).join(
+                let relative: PathBuf = PathBuf::from(section_path)
+                    .join(
                         value["path"]
                             .as_str()
                             .unwrap_or_else(|| name.rsplit('/').next().unwrap()),
-                    ),
-                );
+                    )
+                    .components()
+                    .collect();
                 let project = manifest
                     .projects
                     .iter()

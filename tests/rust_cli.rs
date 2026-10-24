@@ -214,3 +214,51 @@ fn git_herd_alias_quotes_paths_and_forwards_options() {
     assert!(!path.join("escaped").exists());
     assert_eq!(git(&path, &["branch", "--show-current"]), "main");
 }
+
+#[cfg(unix)]
+#[test]
+fn rejects_project_paths_that_resolve_to_the_same_repository() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    project(root, "actual");
+    std::os::unix::fs::symlink("actual", root.join("alias")).unwrap();
+    for suffix in ["", "/not-cloned-yet"] {
+        fs::write(
+            root.join("clowder.yml"),
+            serde_json::json!({
+                "name": "local", "defaults": {"branch": "main"},
+                "clowder": [
+                    {"name": "owner/one", "path": format!("actual{suffix}")},
+                    {"name": "owner/two", "path": format!("alias{suffix}")}
+                ]
+            })
+            .to_string(),
+        )
+        .unwrap();
+        let result = clowder(root, &["forall", "-j2", "touch should-not-run"]);
+        assert!(!result.status.success());
+        assert!(String::from_utf8_lossy(&result.stderr).contains("Multiple projects with path"));
+        assert!(!root.join("actual/should-not-run").exists());
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn parent_components_are_resolved_after_symlinks() {
+    let directory = TempDir::new().unwrap();
+    let root = directory.path();
+    fs::create_dir_all(root.join("outside/child")).unwrap();
+    fs::create_dir(root.join("workspace")).unwrap();
+    std::os::unix::fs::symlink("../outside/child", root.join("workspace/alias")).unwrap();
+    project(&root.join("outside"), "project");
+    fs::write(
+        root.join("workspace/clowder.yml"),
+        "name: local\ndefaults: {branch: main}\nclowder:\n  - name: owner/project\n    path: alias/../project\n",
+    ).unwrap();
+    success(clowder(
+        &root.join("workspace"),
+        &["forall", "touch selected"],
+    ));
+    assert!(root.join("outside/project/selected").is_file());
+    assert!(!root.join("workspace/project").exists());
+}
