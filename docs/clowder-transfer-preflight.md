@@ -1,15 +1,15 @@
 # Transfer preflight: Actions, Pages, and integrations
 
-Updated October 24, 2026 (America/Chicago). The main repository is still
-`JrGoodle/clowder`, and [PR #641](https://github.com/JrGoodle/clowder/pull/641)
-remains a draft. This record supplements the
+Updated October 24, 2026 (America/Chicago). The repository is now
+`polka-dot-cat/clowder`, and [PR #641](https://github.com/polka-dot-cat/clowder/pull/641)
+is merged. This record supplements the
 [transfer plan](clowder-repository-transfer-plan.md) and
 [fixture migration status](clowder-repository-transfer-status.md).
 
 The source repository ID is `38194118`, with public visibility and default
 branch `master`. Repository admin access and active organization-owner membership
-were confirmed. The destination name `polka-dot-cat/clowder` was still unused.
-Recheck availability immediately before the transfer.
+were confirmed. The transfer preserved the repository ID, visibility, default
+branch, collaborators, and protection settings.
 
 ## GitHub Actions
 
@@ -45,8 +45,8 @@ Each matrix job separates the test groups:
 | Group | Collected cases | Execution |
 | --- | ---: | --- |
 | Initialization | 14 | Published GitHub URLs, four workers |
-| Functional | 667 | Staged Cats manifests, four workers |
-| LFS | 3 | Staged Cats manifests, serial on the disposable runner |
+| Functional | 667 | Published Cats manifests, four workers |
+| LFS | 3 | Published Cats manifests, serial on the disposable runner |
 
 SSH, offline, and remote-write cases remain excluded from Actions. The LFS group
 runs after the parallel groups because its steps change global/system LFS
@@ -54,12 +54,10 @@ configuration. Cucumber, JUnit, and coverage files are uploaded even when tests
 fail. The old annotation actions were removed; reports remain available as
 artifacts without granting the test workflow write access to GitHub checks.
 
-The workflow pins the already-published Cats migration commits and uses a
-process-scoped local Git URL override for the functional/LFS groups. The
-initialization group uses the live URL because it asserts that URL. Remove the
-temporary fixture preparation and overrides after the active manifests have
-completed their coordinated cutover; until then, ordinary published Cats names
-remain compatible with existing Clowder versions.
+Before merge, CI pinned the staged Cats commits through a process-scoped local
+Git URL override. Cats' active branches now contain those commits. This cleanup
+removes the temporary preparation and overrides; all groups use published URLs.
+The initialization, functional, and LFS selections remain unchanged.
 
 The Actions baseline passed at commit `6607ba77` in
 [run 40065003927](https://github.com/JrGoodle/clowder/actions/runs/40065003927).
@@ -102,7 +100,7 @@ Supporting checks and repair history:
   accommodates this observed duration; the former limit would have cancelled it.
 
 The first repaired run also exposed a missing parent temporary directory; that
-setup error and the collection fix are now published on the draft PR branch.
+setup error and the collection fix were included in merged PR #641.
 
 ## Pages and DNS
 
@@ -150,7 +148,7 @@ changed during this preflight.
 | Code Climate / Qlty | The old project URL redirects to Qlty's login for the personal-account project. No recent analysis was verified. The owner chose to leave it inactive; legacy webhook `249930018` is now disabled and verified. | Reactivation is deferred to its own TODO after transfer. Coverage uploads remain disabled and the old maintainability/coverage badges are removed. |
 | Codecov | Public API reports the personal-account project as inactive and not activated; its last update is January 30, 2024. The CircleCI coverage-upload workflow is commented out. | Owner chose to keep it inactive. Reactivation is a separate TODO after transfer; the coverage badge is removed. |
 | Slack | Existing webhook is active and its last recorded response is HTTP 200. | Retain its configuration through transfer. No test message was sent. |
-| Requires.io | Last delivery was HTTP 405, and the domain now redirects to a sale page. | Owner authorized disabling hook `17286562`. It is disabled, verified, and its obsolete documentation badge is removed in the draft. |
+| Requires.io | Last delivery was HTTP 405, and the domain now redirects to a sale page. | Owner authorized disabling hook `17286562`. It is disabled, verified, and its obsolete documentation badge is removed. |
 
 Qlty and Codecov reactivation are deferred at the owner's request and are not
 transfer prerequisites. The legacy Code Climate webhook was disabled on
@@ -167,14 +165,14 @@ shared secret in the provider webhook as directed, then re-enable delivery and
 verify a build. Do not put the secret in this repository or chat.
 [Read the Docs webhook update](https://blog.readthedocs.com/security-update-on-incoming-webhooks/)
 
-The draft also repairs `.readthedocs.yml`: it now declares Ubuntu 24.04 and
+The migration also repairs `.readthedocs.yml`: it now declares Ubuntu 24.04 and
 Python 3.11 under `build`, uses the existing pinned requirements, and pins the
 build tools needed by the old package setup. The Actions Ubuntu/Python 3.11 job
 builds the same Sphinx documentation. A hosted Read the Docs build is deferred.
 
 CircleCI's configuration-fetch authorization is now restored. A fresh push of
 `b4a8015e` created pipeline `1578` without the earlier follower-token error and
-published the required GitHub status. [Job 2967](https://circleci.com/gh/JrGoodle/clowder/2967)
+published the required GitHub status. [Job 2967](https://circleci.com/gh/polka-dot-cat/clowder/2967)
 failed before tests because its checkout SSH key was rejected; GitHub listed no
 deploy keys at that time. The owner recreated the repository checkout/deploy key
 through CircleCI. GitHub confirms read-only key `167499686`, created at
@@ -184,7 +182,7 @@ this session. Hosted job validation now passes, and the owner confirmed GitHub
 OAuth access to `polka-dot-cat` is granted.
 See [CircleCI's checkout-key API](https://circleci.com/docs/api/v2/#tag/Project/operation/createCheckoutKey).
 
-[Job 2968](https://circleci.com/gh/JrGoodle/clowder/2968) confirms checkout,
+[Job 2968](https://circleci.com/gh/polka-dot-cat/clowder/2968) confirms checkout,
 additional-key loading, Git setup, and dependency installation now succeed.
 It stopped before tests when the old Code Climate download returned an HTML
 404 page. The active `test_write` job now invokes pytest directly and retains
@@ -193,13 +191,13 @@ separate coverage-upload workflow remains disabled. The later reporting
 deferral also disables the legacy Code Climate webhook as recorded above.
 
 The job retains all 89 `write and not offline` cases. Like Actions, it uses a
-temporary bare Cats clone pinned to the staged migration commits. Only the root
-Cats SSH/HTTPS URLs are rewritten; child repositories still use their GitHub
-SSH remotes, including the remote `pytest*` branch mutations. A CircleCI serial
+temporary bare Cats clone pinned to staged commits before merge. The cleanup
+removes that override now that the manifests are published. All repositories
+use their GitHub URLs, including SSH and the remote `pytest*` branch mutations. A CircleCI serial
 group prevents these jobs from concurrently changing the same remote branches.
-Remove the temporary Cats preparation and overrides after manifest cutover.
+The dry-run access checks use the checked-out Clowder `HEAD` without publishing it.
 
-[Job 2970](https://circleci.com/gh/JrGoodle/clowder/2970) accepted this configuration
+[Job 2970](https://circleci.com/gh/polka-dot-cat/clowder/2970) accepted this configuration
 and reached the tests. Its first fixture cleanup was rejected because SSH used
 the read-only checkout key for a remote write. The test command now explicitly
 selects the existing additional key with fingerprint
@@ -210,7 +208,7 @@ if that additional key is missing.
 ### Hosted CircleCI write validation
 
 After the owner registered the additional public key with GitHub,
-[job 2982](https://circleci.com/gh/JrGoodle/clowder/2982), at commit `e94b8e33`,
+[job 2982](https://circleci.com/gh/polka-dot-cat/clowder/2982), at commit `e94b8e33`,
 completed successfully on October 24. Its JUnit artifact records **89 tests,
 zero failures, zero errors, and zero skips**. GitHub reports
 `ci/circleci: test_write` as successful for that commit. The job took 41m 05s;
@@ -230,8 +228,8 @@ project configuration, retains its keys, and publishes the required status at th
 new repository path.
 [CircleCI organization authorization](https://circleci.com/docs/guides/permissions-authentication/users-organizations-and-integrations-guide/#github-third-party-application-restrictions-for-oauth-integrations)
 
-The latest PR commit must pass its required checks before merge. The repository
-transfer itself can proceed while checks run. The serial group includes
+The owner chose to merge PR #641 before its latest checks completed. Record
+those incomplete results separately from the earlier passing baseline. The serial group includes
 `pipeline.project.slug`, which changes with ownership. Let all old-path write
 jobs finish before triggering a new-path job so both groups cannot mutate the
 shared fixtures concurrently. Recheck CI after transfer and rerun interrupted
@@ -242,7 +240,7 @@ checks as needed.
 The failure record and recovery instructions below are retained for reference.
 Registration and hosted validation are complete.
 
-[Job 2976](https://circleci.com/gh/JrGoodle/clowder/2976), at commit `6607ba77`,
+[Job 2976](https://circleci.com/gh/polka-dot-cat/clowder/2976), at commit `6607ba77`,
 confirms that the additional key is present, but GitHub rejects it with
 `Permission denied (publickey)`. The job now checks write access with dry-run
 pushes before starting tests, so this failed attempt changed no remote branches.
@@ -301,6 +299,33 @@ GitHub OAuth organization access is confirmed by the owner. This session has no
 authenticated CircleCI API or connected browser; verify the retained project's
 settings and required status after transfer.
 
+## Post-transfer checks
+
+The repository transfer and PR #641 merge are complete. The immediate inventory
+confirms preserved branches, tags, release assets, open issues/PRs, collaborator
+permissions, protection, secret names, and environments. CircleCI recognizes the
+same project at `gh/polka-dot-cat/clowder`; its read-only deploy key is retained.
+The owner confirmed GitHub OAuth organization access is granted.
+
+The owner canceled [job 2988](https://circleci.com/gh/polka-dot-cat/clowder/2988)
+after the transfer. It stopped while preparing a prune test. All permanent refs
+in Mu, Duke, Kit, Kishka, Sasha, and June still matched the pre-test inventory.
+Four `pytest-prune-remote` branches remained in Mu, Duke, Kit, and Kishka. They
+were removed with explicit ref leases against the observed commits, and absence
+was verified. Existing `pytest` baseline branches were retained. Clowder's merge
+commit remained intact.
+
+The merge-triggered CircleCI pipeline `1586` stopped during configuration: the
+organization disallows the uncertified `codecov/codecov@1.0.2` orb. No test job
+started, so it did not overlap the canceled job. The follow-up removes the unused
+orb declaration and its inactive upload step, consistent with the owner's
+Codecov deferral. Organization security settings stay unchanged.
+
+Cats and clowder-examples now publish the planned migration commits. The CI
+cleanup removes staged-fixture pins and URL overrides. A hosted CircleCI run
+under the organization still needs to validate configuration, checkout, write
+access, and tests after that cleanup. The canceled run is not a passing result.
+
 ## Evidence
 
 Redacted inventories, owner confirmations, DNS observations, workflow metadata,
@@ -316,3 +341,6 @@ their saved sizes and SHA-256 hashes. The original mirror and inventories are
 retained. The only added Clowder branch is `codex-cleanup`; existing branch and
 tag refs, release/asset identities, and branch protection match the original
 inventory. Published Cats refs and GYP's required `fork-branch` are unchanged.
+
+Post-transfer inventories, canceled-job logs, ref checks, cleanup records, and
+manifest-cutover evidence are under `post-transfer-20261024/` in that directory.

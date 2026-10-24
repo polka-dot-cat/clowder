@@ -5,13 +5,30 @@ Updated October 24, 2026 (America/Chicago). Follow the
 
 ## Current state
 
-The migration is being prepared in draft
-[PR #641](https://github.com/JrGoodle/clowder/pull/641), on `codex-cleanup`.
-The main repository remains `JrGoodle/clowder`; its remote, default branch, and
-public visibility have not changed.
-Links to `polka-dot-cat/clowder` are prepared for publication after the transfer.
-The [Actions, Pages, and integration preflight](clowder-transfer-preflight.md)
-records the next phase, including the CI repair and remaining account-side work.
+The owner transferred the repository to
+[polka-dot-cat/clowder](https://github.com/polka-dot-cat/clowder) on October 24
+and merged [PR #641](https://github.com/polka-dot-cat/clowder/pull/641) at
+`ecfdc14ccd91c4f310fe079476185f7f17c5db13`. The owner chose to merge before the
+latest checks completed. Earlier successful baselines remain recorded below;
+they do not establish success for the merged commit.
+
+Repository ID `38194118`, public visibility, `master`, collaborator permissions,
+all five required checks, secret names, environments, 40 tags, 40 releases, and
+all 78 release-asset identities and sizes were preserved. The immediate transfer
+inventory found all 14 expected branches; only the already-published migration
+branch had advanced since the earlier snapshot. Open issue/PR numbers and issue
+assignees were preserved. The local `origin` now uses the organization URL.
+
+The old GitHub API URL resolves to the same repository. CircleCI retains project
+ID `bb8973a7-cc5b-4870-affe-eb39676286fb` at `gh/polka-dot-cat/clowder` and the
+read-only checkout key. Requires.io, Read the Docs, and Code Climate webhooks
+remain disabled; CircleCI and Slack remain active.
+
+After merge, Cats and clowder-examples were fast-forwarded to the prepared
+manifest commits. This follow-up removes the temporary CI fixture overrides and
+the unused Codecov orb that blocked the first organization pipeline. Hosted CI
+validation after this cleanup remains pending. See the
+[integration record](clowder-transfer-preflight.md#post-transfer-checks).
 
 `felidae` has been transferred to
 [polka-dot-cat/felidae](https://github.com/polka-dot-cat/felidae). Its repository ID
@@ -25,9 +42,8 @@ The replacement test repositories are now available under `polka-dot-cat`:
 [sox](https://github.com/polka-dot-cat/sox). Their default branch is `master`.
 Their published manifests and the matching local Clowder assertions now use the
 organization names. All 97 cases affected by the deleted forks and one new
-saved-defaults regression pass. The remaining Cats manifest changes are staged
-on migration branches. Their active branches keep the old project names until
-PR #641 merges. The main repository transfer remains pending.
+saved-defaults regression pass. The remaining Cats and clowder-examples manifest
+changes are now published on their active branches after PR #641 merged.
 
 ## Backups and inventory
 
@@ -59,7 +75,7 @@ contains its absolute path. Keep these backups outside the repository.
 
 | Existing reference | Confirmed destination or status |
 | --- | --- |
-| `JrGoodle/clowder` | Planned: `polka-dot-cat/clowder`; ownership change pending |
+| `JrGoodle/clowder` | Transferred to `polka-dot-cat/clowder`; repository ID preserved |
 | `JrGoodle/cats`, `clowder-examples`, `misc-clowder-tests`, `swift-clowder` | Same repository names under `polka-dot-cat`; redirects verified |
 | `JrGoodle/mu`, `duke`, `kit`, `kishka`, `sasha`, `june`, `duffy` | Same repository names under `polka-dot-cat`; redirects verified |
 | `JrGoodle/felidae` | Transferred to `polka-dot-cat/felidae` in this transition |
@@ -67,12 +83,9 @@ contains its absolute path. Keep these backups outside the repository.
 | `JrGoodle/ash` | Transferred to `polka-dot-cat/ash`; active submodule URLs updated |
 | `JrGoodle/swift` | Existing personal fork; no destination change selected |
 
-The local patch updates project links, build metadata, website and artifact
-scripts, test-repository clone URLs, and initialization expectations. Existing
-manifest project names in the draft now match the staged Cats migration
-branches. The active `polka-dot-cat/cats` manifests still declare projects as
-`JrGoodle/mu` and similar names. Validate the draft with the staged manifests
-until the coordinated cutover below.
+The merged patch updates project links, build metadata, website and artifact
+scripts, test-repository clone URLs, initialization expectations, and manifest
+project names. Published Cats manifests now match those assertions.
 
 The YAML source-URL tests also use a distinct Beanstalk host,
 `polka-dot-cat.git.beanstalkapp.com`. Those references are not GitHub organization
@@ -177,46 +190,27 @@ of mixed hosts or branch history.
 ## Cats and Felidae migration
 
 The owner chose to retain Beanstalk and keep published Cats manifest names
-compatible until PR #641 merges. The draft updates the matching project names,
+compatible until PR #641 merged. The merged patch updates the matching project names,
 CLI arguments, expected YAML, environment-variable checks, and Cats guide.
 Author credits, local filesystem paths, historical recordings, and fixed refs
 remain unchanged.
 
-### Staged manifests: publish at merge
+### Published manifest cutover
 
-These new branches are published. Existing `master` and `alt-branch` refs have
-not moved:
+After PR #641 merged, the active branches were fast-forwarded to these prepared
+commits. The Cats updates used one atomic push. All unrelated refs were preserved:
 
-| Repository / active branch | Current active commit | Migration branch | Prepared commit |
+| Repository / active branch | Previous active commit | Migration branch | Published commit |
 | --- | --- | --- | --- |
 | `cats` / `master` | `2202007cc3d1cb957c7f4bfc08797b3350125e33` | `org-migration/master` | [`6767bc8`](https://github.com/polka-dot-cat/cats/commit/6767bc8cb483775cb13ecdf9ac50bb24307f2130) |
 | `cats` / `alt-branch` | `664d3c130482b941cfe96b5672d9ca49f1dc397e` | `org-migration/alt-branch` | [`ee06522`](https://github.com/polka-dot-cat/cats/commit/ee065226e79f8001478cae930bbff1a1564befcd) |
 | `clowder-examples` / `master` | `0a4714bdecbfb1fb9175cf870b490d607b964ddb` | `org-migration/master` | [`c1dd3c2`](https://github.com/polka-dot-cat/clowder-examples/commit/c1dd3c286dcafdfe4a28384aebe60f748fe1d168) |
 
-Before merge, use the [staged-fixture instructions](../tests/README.md#testing-the-draft-before-the-manifest-cutover)
-to validate the draft. The test process redirects only the root Cats clone to a
-local bare repository with the prepared active branches. Project repositories
-are fetched from GitHub. An ordinary test run against the published Cats
-`master` still sees the old names and can fail the draft's new assertions.
-
-At the transfer and merge window:
-
-1. Confirm the active refs still equal the current commits above, and the
-   migration refs still equal the linked prepared commits. If they differ,
-   review and revalidate the intervening changes.
-2. Complete the main repository transfer checks and merge PR #641 as specified
-   in the transfer plan.
-3. Fast-forward Cats' `master` and `alt-branch` from their matching migration
-   branches with one atomic push. Fast-forward clowder-examples' `master` from
-   its migration branch. Use normal fast-forward pushes; preserve all tags.
-4. Verify the published manifests and rerun the relevant checks without the
-   local URL override. Rerun any merge-triggered check that fetched fixtures
-   before both repositories completed their cutover.
-
-Keeping the active manifests unchanged preserves compatibility now. The cost is
-that the draft needs the staged fixture setup and the merge needs coordinated
-publication across repositories. GitHub cannot make that cross-repository
-cutover atomic.
+Active and migration refs were checked immediately before publication, and each
+update was confirmed as a fast-forward. The resulting advertised refs match the
+planned state exactly. Migration branches remain available as historical markers.
+Use the [published-fixture instructions](../tests/README.md#testing-the-published-manifests)
+for tests; no local Cats URL override is needed.
 
 ### Published submodule changes
 
@@ -325,8 +319,8 @@ This fixture-validation phase did not run tests that disable host networking,
 modify remote branches, or uninstall global/system LFS configuration. The later
 [preflight phase](clowder-transfer-preflight.md#github-actions) ran the three LFS
 cases in a disposable container. These checks do not establish a full CI
-baseline. The initial inventory had no Actions/check runs. The draft PR now
-has [Actions run 40058163818](https://github.com/JrGoodle/clowder/actions/runs/40058163818),
+baseline. The initial inventory had no Actions/check runs. The initial draft PR had
+[Actions run 40058163818](https://github.com/JrGoodle/clowder/actions/runs/40058163818),
 which failed before tests because the workflow used deprecated
 `actions/upload-artifact@v2`; the other matrix jobs were cancelled. The subsequent
 [preflight repair](clowder-transfer-preflight.md#github-actions) updates the
@@ -340,31 +334,30 @@ Code Climate reporter returned HTML. All 89 write cases passed against local
 bare fixture copies in an isolated
 Python 3.11 container with networking disabled. The owner subsequently registered
 CircleCI's separate additional public key with GitHub. Hosted
-[job 2982](https://circleci.com/gh/JrGoodle/clowder/2982), at `e94b8e33`, then
+[job 2982](https://circleci.com/gh/polka-dot-cat/clowder/2982), at `e94b8e33`, then
 passed all **89 write cases**, with no failures, errors, or skips, confirmed from
 its JUnit artifact. Its required GitHub status is successful. The job completed
 in 41 minutes, including 39m 43s of tests against the real GitHub SSH fixtures.
 The working checkout key remains read-only. See the
 [hosted validation record](clowder-transfer-preflight.md#hosted-circleci-write-validation).
 
+After publication, five focused tests passed against the actual GitHub URLs
+without fixture overrides: raw/resolved YAML, project environment variables,
+and recursive submodules. The run used the existing Python 3.10 validation
+environment with its `bin` directory on `PATH` for the harness's `python` child
+processes. The first attempt stopped before Clowder ran because that PATH entry
+was missing; correcting the test environment resolved it.
+
 ## Remaining transfer steps
 
-1. The corrected Actions baseline is verified. Complete the service account
-   checks in the [preflight record](clowder-transfer-preflight.md). Beanstalk access remains
-   pending at the owner's request.
-   Keep the staged Cats manifests off the active branches until PR #641 merges;
-   use the recorded cutover sequence at merge.
-2. Hosted CircleCI write validation is complete, and the owner confirmed GitHub
-   OAuth organization access is granted. The latest PR commit must still pass
-   its required checks before merge. After transfer, verify CircleCI's project
-   configuration, keys, and status reporting under `polka-dot-cat`. Let old-path
-   write jobs finish before starting new-path jobs, since their serial groups differ.
-   Qlty and Codecov are deferred
-   to separate [TODOs](https://github.com/polka-dot-cat/clowder/blob/master/TODO.md#deferred-reporting-integrations--after-transfer);
-   their upload workflow remains disabled and the legacy Code Climate webhook
-   is disabled. Requires.io and Read the Docs are disabled; Slack remains configured.
-3. Transfer the main repository, update local remotes, publish the prepared patch,
-   and complete the [plan's completion checks](clowder-repository-transfer-plan.md#completion-checks).
+1. Merge the CI cleanup that removes temporary fixture overrides and the unused
+   Codecov orb. Confirm hosted Actions and CircleCI checks against published
+   manifests under the organization. The first post-transfer CircleCI pipeline
+   stopped during configuration, before running tests.
+2. Complete the remaining [verification checks](clowder-repository-transfer-plan.md#completion-checks).
+   Beanstalk's 28 source-URL cases remain pending at the owner's request.
+   Qlty and Codecov remain inactive, with separate follow-up TODOs. Requires.io
+   and Read the Docs are disabled; Slack remains configured.
 
 The owner has deferred `clowder.cat` DNS changes, Pages/domain verification,
 and website restoration to a separate

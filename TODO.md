@@ -31,9 +31,11 @@ are separate from the initial review and were updated on 2026-10-24.
   verify recursive clones and preserve tags and unrelated refs.
 - [x] Stage the remaining Cats and clowder-examples manifest names on migration
   branches and prepare their matching Clowder assertions in draft PR #641.
-- [ ] At PR #641's merge, fast-forward the active manifest branches to the
-  [recorded commits](docs/clowder-repository-transfer-status.md#cats-and-felidae-migration)
-  and verify the tests against the published fixtures. Keep the old names until merge.
+- [x] After PR #641 merged, fast-forward the active Cats and clowder-examples
+  manifest branches to the [recorded commits](docs/clowder-repository-transfer-status.md#cats-and-felidae-migration).
+  Verify all published refs and preserve unrelated branches and tags.
+- [ ] Validate hosted CI against the published manifests after removing the
+  temporary fixture pins and URL overrides.
 - [ ] Verify Beanstalk's server host key, then check SSH access and run the 28
   explicit source-URL cases. Retain Beanstalk; the owner confirmed the account
   public key is already registered and chose to leave host verification pending.
@@ -65,14 +67,19 @@ are separate from the initial review and were updated on 2026-10-24.
   Track reactivation separately below; neither service blocks the transfer.
 - [x] Confirm CircleCI's GitHub OAuth organization access to `polka-dot-cat`.
   The owner confirmed access is granted on October 24.
-- [ ] After transfer, verify CircleCI's project configuration, keys, and required
-  `test_write` status. Let old-path write jobs finish before starting new-path
-  jobs, because their serial-group names differ.
+- [ ] Verify a new hosted CircleCI `test_write` run under `polka-dot-cat`.
+  The project identity and read-only checkout key are retained. Pipeline `1586`
+  stopped on the unused Codecov orb; remove that declaration and inactive upload
+  step without enabling Codecov or relaxing organization security.
+- [x] Audit canceled CircleCI job `2988`: permanent fixture refs are unchanged.
+  Remove its four temporary prune branches with ref leases and verify cleanup.
 - [x] Defer `clowder.cat` DNS, Pages, and domain-verification work at the owner's
   request. Website availability is not a transfer prerequisite; retain its
   current configuration and track restoration separately below.
-- [ ] Transfer `clowder`, update local remotes, publish the migration changes, and
-  complete the transfer plan's verification checklist.
+- [x] Transfer `clowder`, update the local remote, and merge PR #641. The owner
+  elected to merge before the latest checks completed. Verify repository identity,
+  refs, releases, issue/PR numbers, collaborators, protection, keys, and settings.
+- [ ] Merge the CI cleanup and complete the remaining transfer verification checks.
 
 ## Deferred website work — after transfer
 

@@ -26,9 +26,6 @@ jobs:
       OS_NAME: ${{ matrix.os }}
       CLOWDER_DEBUG: true
       PYTHONPATH: ${{ github.workspace }}
-      # Keep published fixture names compatible until the migration PR merges.
-      CATS_MASTER_SHA: 6767bc8cb483775cb13ecdf9ac50bb24307f2130
-      CATS_ALT_BRANCH_SHA: ee065226e79f8001478cae930bbff1a1564befcd
     # Keep the existing required-check names while selecting compatible runners.
     runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15-intel' || 'ubuntu-24.04' }}
     timeout-minutes: 60
@@ -70,12 +67,6 @@ jobs:
     - name: Build documentation
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       run: python -m sphinx -b html docs build/docs/html
-    - name: Prepare staged Cats fixtures
-      id: fixtures
-      run: |
-        git clone --bare https://github.com/polka-dot-cat/cats.git "$RUNNER_TEMP/cats.git"
-        git -C "$RUNNER_TEMP/cats.git" update-ref refs/heads/master "$CATS_MASTER_SHA"
-        git -C "$RUNNER_TEMP/cats.git" update-ref refs/heads/alt-branch "$CATS_ALT_BRANCH_SHA"
     - name: Run initialization tests against published URLs
       run: |
         python -m pytest tests/functional -v -n 4 --exitfirst \
@@ -83,14 +74,8 @@ jobs:
           --cov=clowder --cov-append --cov-config=.coveragerc \
           --cov-report=xml:build/coverage/init.xml \
           --junitxml=build/junit/init.xml --cucumberjson=build/cucumber/init.json
-    - name: Run functional tests against staged manifests
-      if: ${{ !cancelled() && steps.fixtures.outcome == 'success' }}
-      env:
-        GIT_CONFIG_COUNT: '2'
-        GIT_CONFIG_KEY_0: url.file://${{ runner.temp }}/cats.git.insteadOf
-        GIT_CONFIG_VALUE_0: https://github.com/polka-dot-cat/cats.git
-        GIT_CONFIG_KEY_1: protocol.file.allow
-        GIT_CONFIG_VALUE_1: always
+    - name: Run functional tests against published manifests
+      if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       run: |
         python -m pytest tests/functional -v -n 4 --exitfirst \
           --basetemp=temp/functional -m 'not init and not ssh and not offline and not write and not lfs' \
@@ -98,13 +83,7 @@ jobs:
           --cov-report=xml:build/coverage/functional.xml \
           --junitxml=build/junit/functional.xml --cucumberjson=build/cucumber/functional.json
     - name: Run LFS tests serially on the disposable runner
-      if: ${{ !cancelled() && steps.fixtures.outcome == 'success' }}
-      env:
-        GIT_CONFIG_COUNT: '2'
-        GIT_CONFIG_KEY_0: url.file://${{ runner.temp }}/cats.git.insteadOf
-        GIT_CONFIG_VALUE_0: https://github.com/polka-dot-cat/cats.git
-        GIT_CONFIG_KEY_1: protocol.file.allow
-        GIT_CONFIG_VALUE_1: always
+      if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       run: |
         for filter in clean smudge process required; do
           sudo git config --system --unset-all "filter.lfs.$filter" || true

@@ -1,10 +1,8 @@
 # Examples
 
-The GitHub links below use the current repository owners. This draft uses
-`polka-dot-cat/...` project names. Cats' published `master` and `alt-branch`
-manifests retain the old names until PR #641 merges. Before that cutover, test
-the draft against the staged manifests described below. See the
-[transfer progress record](../docs/clowder-repository-transfer-status.md).
+The GitHub fixtures and Clowder assertions use `polka-dot-cat/...` project
+names. PR #641 is merged, and the Cats/clowder-examples manifest cutover is
+complete. See the [transfer record](../docs/clowder-repository-transfer-status.md).
 
 ## Cats
 
@@ -19,51 +17,29 @@ https://github.com/polka-dot-cat/cats.git
 | `duke` | https://github.com/polka-dot-cat/duke |
 | `mu` | https://github.com/polka-dot-cat/mu |
 
-### Testing the draft before the manifest cutover
+### Testing the published manifests
 
-Cats has migration branches `org-migration/master` and
-`org-migration/alt-branch`. Use a temporary bare clone with those commits as its
-local active branches. This leaves the published fixtures compatible with the
-existing Clowder tests until the migration PR merges.
+Use the published Cats `master` and `alt-branch` directly. The temporary Git URL
+overrides and pinned migration commits are no longer needed.
 
 ```sh
-cats_fixture_dir=$(mktemp -d)
-git clone --bare https://github.com/polka-dot-cat/cats.git "$cats_fixture_dir/cats.git"
-git -C "$cats_fixture_dir/cats.git" update-ref refs/heads/master refs/heads/org-migration/master
-git -C "$cats_fixture_dir/cats.git" update-ref refs/heads/alt-branch refs/heads/org-migration/alt-branch
-
-env GIT_CONFIG_COUNT=2 \
-  GIT_CONFIG_KEY_0="url.file://$cats_fixture_dir/cats.git.insteadOf" \
-  GIT_CONFIG_VALUE_0=https://github.com/polka-dot-cat/cats.git \
-  GIT_CONFIG_KEY_1=protocol.file.allow GIT_CONFIG_VALUE_1=always \
-  pipenv run python -m pytest tests/functional/test_features.py -q \
-    -m 'cats and not (ssh or offline or write or lfs or help or init)' \
-    -k 'forall or yaml or submodules'
+pipenv run python -m pytest tests/functional/test_features.py -q \
+  -m 'cats and not (ssh or offline or write or lfs or help or init)' \
+  -k 'forall or yaml or submodules'
 ```
 
-The URL override applies only to this command and the root Cats repository.
-Child repositories still use GitHub. Do not use this override for tests that
-assert the root Cats remote URL: Git reports the rewritten local URL.
-After the active manifests are updated, omit the override.
+GitHub Actions runs 14 initialization cases, 667 functional cases, and three
+serial LFS cases per matrix job against published URLs. CircleCI runs the 89
+`write and not offline` cases through GitHub SSH, with coverage, JUnit, and
+Cucumber artifacts. It selects its additional SSH key explicitly and checks
+write access to all six child repositories with dry-run pushes. Its checkout
+key remains read-only. See the
+[hosted validation record](../docs/clowder-transfer-preflight.md#hosted-circleci-write-validation).
 
-GitHub Actions uses these same staged commits until cutover. It runs the 14
-initialization cases against the published URLs, then 667 other non-SSH,
-non-offline, non-write, non-LFS cases against the staged fixtures. The three LFS
-cases run serially afterward on each disposable runner. Remove the workflow's
-temporary fixture pins and overrides once the active manifests are published.
-See the [CI preflight record](../docs/clowder-transfer-preflight.md#github-actions).
-
-CircleCI's active `test_write` job uses the same staged Cats commits for its 89
-cases. It rewrites only the root Cats SSH/HTTPS URLs; child repositories retain
-their GitHub SSH remotes and the tests can create/delete remote `pytest*` branches.
-A CircleCI serial group prevents concurrent write-test jobs. Coverage, JUnit,
-and Cucumber reports are stored as artifacts without the legacy Code Climate reporter.
-The job explicitly selects its additional SSH key and checks write access to all
-six child repositories with dry-run pushes before running tests. Its checkout
-deploy key stays read-only. See the
-[key repair record](../docs/clowder-transfer-preflight.md#remaining-circleci-key-repair)
-for the current authorization blocker; the isolated 89-case run does not validate
-hosted SSH access.
+The SSH fixtures delete remote `pytest*` branches during setup, and write cases
+create and delete more temporary branches. CircleCI serializes these jobs; do
+not run another write suite against the shared fixtures concurrently. A canceled
+job can leave temporary branches, which the next SSH fixture setup removes.
 
 ### Felidae, submodules, and Beanstalk
 

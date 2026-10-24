@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@1.0.2
-
 commands:
   install_code_climate:
     steps:
@@ -44,8 +41,6 @@ commands:
       - run:
           name: Generate test coverage reports
           command: script/test --report-coverage
-      - codecov/upload:
-          file: build/coverage/coverage.xml
       - run:
           name: Sum coverage for Code climate
           command: |
@@ -243,32 +238,14 @@ jobs:
   test_write:
     docker:
       - image: cimg/python:3.8.16
-    environment:
-      CATS_MASTER_SHA: 6767bc8cb483775cb13ecdf9ac50bb24307f2130
-      CATS_ALT_BRANCH_SHA: ee065226e79f8001478cae930bbff1a1564befcd
     steps:
       - checkout
       - setup_ssh
       - install_git_lfs
       - setup_git_config
       - run: script/cibuild
-      # Keep published fixture names compatible until the migration PR merges.
       - run:
-          name: Prepare staged Cats fixtures
-          command: |
-            git clone --bare https://github.com/polka-dot-cat/cats.git /tmp/clowder-cats.git
-            git -C /tmp/clowder-cats.git update-ref refs/heads/master "$CATS_MASTER_SHA"
-            git -C /tmp/clowder-cats.git update-ref refs/heads/alt-branch "$CATS_ALT_BRANCH_SHA"
-      - run:
-          name: Run write tests against staged manifests
-          environment:
-            GIT_CONFIG_COUNT: '3'
-            GIT_CONFIG_KEY_0: url.file:///tmp/clowder-cats.git.insteadOf
-            GIT_CONFIG_VALUE_0: git@github.com:polka-dot-cat/cats.git
-            GIT_CONFIG_KEY_1: url.file:///tmp/clowder-cats.git.insteadOf
-            GIT_CONFIG_VALUE_1: https://github.com/polka-dot-cat/cats.git
-            GIT_CONFIG_KEY_2: protocol.file.allow
-            GIT_CONFIG_VALUE_2: always
+          name: Run write tests against published manifests
           command: |
             write_key="$HOME/.ssh/id_rsa_e97d20a051b29c22f6b95b5547c47c20"
             if [[ ! -f "$write_key" ]]; then
@@ -280,9 +257,9 @@ jobs:
             # Save only the public key so account access can be restored if needed.
             ssh-keygen -y -P '' -f "$write_key" > build/circleci-write-key.pub
             for project in mu duke kishka kit sasha june; do
-              git -C /tmp/clowder-cats.git push --dry-run \
+              git push --dry-run \
                 "git@github.com:polka-dot-cat/$project.git" \
-                refs/heads/master:refs/heads/pytest-ci-access-check
+                HEAD:refs/heads/pytest-ci-access-check
             done
             python -m pytest tests/functional -v -s --tb=short --exitfirst \
               --basetemp=temp -m 'write and not offline' \
