@@ -10,7 +10,8 @@ publish = false
 include = [
     "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "src/**",
     "clowder/clowder.schema.json", "LICENSE", "README.md",
-    "docs/rust-*.md", "TODO.md", "tests/rust_cli.rs", "tests/data/rust/**",
+    "docs/rust-*.md", "TODO.md", "script/package-rust",
+    "tests/rust_cli.rs", "tests/data/rust/**",
 ]
 
 [[bin]]

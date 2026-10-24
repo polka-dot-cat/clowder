@@ -10,6 +10,7 @@ deferred under the owner's existing host-key decision.
 | --- | ---: | --- |
 | Read-only cases excluding SSH, offline, and LFS | 681 | Native macOS executable, public fixture URLs. This is the union of the initial run and focused runs after harness fixes. |
 | Write cases excluding offline | 89 | Native Linux release executable, private local fixture copies, container network disabled. No public repository writes. |
+| Hosted write confirmation (same 89 cases) | 89 | CircleCI job [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), native executable at `408a2f4b`, published GitHub fixtures and the registered write key. All passed with no failures or skips in 33m34s. Counted once in the total above. |
 | Main LFS command cases | 3 | Native Linux release executable, public HTTPS Git/LFS, disposable container. |
 | SSH-form schema cases excluding LFS and explicit Beanstalk URLs | 211 | Native Linux executable with a test SSH transport that serves private bare copies fetched over HTTPS. Validates URLs, refs, inheritance, and submodules; does not establish account SSH authorization. |
 | LFS schema cases | 17 | Same isolated transport, with read-only public HTTPS LFS downloads. |
@@ -23,11 +24,17 @@ include the Git-alias PATH fix in `408a2f4b`. Each case is counted once across
 reports. Earlier failed runs remain in the evidence directory and do not add
 to the passed count.
 
-Eight Rust tests also pass on macOS and Linux: four unit tests and four native
-CLI integration tests. These check manifest inheritance, parsing, captured Python
+Eight Rust tests pass on macOS and Linux at the original checkpoint: four unit
+tests and four native CLI integration tests. These check manifest inheritance, parsing, captured Python
 output, concurrent workers, exit codes, and validation before mutations.
 `cargo fmt --check` and strict Clippy validation pass. A Cargo source package
 builds successfully after extraction.
+
+The YAML compatibility follow-up passes all 681 read-only scenarios again in a
+single macOS run. It also matches 86 captured PyYAML examples. The current local
+suite has 15 Rust tests, including shell-safe Git aliases, duplicate symlinked
+project paths, and parent traversal through symlinks. Those follow-up checks are
+being added to the Linux validation snapshot.
 
 A separate Debian runtime image containing Git and the release executable,
 with no Python interpreter, passes version, YAML, status, and configuration
@@ -65,7 +72,8 @@ work. They do not predict clone/fetch speed. Raw measurements are in
 
 ## Remaining checks
 
-Hosted native CI is still being validated. CircleCI builds Rust and runs the
-read-only and serialized write suites. Existing Actions jobs still test the
+Hosted native write CI has passed. CircleCI builds Rust and runs the read-only
+and serialized write suites; the read-only job's temporary-directory setup has
+been repaired and its rerun is pending. Existing Actions jobs still test the
 Python reference. Keep the PR in draft while these checks and the remaining
 packaging/compatibility work in [TODO.md](../TODO.md) are open.

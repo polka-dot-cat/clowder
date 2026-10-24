@@ -25,7 +25,9 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
 - [x] Validate schema/source inheritance, recursive submodules, and LFS in
   disposable containers. See the [validation record](docs/rust-migration-validation.md)
   for transport limits; retain the separate pending Beanstalk host-key check.
-- [ ] Validate remote-write behavior in isolation and through serialized CI.
+- [x] Validate remote-write behavior in isolation and through serialized CI.
+  All 89 cases pass in the isolated Linux environment and native CircleCI job
+  [3009](https://circleci.com/gh/polka-dot-cat/clowder/3009), with no skips.
 - [x] Validate all 63 offline scenarios in disposable environments. Repair the
   Python harness gateway-output capture so these scenarios can run on Linux.
 - [ ] Build and test the native CLI on macOS and Linux in hosted CI.
@@ -92,10 +94,10 @@ are separate from the initial review and were updated on 2026-10-24.
   Track reactivation separately below; neither service blocks the transfer.
 - [x] Confirm CircleCI's GitHub OAuth organization access to `polka-dot-cat`.
   The owner confirmed access is granted on October 24.
-- [ ] Verify a new hosted CircleCI `test_write` run under `polka-dot-cat`.
-  The project identity and read-only checkout key are retained. Pipeline `1586`
-  stopped on the unused Codecov orb; remove that declaration and inactive upload
-  step without enabling Codecov or relaxing organization security.
+- [x] Verify a new hosted CircleCI `test_write` run under `polka-dot-cat`.
+  Job `3009` passes all 89 cases against the published manifests using the
+  native CLI. The unused Codecov orb and upload step have been removed;
+  Codecov remains inactive and organization security is unchanged.
 - [x] Audit canceled CircleCI job `2988`: permanent fixture refs are unchanged.
   Remove its four temporary prune branches with ref leases and verify cleanup.
 - [x] Defer `clowder.cat` DNS, Pages, and domain-verification work at the owner's

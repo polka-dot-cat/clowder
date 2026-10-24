@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Build a native archive locally. This does not tag, publish, or install anything.
+set -euo pipefail
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
+
+if [[ $# -gt 1 || "${1:-}" == --help ]]; then
+    echo "Usage: script/package-rust [target-triple]"
+    echo "Defaults to the host target; archives go in dist/rust/."
+    exit "$(( $# > 1 ))"
+fi
+
+target="${1:-$(rustc -vV | sed -n 's/^host: //p')}"
+case "$target" in
+    *-apple-darwin|*-unknown-linux-gnu|*-unknown-linux-musl) ;;
+    *) echo "Unsupported package target: $target" >&2; exit 1 ;;
+esac
+version=$(sed -n 's/^version = "\([^"]*\)"$/\1/p' Cargo.toml | head -n 1)
+[[ -n "$version" && -n "$target" ]]
+
+cargo build --release --locked --target "$target"
+binary="${CARGO_TARGET_DIR:-target}/$target/release/clowder"
+[[ -x "$binary" ]]
+
+output="$PWD/dist/rust"
+mkdir -p "$output"
+staging=$(mktemp -d "$output/.package.XXXXXX")
+trap 'rm -rf "$staging"' EXIT
+name="clowder-$version-$target"
+mkdir "$staging/$name"
+cp "$binary" LICENSE "$staging/$name/"
+cp docs/rust-installation.md "$staging/$name/README.md"
+tar -czf "$output/$name.tar.gz" -C "$staging" "$name"
+(
+    cd "$output"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$name.tar.gz" | tee "$name.tar.gz.sha256"
+    else
+        shasum -a 256 "$name.tar.gz" | tee "$name.tar.gz.sha256"
+    fi
+)
+echo "Created $output/$name.tar.gz"

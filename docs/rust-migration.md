@@ -81,3 +81,6 @@ cargo install --path . --locked
 The executable requires Git on `PATH` and a shell for `forall` and `repo run`.
 It does not require the Python package or its dependencies. Keep the Python
 environment only when running the existing BDD harness or comparing behavior.
+
+The [native installation guide](rust-installation.md) also explains archive
+installation, checksums, platform requirements, and `script/package-rust`.
