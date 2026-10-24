@@ -122,3 +122,54 @@ skips in 33m16s. All required PR checks are successful at this implementation
 checkpoint. Actual Beanstalk host trust and access, native release
 publication/signing, and the unrelated deferred integrations remain separate
 tasks in [TODO.md](../TODO.md).
+
+## Native hardening follow-up (2026-10-24)
+
+All four follow-up areas have a repeatable repository workflow in
+[the native testing guide](rust-testing.md).
+
+- The local native suite passes 28 tests on macOS (27 on Linux; Zsh completion
+  is macOS-specific). Process tests cover Ctrl-C, SIGTERM, stubborn grandchildren,
+  queued projects, captured Git commands, failed fetches, large parallel output,
+  terminal input, and Ctrl-Z/foreground resume.
+- `script/coverage-rust` passes the native suite and all 681 read-only BDD cases
+  with LLVM instrumentation. The macOS run measured **89.89% line coverage**,
+  **89.87% function coverage**, and **87.70% region coverage**, excluding test
+  source files. `src/process.rs` reached 97.24% line coverage. This report covers
+  local tests and the read-only selection; it is not a claim that every remote
+  write/offline path was measured. Linux CI now collects the same selection and
+  retains HTML, LCOV, JSON, and run metadata as build artifacts. Qlty and Codecov
+  remain inactive.
+- The checked-in Docker workflow passes all **1,111 unique unchanged Gherkin
+  cases**, with no skips: 681 read, 89 private write, 211 schema, 17 schema LFS,
+  19 SSH-form commands, 3 other LFS, 51 offline, 12 offline write, and 28 custom
+  source URL cases. Each suite has a fresh container; writes use private copies.
+  This retains the separate pending live Beanstalk validation.
+- The checked-in parser corpus adds 538 YAML and 531 INI cases. Three further
+  seeds (`1`, `42`, `8675309`) each pass 5,026 YAML and 5,019 INI cases: 30,135
+  additional comparisons. The generator found and now covers duplicate YAML
+  anchors, explicit signed integers, bracket-containing INI sections, malformed
+  interpolation keys, and the ten-level interpolation boundary.
+- The source package builds successfully with 46 intended files (1.4 MiB before
+  compression), including the generated corpus and native test modules. All 28
+  native tests also pass from the extracted package. The Sphinx HTML build
+  succeeds; stale API references and unlisted-page warnings remain in the
+  existing documentation backlog.
+
+Local coverage artifacts are under `build/coverage/rust/`; container reports are
+under `build/isolated/`. Build/test transcripts and the earlier coverage baseline
+are retained in the existing `service-preflight-uds_8n9d` evidence directory.
+
+The same eight-local-repository `forall` benchmark was repeated after process
+hardening (one warmup and seven measured runs per setting):
+
+| Implementation | One worker median | Four workers median |
+| --- | ---: | ---: |
+| Python reference | 1,962.19 ms | 1,916.33 ms |
+| Rust release | 611.10 ms | 231.36 ms |
+
+These final Rust medians are higher than the earlier 517.42/190.12 ms sample,
+while remaining about 3.2× and 8.3× faster than Python at the same worker counts.
+This small Git-heavy local workload includes the added process management; it
+does not predict network-bound clone performance. Raw samples are retained as
+`rust-forall-hardening-benchmark.json` beside the earlier benchmark evidence.

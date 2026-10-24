@@ -19,8 +19,12 @@ mkdir -p "$report"
 rm -f "$report/summary.txt" "$report/summary.json" "$report/lcov.info"
 rm -rf "$report/html"
 {
-    git rev-parse HEAD
-    git status --short
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        git rev-parse HEAD
+        git status --short
+    else
+        printf 'Source tree has no Git metadata\n'
+    fi
     "$RUSTC" --version
     "$tool" llvm-cov --version
 } | tee "$report/run.txt"

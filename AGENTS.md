@@ -44,6 +44,12 @@ inside parallel operations.
 with `CLOWDER_COMPLETE=1`; completion may read local manifests and refs but must
 not run a command handler or contact a remote.
 
+`script/coverage-rust` measures native implementation coverage locally.
+`script/test-isolated build` and `script/test-isolated all` run the full functional
+matrix in disposable containers without host credentials. See
+[docs/rust-testing.md](docs/rust-testing.md) for suite limits and parser corpus generation.
+Keep Qlty and Codecov inactive until the owner requests reactivation.
+
 `script/package-rust` builds local archives without publishing. After dependency
 changes, use `script/update-rust-licenses` to regenerate `THIRD-PARTY-NOTICES.md`;
 see the installation guide for the pinned notice tool. Review new license types

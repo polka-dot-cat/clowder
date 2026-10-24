@@ -4,7 +4,7 @@
 
 Run `cargo test --locked` for native parser, CLI, filesystem, process, and
 completion tests. These tests use temporary local repositories and require Git
-and the macOS/Linux `script` utility for terminal input checks. They do not use
+and the macOS/Linux `script` and `ps` utilities for terminal input checks. They do not use
 credentials, public repositories, or Python. `cargo clippy --all-targets -- -D warnings`
 and `cargo fmt --check` provide the remaining native checks.
 
@@ -43,6 +43,12 @@ the script; it does not produce a report labeled as a successful run. Set
 `rustup which rustc` unless `RUSTC` is set, so LLVM tools match the compiler even
 when Homebrew tools appear first on `PATH`.
 
+The Linux native CircleCI job also runs this script with the 681 read-only BDD
+cases and stores `build/coverage/rust/` as a build artifact. Release archives are
+built separately, without coverage instrumentation. `run.txt` records the source
+revision, working-tree status, tool versions, and exit status. Old reports are
+removed before a new run, so failed validation cannot leave a stale report.
+
 The legacy pytest coverage report measures Python harness/reference code, not
 the native CLI. No coverage command here sends a report to Qlty, Codecov, or any
 other service. Those integrations remain inactive.
@@ -73,3 +79,55 @@ and recursive aliases are not counted as Python-compatible cases. The fixtures
 record how many generated values were outside that contract. Inputs are small
 and bounded; this is deterministic differential testing, not exhaustive fuzzing.
 
+## Disposable Linux integration tests
+
+Install Docker with Linux container support and use host Python 3.8 or later:
+
+```sh
+script/test-isolated build
+script/test-isolated all
+# Or select one suite, for example:
+script/test-isolated write
+script/test-isolated source-urls
+```
+
+The build uses current tracked and unignored repository files, so local edits are
+included. It installs the pinned Rust toolchain and Python test requirements,
+runs native tests, and builds the release executable. It does not copy `.git`,
+host SSH keys, Docker sockets, or ignored build/test trees. Rebuild after source
+changes. `--image` selects an image tag and `--reports` selects the output folder.
+
+Each suite runs in a fresh container. A multi-suite run resolves the image tag
+to one image ID at the start and records that ID in the report directory. Only `build/isolated/` is mounted for JUnit
+and Cucumber reports. The container's Git configuration, fixtures, LFS filters,
+and network interface are disposable. `NET_ADMIN` is granted only to the write
+suite's local connectivity stub and the two suites that exercise offline behavior.
+No command changes host Git configuration or host networking.
+
+| Suite | Cases | Transport and isolation |
+| --- | ---: | --- |
+| `read` | 681 | Public HTTPS reads; no credentials. |
+| `write` | 89 | Network disabled; Git URLs redirect to private bare copies. |
+| `schema` | 211 | SSH-form URLs use private copies, populated by public HTTPS. |
+| `schema-lfs` | 17 | Private Git copies; public HTTPS downloads for LFS objects. |
+| `ssh-features` | 19 | Private copies, including fixture cleanup and branch changes. |
+| `lfs` | 3 | Public HTTPS; LFS configuration changes stay inside the container. |
+| `offline` | 51 | Disables/restores only container `eth0`. |
+| `offline-write` | 12 | Private Git copies; the transport rejects requests while `eth0` is down. |
+| `source-urls` | 28 | Network disabled; custom URLs use the private Felidae mirror. |
+
+The eight writable/custom-URL fixture repositories have recorded branch/tag
+objects in `tests/isolation/fixtures.json`; ephemeral `pytest*` branches are
+excluded. Image construction verifies those objects and restores the recorded
+refs. No private bare repository retains a public push destination. The SSH
+adapter never invokes real SSH and permits receive-pack only for these private
+fixtures in explicitly selected suites. Additional read-only upstreams and LFS
+objects are fetched from public HTTPS, so those checks still depend on remote
+availability. Python base-image and OS package updates can also affect the
+container; this is a reproducible procedure, not a byte-identical image lock.
+
+The custom-URL tests check URL construction and Git behavior against local data.
+They do not validate Beanstalk credentials, connectivity, or its server key.
+That live-service check remains pending, separately from these 1,111 cases.
+The legacy `script/docker` copies host SSH keys; use `script/test-isolated` for
+this validation path.
