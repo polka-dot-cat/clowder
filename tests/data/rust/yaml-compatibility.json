@@ -1,0 +1,392 @@
+{
+  "source": "Captured from the Python reference environment with PyYAML 6.0",
+  "cases": [
+    {
+      "yaml": "null",
+      "value": null
+    },
+    {
+      "yaml": "Null",
+      "value": null
+    },
+    {
+      "yaml": "NULL",
+      "value": null
+    },
+    {
+      "yaml": "~",
+      "value": null
+    },
+    {
+      "yaml": "yes",
+      "value": true
+    },
+    {
+      "yaml": "Yes",
+      "value": true
+    },
+    {
+      "yaml": "YES",
+      "value": true
+    },
+    {
+      "yaml": "yEs",
+      "value": "yEs"
+    },
+    {
+      "yaml": "no",
+      "value": false
+    },
+    {
+      "yaml": "No",
+      "value": false
+    },
+    {
+      "yaml": "NO",
+      "value": false
+    },
+    {
+      "yaml": "nO",
+      "value": "nO"
+    },
+    {
+      "yaml": "y",
+      "value": "y"
+    },
+    {
+      "yaml": "Y",
+      "value": "Y"
+    },
+    {
+      "yaml": "n",
+      "value": "n"
+    },
+    {
+      "yaml": "N",
+      "value": "N"
+    },
+    {
+      "yaml": "on",
+      "value": true
+    },
+    {
+      "yaml": "On",
+      "value": true
+    },
+    {
+      "yaml": "ON",
+      "value": true
+    },
+    {
+      "yaml": "oN",
+      "value": "oN"
+    },
+    {
+      "yaml": "off",
+      "value": false
+    },
+    {
+      "yaml": "Off",
+      "value": false
+    },
+    {
+      "yaml": "OFF",
+      "value": false
+    },
+    {
+      "yaml": "oFF",
+      "value": "oFF"
+    },
+    {
+      "yaml": "true",
+      "value": true
+    },
+    {
+      "yaml": "True",
+      "value": true
+    },
+    {
+      "yaml": "TRUE",
+      "value": true
+    },
+    {
+      "yaml": "tRuE",
+      "value": "tRuE"
+    },
+    {
+      "yaml": "false",
+      "value": false
+    },
+    {
+      "yaml": "False",
+      "value": false
+    },
+    {
+      "yaml": "FALSE",
+      "value": false
+    },
+    {
+      "yaml": "fAlSe",
+      "value": "fAlSe"
+    },
+    {
+      "yaml": "0",
+      "value": 0
+    },
+    {
+      "yaml": "-0",
+      "value": 0
+    },
+    {
+      "yaml": "+12",
+      "value": 12
+    },
+    {
+      "yaml": "012",
+      "value": 10
+    },
+    {
+      "yaml": "019",
+      "value": "019"
+    },
+    {
+      "yaml": "0o12",
+      "value": "0o12"
+    },
+    {
+      "yaml": "0b101",
+      "value": 5
+    },
+    {
+      "yaml": "0xAB",
+      "value": 171
+    },
+    {
+      "yaml": "1_200",
+      "value": 1200
+    },
+    {
+      "yaml": "01_2",
+      "value": 10
+    },
+    {
+      "yaml": "1:20",
+      "value": 80
+    },
+    {
+      "yaml": "01:20",
+      "value": "01:20"
+    },
+    {
+      "yaml": "1:59:59",
+      "value": 7199
+    },
+    {
+      "yaml": "1:60",
+      "value": "1:60"
+    },
+    {
+      "yaml": "-1:20",
+      "value": -80
+    },
+    {
+      "yaml": "+1:20",
+      "value": 80
+    },
+    {
+      "yaml": "1.2",
+      "value": 1.2
+    },
+    {
+      "yaml": "-.2",
+      "value": "-.2"
+    },
+    {
+      "yaml": "+.2",
+      "value": "+.2"
+    },
+    {
+      "yaml": ".2",
+      "value": 0.2
+    },
+    {
+      "yaml": "1.",
+      "value": 1.0
+    },
+    {
+      "yaml": "1e3",
+      "value": "1e3"
+    },
+    {
+      "yaml": "1.0e3",
+      "value": "1.0e3"
+    },
+    {
+      "yaml": "1.0e+3",
+      "value": 1000.0
+    },
+    {
+      "yaml": "1.0e-3",
+      "value": 0.001
+    },
+    {
+      "yaml": "1:20.5",
+      "value": 80.5
+    },
+    {
+      "yaml": "1_000.5",
+      "value": 1000.5
+    },
+    {
+      "yaml": "\"yes\"",
+      "value": "yes"
+    },
+    {
+      "yaml": "'012'",
+      "value": "012"
+    },
+    {
+      "yaml": "!!str on",
+      "value": "on"
+    },
+    {
+      "yaml": "!!bool YeS",
+      "value": true
+    },
+    {
+      "yaml": "!!int 0o10",
+      "value": 8
+    },
+    {
+      "yaml": "!!float 1e3",
+      "value": 1000.0
+    },
+    {
+      "yaml": "!!null something",
+      "value": null
+    },
+    {
+      "yaml": "! yes",
+      "value": true
+    },
+    {
+      "yaml": "! 12",
+      "value": 12
+    },
+    {
+      "yaml": "2026-1-2",
+      "value": "2026-1-2"
+    },
+    {
+      "yaml": "'2026-01-02'",
+      "value": "2026-01-02"
+    },
+    {
+      "yaml": "\"<<\"",
+      "value": "<<"
+    },
+    {
+      "yaml": "\"=\"",
+      "value": "="
+    },
+    {
+      "yaml": "\"猫\"",
+      "value": "猫"
+    },
+    {
+      "yaml": "|\n  hello\n  world\n",
+      "value": "hello\nworld\n"
+    },
+    {
+      "yaml": ">\n  hello\n  world\n",
+      "value": "hello world\n"
+    },
+    {
+      "yaml": "[yes, 012, true, null, \"yes\", \"猫\"]",
+      "value": [
+        true,
+        10,
+        true,
+        null,
+        "yes",
+        "猫"
+      ]
+    },
+    {
+      "yaml": "base: &a {branch: main, depth: 012}\nproject: {<<: *a, branch: topic}\n",
+      "value": {
+        "base": {
+          "branch": "main",
+          "depth": 10
+        },
+        "project": {
+          "branch": "topic",
+          "depth": 10
+        }
+      }
+    },
+    {
+      "yaml": "a: &a {branch: first}\nb: &b {branch: second, remote: origin}\np: {<<: [*a, *b]}\n",
+      "value": {
+        "a": {
+          "branch": "first"
+        },
+        "b": {
+          "branch": "second",
+          "remote": "origin"
+        },
+        "p": {
+          "branch": "first",
+          "remote": "origin"
+        }
+      }
+    },
+    {
+      "yaml": "name: first\nname: second\n",
+      "value": {
+        "name": "second"
+      }
+    },
+    {
+      "yaml": "= : value",
+      "value": {
+        "=": "value"
+      }
+    },
+    {
+      "yaml": "{a: &a [1, \"on\"], b: *a}",
+      "value": {
+        "a": [
+          1,
+          "on"
+        ],
+        "b": [
+          1,
+          "on"
+        ]
+      }
+    },
+    {
+      "yaml": "{'<<': yes}",
+      "value": {
+        "<<": true
+      }
+    },
+    {
+      "yaml": "a: {<<: 42}",
+      "error": true
+    },
+    {
+      "yaml": "a: {<<: [42]}",
+      "error": true
+    },
+    {
+      "yaml": "---\na: 1\n---\nb: 2",
+      "error": true
+    },
+    {
+      "yaml": "!!not-a-real-tag x",
+      "error": true
+    }
+  ]
+}

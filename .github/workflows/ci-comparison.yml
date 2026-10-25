@@ -1,0 +1,80 @@
+name: CI - Implementation comparisons
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  python_reference:
+    name: Python reference
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOWDER_IMPLEMENTATION: python
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - name: Install reference dependencies
+        run: |
+          python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
+          python -m pip install -r requirements.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Verify parser captures and reference CLI selection
+        run: |
+          python script/generate-rust-compatibility --check
+          python -m unittest discover -s tests/isolation -p 'test_*.py'
+          python -m pytest tests/functional/test_features.py -v -m help -k empty_directory
+
+  shared_contract:
+    name: Python, Rust, and Swift shared behavior
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - name: Import Swift release signing keys
+        if: runner.os == 'Linux'
+        run: gpg --batch --import .github/keys/swift-signing-keys.asc
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
+        with:
+          swift-version: '6.4.1'
+      - name: Install Rust and Python comparison tools
+        run: |
+          # Keep toolchain files and component metadata independent of the runner image.
+          RUSTUP_HOME=$(mktemp -d "$RUNNER_TEMP/clowder-rustup.XXXXXX")
+          export RUSTUP_HOME
+          echo "RUSTUP_HOME=$RUSTUP_HOME" >> "$GITHUB_ENV"
+          rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt
+          python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
+          python -m pip install -r requirements.txt
+          python -m pip install --no-deps --no-build-isolation -e .
+      - name: Compare output on identical local workloads
+        run: |
+          python script/benchmark-implementations --python "$(command -v python)" \
+            --check-only --sizes 8,100 --output build/comparison
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: implementation-comparison
+          path: |
+            build/comparison/results.json
+            build/comparison/mismatch-*.txt

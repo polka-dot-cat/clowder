@@ -1,0 +1,87 @@
+{
+  "polka-dot-cat/cats": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/alt-branch": "ee065226e79f8001478cae930bbff1a1564befcd",
+      "refs/heads/master": "6767bc8cb483775cb13ecdf9ac50bb24307f2130",
+      "refs/heads/org-migration/alt-branch": "ee065226e79f8001478cae930bbff1a1564befcd",
+      "refs/heads/org-migration/master": "6767bc8cb483775cb13ecdf9ac50bb24307f2130"
+    }
+  },
+  "polka-dot-cat/mu": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "8c3796f0d0bf9baa076332a6765722e2125cffaf",
+      "refs/heads/knead": "60044a0c5489872c1b793d9dbd8b3e4b19f66fb3",
+      "refs/heads/lfs": "ef876746e13977b7153ffd1fd5d81e75187a825e",
+      "refs/heads/master": "8c3796f0d0bf9baa076332a6765722e2125cffaf",
+      "refs/heads/new-branch": "60044a0c5489872c1b793d9dbd8b3e4b19f66fb3",
+      "refs/heads/submodules": "eb6f03ffe54f7b87bd14f7e38baef3c0d3b54aba",
+      "refs/heads/test": "38164db82ee870debb6021234819d05b2533f836",
+      "refs/tags/pytest-tag": "cddce39214a1ae20266d9ee36966de67438625d1",
+      "refs/tags/test-clowder-yaml-tag": "a4ff45d5693960eef37876175b2136b1741121bd",
+      "refs/tags/v0.01": "cddce39214a1ae20266d9ee36966de67438625d1"
+    }
+  },
+  "polka-dot-cat/duke": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "7083e8840e1bb972b7664cfa20bbd7a25f004018",
+      "refs/heads/master": "7083e8840e1bb972b7664cfa20bbd7a25f004018",
+      "refs/heads/new-branch": "43347045441d05c2dee745acf2a96f90643b8210",
+      "refs/heads/purr": "43347045441d05c2dee745acf2a96f90643b8210",
+      "refs/tags/purr": "43347045441d05c2dee745acf2a96f90643b8210",
+      "refs/tags/pytest-tag": "7083e8840e1bb972b7664cfa20bbd7a25f004018",
+      "refs/tags/v0.01": "7083e8840e1bb972b7664cfa20bbd7a25f004018"
+    }
+  },
+  "polka-dot-cat/kishka": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "9777b550e4b586b71b33d5f703d8c37d2b477b1a",
+      "refs/heads/master": "9777b550e4b586b71b33d5f703d8c37d2b477b1a",
+      "refs/heads/new-branch": "9777b550e4b586b71b33d5f703d8c37d2b477b1a",
+      "refs/tags/pytest-tag": "c489dfafe1e0adb7a070e4eedfc20f1c53ecaeb9",
+      "refs/tags/v0.01": "d185e3bff9eaaf6e146d4e09165276cd5c9f31c8"
+    }
+  },
+  "polka-dot-cat/kit": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "f2e20031ddce5cb097105f4d8ccbc77f4ac20709",
+      "refs/heads/master": "f2e20031ddce5cb097105f4d8ccbc77f4ac20709",
+      "refs/heads/new-branch": "f2e20031ddce5cb097105f4d8ccbc77f4ac20709",
+      "refs/tags/pytest-tag": "490f00c63551a6384b64063c210dc08f22426712",
+      "refs/tags/v0.01": "da5c3d32ec2c00aba4a9f7d822cce2c727f7f5dd"
+    }
+  },
+  "polka-dot-cat/sasha": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "b2c8e63d65aba4375b8ea5b84ad2a0e8487ec196",
+      "refs/heads/master": "b2c8e63d65aba4375b8ea5b84ad2a0e8487ec196",
+      "refs/heads/new-branch": "b2c8e63d65aba4375b8ea5b84ad2a0e8487ec196",
+      "refs/tags/pytest-tag": "775979e0b1a7f753131bf16a4794c851c67108d8",
+      "refs/tags/v0.01": "775979e0b1a7f753131bf16a4794c851c67108d8"
+    }
+  },
+  "polka-dot-cat/june": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/herd-branch": "858cbea9bdef3809382681cf2b7c01817ca50b2d",
+      "refs/heads/master": "858cbea9bdef3809382681cf2b7c01817ca50b2d",
+      "refs/heads/new-branch": "858cbea9bdef3809382681cf2b7c01817ca50b2d",
+      "refs/tags/pytest-tag": "b6e1316cc62cb2ba18fa982fc3d67ef4408c8bfd",
+      "refs/tags/v0.01": "b6e1316cc62cb2ba18fa982fc3d67ef4408c8bfd"
+    }
+  },
+  "polka-dot-cat/felidae": {
+    "head": "refs/heads/master",
+    "refs": {
+      "refs/heads/felid": "7c6f96c3eecbb693a75a79213c8dade99da380ba",
+      "refs/heads/master": "7c6f96c3eecbb693a75a79213c8dade99da380ba",
+      "refs/tags/cat": "ebd3ebb75f0f3fc08b1acaae92514f6cbb0586f2",
+      "refs/tags/felid": "930b77650fcc55581e821f93e8ae0eda94928501"
+    }
+  }
+}

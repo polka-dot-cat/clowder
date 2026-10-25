@@ -1,0 +1,51 @@
+{
+  "manifest": "name: sample\nprotocol: https\ndefaults:\n  branch: main\nclowder:\n- name: example/alpha\n  groups: [tools]\n- name: example/beta\n  path: libs/beta\n",
+  "cases": [
+    {
+      "args": [
+        "--version"
+      ],
+      "stdout": "clowder version 4.0b7\n"
+    },
+    {
+      "args": [
+        "--help"
+      ],
+      "stdout": "usage: clowder [-h] [-v] [--debug]\n               {branch,checkout,clean,config,diff,forall,herd,init,link,prune,repo,reset,save,start,stash,status,yaml}\n               ...\n\npositional arguments:\n  {branch,checkout,clean,config,diff,forall,herd,init,link,prune,repo,reset,save,start,stash,status,yaml}\n    branch              Display current branches\n    checkout            Checkout local branch in projects\n    clean               Discard current changes in projects\n    config              Manage clowder config (EXPERIMENTAL)\n    diff                Show git diff for projects\n    forall              Run command or script in project directories\n    herd                Clone and update projects with latest changes\n    init                Clone repository to clowder directory and create\n                        clowder yaml symlink\n    link                Symlink clowder yaml version\n    prune               Prune branches\n    repo                Manage clowder repo\n    reset               Reset branches to upstream commits or check out\n                        detached HEADs for tags and shas\n    save                Create clowder yaml version for current repos\n    start               Start a new branch\n    stash               Stash current changes\n    status              projects and groups to print status of\n    yaml                Print clowder yaml file information\n\noptions:\n  -h, --help            show this help message and exit\n  -v, --version         show program's version number and exit\n  --debug, -d           print debug output\n"
+    },
+    {
+      "args": [
+        "herd",
+        "--help"
+      ],
+      "stdout": "usage: clowder herd [-h] [--jobs <n>] [--rebase] [--depth <n>]\n                    [--protocol <protocol>]\n                    [--exclude <exclude> [<exclude> ...]]\n                    [--branch <branch> | --tag <tag>]\n                    [<project|group> ...]\n\npositional arguments:\n  <project|group>       projects and groups to herd:\n                        \n                        Project Names  Project PathsProject Groups\n                        -------------  ---------------------------\n                        example/alpha  alpha      all  \n                        example/beta   libs/beta  tools\n\noptions:\n  -h, --help            show this help message and exit\n  --jobs <n>, -j <n>    number of jobs to use running command in parallel\n  --rebase, -r          use rebase instead of pull\n  --depth <n>, -d <n>   depth to herd\n  --protocol <protocol>, -p <protocol>\n                        git protocol to use for cloning\n  --exclude <exclude> [<exclude> ...]\n                        Projects to exclude\n  --branch <branch>, -b <branch>\n                        branch to herd if present\n  --tag <tag>, -t <tag>\n                        tag to herd if present\n"
+    },
+    {
+      "args": [
+        "status"
+      ],
+      "stdout": "sample\n\nalpha     -\nlibs/beta -\n"
+    },
+    {
+      "args": [
+        "yaml"
+      ],
+      "stdout": "name: sample\nprotocol: https\ndefaults:\n  branch: main\nclowder:\n- name: example/alpha\n  groups:\n  - tools\n- name: example/beta\n  path: libs/beta\n"
+    },
+    {
+      "args": [
+        "config"
+      ],
+      "stdout": "sample\n\n - No config file found\n"
+    },
+    {
+      "args": [
+        "config",
+        "set",
+        "jobs",
+        "4"
+      ],
+      "stdout": "sample\n\n - Set jobs config value\nCurrent config\n\n[git]\n\n[command]\njobs = 4\n\n"
+    }
+  ]
+}

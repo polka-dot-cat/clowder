@@ -6,16 +6,60 @@ This file applies to the full repository. Follow applicable parent instructions;
 on this workstation, also read `/Users/jrgoodle/AGENTS.md`. Use clear, direct
 technical English. Track follow-up work in [TODO.md](TODO.md).
 
-Clowder is a Python CLI for managing multiple Git repositories from a
-`clowder.yml` or `clowder.yaml` manifest. The distribution is `clowder-repo`, the
-command is `clowder`, and the entry point is `clowder.app:main`. The version lives
-in `clowder/__init__.py`. macOS and Linux are the declared platforms; Windows
-support is incomplete.
+Clowder manages multiple Git repositories from a `clowder.yml` or `clowder.yaml`
+manifest. Swift in `swift/` is the intended production CLI and future Mac app
+core. Rust in `src/` is a maintained comparison implementation. Follow
+[docs/implementations.md](docs/implementations.md) and keep all three in the same
+branch. The combined migration uses `rust-migration` and draft PR #642; do not
+merge the draft until the validation and owner review are complete.
+The retained Python reference uses `clowder.app:main` and the `clowder-repo`
+distribution. Keep `Cargo.toml`, `src/cli_spec.json`, and `clowder/__init__.py`
+version declarations consistent when preparing a release. macOS and Linux are
+the declared platforms; Windows support is incomplete.
 
 Read [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), and the relevant
 command or schema documentation before changing behavior.
 
 ## Repository map
+
+### Rust comparison implementation
+
+The native CLI is in `src/`, with its build in `Cargo.toml` and `Cargo.lock`.
+Follow [docs/rust-migration.md](docs/rust-migration.md). Keep the Python CLI as
+the behavior reference and test-support library during migration. The Rust
+executable must not invoke Python to implement commands. Preserve all current
+Gherkin feature files.
+
+Use `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
+`cargo test --locked`. Set `CLOWDER_IMPLEMENTATION=rust` for Rust BDD runs;
+pytest builds and selects Swift by default.
+Set `CLOWDER_EXECUTABLE` to an absolute executable path to test an existing build.
+For the Python reference, unset that variable and set `CLOWDER_IMPLEMENTATION=python`.
+The existing network, SSH, remote-write, and LFS precautions below
+still apply. `tests/rust_cli.rs` uses temporary repositories and captured Python
+output in `tests/data/rust/` for local regression checks.
+
+`src/cli_spec.json` embeds the legacy argument grammar and base help text;
+workspace-specific help tables are generated in Rust. Git remains an external
+runtime dependency. Each worker owns its subprocess working directory,
+environment, and output; do not change the process directory or environment
+inside parallel operations.
+
+`completions/` contains native Bash and Zsh wrappers. They invoke the executable
+with `CLOWDER_COMPLETE=1`; completion may read local manifests and refs but must
+not run a command handler or contact a remote.
+
+`script/coverage-rust` measures native implementation coverage locally.
+`script/test-isolated build --implementation rust` and
+`script/test-isolated all --implementation rust` run the Rust functional matrix
+in disposable containers without host credentials. See
+[docs/rust-testing.md](docs/rust-testing.md) for suite limits and parser corpus generation.
+Keep Qlty and Codecov inactive until the owner requests reactivation.
+
+`script/package-rust` builds local archives without publishing. After dependency
+changes, use `script/update-rust-licenses` to regenerate `THIRD-PARTY-NOTICES.md`;
+see the installation guide for the pinned notice tool. Review new license types
+and source-text hashes in `about.toml` with the dependency update.
 
 | Location | Purpose |
 | --- | --- |
@@ -35,6 +79,16 @@ command or schema documentation before changing behavior.
 `tests/old-scripts/` contains legacy shell tests. Use the pytest suite for new
 coverage. `build/`, `temp/`, `dist/`, `*.egg-info`, caches, and
 `README-processed.md` are generated or ignored content; do not edit them as source.
+
+### Swift production implementation
+
+The independent Swift CLI is under `swift/`; read [docs/swift-migration.md](docs/swift-migration.md).
+Use `script/check-swift`, `swift test --package-path swift`, and a release build.
+The unchanged BDD harness and `script/test-isolated` select Swift by default.
+CI must set `CLOWDER_IMPLEMENTATION` explicitly. Use `script/test-isolated` for
+side-effecting integration tests. Keep Python/Rust runtime fallbacks out of the
+Swift executable. `Embedded.swift` is generated from the shared grammar/schema
+by `script/update-swift-resources`. Do not edit `.build/` dependency/build output.
 
 ## Environment and setup
 
@@ -110,8 +164,11 @@ is not required. State which checks ran and any limits on validation.
   keep edits readable and avoid unrelated formatting changes.
 - Keep CLI parsing in handlers, manifest representation in models, and Git work
   in controllers/utilities. Reuse `CONSOLE`, `Format`, and existing Git wrappers.
-- Register a new top-level command in both `clowder/cli/__init__.py` and
-  `ClowderApp.Meta.subcommands`. Update help, `docs/commands.md`, and scenarios.
+- Shared CLI grammar lives in `src/cli_spec.json`; regenerate Swift resources
+  after changes. Update help, `docs/commands.md`, and scenarios. Keep shared
+  behavior aligned across maintained implementations. Python-only command
+  registration uses `clowder/cli/__init__.py` and `ClowderApp.Meta.subcommands`.
+  Mac app features can remain Swift-only; document differences before comparing.
 - For manifest changes, update the schema, models/resolution, syntax reference,
   and fixtures together. Cover defaults, section overrides, project overrides,
   upstreams, and both YAML extensions where relevant.

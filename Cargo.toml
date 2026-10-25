@@ -1,0 +1,39 @@
+[package]
+name = "clowder-repo"
+version = "4.0.0-beta.7"
+edition = "2024"
+rust-version = "1.99"
+description = "Manage a clowder of Git repositories"
+license = "MIT"
+repository = "https://github.com/polka-dot-cat/clowder"
+publish = false
+include = [
+    "/Cargo.toml", "/Cargo.lock", "/rust-toolchain.toml", "/src/**",
+    "/clowder/clowder.schema.json", "/LICENSE", "/README.md",
+    "/docs/rust-*.md", "/TODO.md", "/script/package-rust",
+    "/completions/**",
+    "/about.toml", "/docs/rust-licenses.hbs", "/THIRD-PARTY-NOTICES.md",
+    "/script/update-rust-licenses",
+    "/tests/rust_*.rs", "/tests/rust_unit/**", "/script/coverage-rust", "/script/generate-rust-compatibility", "/tests/data/rust/**",
+]
+
+[[bin]]
+name = "clowder"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+jsonschema = { version = "0.60", default-features = false }
+rayon = "1.12"
+regex = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+serde_yaml_ng = "0.10"
+yaml-rust2 = { version = "0.13", default-features = false }
+tempfile = "3"
+signal-hook = { version = "0.4.5", default-features = false }
+nix = { version = "0.31.3", features = ["signal", "term", "process"] }
+
+[profile.release]
+lto = "thin"
+strip = true

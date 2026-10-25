@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""Compare Python, Rust release, and Swift release in fresh processes on local fixtures."""
+import argparse
+import datetime
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import random
+import re
+import shutil
+import statistics
+import subprocess
+import time
+
+ROOT = Path(__file__).resolve().parent.parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--python', required=True, type=Path, help='Python interpreter with the project and its dependencies installed')
+parser.add_argument('--samples', type=int, default=31)
+parser.add_argument('--warmups', type=int, default=3)
+parser.add_argument('--sizes', default='8,100,1000')
+parser.add_argument('--seed', type=int, default=20261024)
+parser.add_argument('--output', type=Path)
+parser.add_argument('--check-only', action='store_true', help='Compare behavior without collecting timing samples')
+args = parser.parse_args()
+sizes = sorted(set(int(value) for value in args.sizes.split(',')))
+if args.samples < 3 or args.warmups < 1 or not sizes or min(sizes) < 2:
+    parser.error('Use at least 3 samples, 1 warmup, and 2 projects')
+# Keep the venv interpreter path: resolving its symlink would lose venv packages.
+python = args.python.expanduser().absolute()
+output = (args.output or ROOT / 'build/benchmarks' / datetime.datetime.now(
+    datetime.timezone.utc).strftime('implementations-%Y%m%dT%H%M%SZ')).resolve()
+output.mkdir(parents=True, exist_ok=False)
+env = dict(os.environ, PYTHONPATH=str(ROOT), GIT_CONFIG_GLOBAL=os.devnull,
+           GIT_CONFIG_SYSTEM=os.devnull, GIT_TERMINAL_PROMPT='0',
+           PYTHONWARNINGS='ignore:trio.MultiError is deprecated')
+for key in list(env):
+    if key.startswith('CLOWDER_BENCH_') or key in ('CLOWDER_COMPLETE', 'CLOWDER_EXECUTABLE', 'CLOWDER_IMPLEMENTATION', 'BASH_ENV'):
+        env.pop(key)
+
+
+def read(command, cwd=ROOT):
+    return subprocess.check_output(command, cwd=cwd, env=env, text=True, stderr=subprocess.STDOUT).strip()
+
+
+def build(command):
+    subprocess.run(command, cwd=ROOT, env=env, check=True)
+
+
+python_info = json.loads(read([str(python), '-c', '''import json, platform, importlib.metadata, yaml
+print(json.dumps({'version':platform.python_version(), 'packages':{name:importlib.metadata.version(name) for name in ('clowder-repo','PyYAML','jsonschema','trio')}, 'libyaml_available':yaml.__with_libyaml__}))''']))
+build(['cargo', 'build', '--release', '--locked', '--target-dir', str(ROOT / 'target')])
+build(['swift', 'build', '--package-path', str(ROOT / 'swift'), '-c', 'release'])
+swift_bin = Path(read(['swift', 'build', '--package-path', str(ROOT / 'swift'), '-c', 'release', '--show-bin-path'])) / 'clowder'
+commands = {'python': [str(python), '-m', 'clowder.app']}
+artifacts = {}
+for name, binary in (('rust', ROOT / 'target/release/clowder'), ('swift', swift_bin)):
+    destination = output / name / 'clowder'
+    destination.parent.mkdir()
+    shutil.copy2(binary, destination)
+    commands[name] = [str(destination)]
+    artifacts[name] = {'bytes': destination.stat().st_size, 'sha256': hashlib.sha256(destination.read_bytes()).hexdigest()}
+source_digest = hashlib.sha256()
+for base in ('src', 'swift/Sources', 'clowder'):
+    for path in sorted((ROOT / base).rglob('*')):
+        if path.is_file() and path.suffix in ('.rs', '.json', '.swift', '.c', '.h', '.py'):
+            source_digest.update(str(path.relative_to(ROOT)).encode() + b'\0' + path.read_bytes())
+metadata = {'time_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'commit': read(['git', 'rev-parse', 'HEAD']), 'source_sha256': source_digest.hexdigest(),
+            'working_tree': read(['git', 'status', '--short']),
+            'platform': platform.platform(), 'machine': platform.machine(), 'cpu_count': os.cpu_count(),
+            'python': python_info, 'rustc': read(['rustc','--version']), 'cargo': read(['cargo','--version']),
+            'swift': read(['swift','--version']), 'git': read(['git','--version']),
+            'mode': 'check-only' if args.check_only else 'benchmark',
+            'samples': 0 if args.check_only else args.samples,
+            'warmups': 0 if args.check_only else args.warmups, 'seed': args.seed, 'sizes': sizes,
+            'python_warning_filter': env['PYTHONWARNINGS'],
+            'filesystem_cache': 'warm; no OS cache purge', 'manifest_cache': 'none in any implementation',
+            'processes': 'fresh for every sample', 'load_average_start': os.getloadavg(), 'artifacts': artifacts}
+if platform.system() == 'Darwin':
+    metadata.update(cpu=read(['sysctl','-n','machdep.cpu.brand_string']), memory_bytes=int(read(['sysctl','-n','hw.memsize'])))
+report = {'metadata': metadata, 'workloads': []}
+rng = random.Random(args.seed)
+
+
+def fixture(count):
+    workspace = output / 'fixtures' / str(count)
+    workspace.mkdir(parents=True)
+    lines = ['name: benchmark', 'protocol: https', 'defaults:', '  branch: main',
+             '  git:', '    submodules: recursive', '    depth: 10', '    config:',
+             '      core.autocrlf: false', 'sources:', '  mirror:', '    url: github.com',
+             '    protocol: https', 'clowder:']
+    paths = []
+    for group in range(min(10,count)):
+        lines += [f'  group{group}:', f'    path: group{group}', f'    groups: [team{group}, common]',
+                  '    defaults:', '      source: mirror', '    projects:']
+        for index in range(group, count, min(10,count)):
+            name = f'project-{index:05}'
+            lines += [f'      - name: example/{name}', f'        path: {name}', '        groups: [tools, libraries]',
+                      '        upstream:', f'          name: upstream/{name}', '        git:', '          config:',
+                      '            core.filemode: true']
+            path = workspace / f'group{group}' / name
+            path.mkdir(parents=True)
+            paths.append(path)
+    (workspace / 'clowder.yml').write_text('\n'.join(lines) + '\n')
+    return workspace, paths
+
+
+def invoke(workspace, implementation, arguments, capture=False):
+    start = time.perf_counter_ns()
+    result = subprocess.run([*commands[implementation], *arguments], cwd=workspace, env=env,
+                            stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
+                            stderr=subprocess.PIPE)
+    elapsed = (time.perf_counter_ns() - start) / 1e6
+    if result.returncode:
+        raise RuntimeError(f'{implementation} {arguments}: {result.stderr.decode(errors="replace")}')
+    return result, elapsed
+
+
+def summary(values):
+    return {'median_ms':statistics.median(values), 'p95_ms':sorted(values)[math.ceil(.95*len(values))-1],
+            'min_ms':min(values), 'max_ms':max(values), 'samples_ms':values}
+
+
+def measure(workspace, count, arguments, name):
+    # Compare output before timing. The existing native forall UI deliberately
+    # differs from Python's command prefixes / live parallel progress display.
+    # Check selected project/status lines for that command, and exact bytes for
+    # all other workloads. Rust and Swift must always match each other exactly.
+    expected, _ = invoke(workspace, 'python', arguments, True)
+    native = None
+    def comparable(data, stream):
+        if arguments[0] == 'forall' and stream == 'stdout':
+            lines = re.findall(rb'^example/project-[0-9]+ \[main\]$', data, flags=re.MULTILINE)
+            if len(lines) != count or len(set(lines)) != count:
+                raise RuntimeError('Missing or duplicate forall project status lines')
+            return lines
+        return data
+    for implementation in ('rust','swift'):
+        actual, _ = invoke(workspace, implementation, arguments, True)
+        for stream in ('stdout','stderr'):
+            if comparable(getattr(actual,stream), stream) != comparable(getattr(expected,stream), stream):
+                (output / f'mismatch-{name}-{implementation}-{stream}.txt').write_bytes(getattr(actual,stream))
+                (output / f'mismatch-{name}-python-{stream}.txt').write_bytes(getattr(expected,stream))
+                raise RuntimeError(f'Output mismatch: {name}, {implementation}, {stream}')
+            if native is not None and getattr(actual,stream) != getattr(native,stream):
+                raise RuntimeError(f'Native byte-output mismatch: {name}, {stream}')
+        native = actual
+    item = {'name':name, 'projects':count, 'arguments':arguments, 'output_matches':True,
+            'output_comparison':'project/status lines for Python forall; exact native bytes' if arguments[0] == 'forall' else 'exact bytes',
+            'stdout_sha256':hashlib.sha256(expected.stdout).hexdigest()}
+    manifest = workspace / 'clowder.yml'
+    if manifest.is_file():
+        item.update(manifest_bytes=manifest.stat().st_size,
+                    manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest())
+    if args.check_only:
+        report['workloads'].append(item)
+        (output / 'results.json').write_text(json.dumps(report,indent=2)+'\n')
+        print(name + ': Python, Rust, and Swift output checks passed', flush=True)
+        return
+    values = {key:[] for key in commands}
+    orders = []
+    for index in range(args.warmups + args.samples):
+        modes = list(commands)
+        rng.shuffle(modes)
+        if index >= args.warmups:
+            orders.append(modes.copy())
+        for mode in modes:
+            _, elapsed = invoke(workspace, mode, arguments)
+            if index >= args.warmups:
+                values[mode].append(elapsed)
+        if index >= args.warmups and (index-args.warmups+1) % 8 == 0:
+            print(f'{name}: {index-args.warmups+1}/{args.samples} rounds', flush=True)
+    item.update(round_order=orders,
+                implementations={mode:summary(samples) for mode,samples in values.items()})
+    report['workloads'].append(item)
+    (output / 'results.json').write_text(json.dumps(report,indent=2)+'\n')
+    print(name, {mode:round(data['median_ms'],3) for mode,data in item['implementations'].items()}, flush=True)
+
+
+empty = output / 'fixtures/empty'
+empty.mkdir(parents=True)
+measure(empty,0,['--version'],'empty-version')
+measure(empty,0,['--help'],'empty-help')
+small = None
+for count in sizes:
+    workspace, paths = fixture(count)
+    for command in ('--help','yaml'):
+        measure(workspace,count,[command],f'{count}-{command.lstrip("-")}')
+    if count == min(sizes):
+        small = (workspace, paths)
+workspace, paths = small
+for path in paths:
+    subprocess.run(['git','init','-q','--initial-branch=main',str(path)], env=env, check=True)
+    subprocess.run(['git','-C',str(path),'-c','user.name=Benchmark','-c','user.email=benchmark@example.invalid',
+                    '-c','commit.gpgsign=false','-c','core.hooksPath=/dev/null','commit','--allow-empty','-qm','fixture'], env=env,check=True)
+measure(workspace,len(paths),['status'],'local-status')
+# Python forall requires .clowder; use a linked manifest to avoid its warning
+# about a manifest outside that directory. All modes see the same workspace.
+(workspace / '.clowder').mkdir()
+(workspace / 'clowder.yml').rename(workspace / '.clowder/clowder.yml')
+(workspace / 'clowder.yml').symlink_to('.clowder/clowder.yml')
+for jobs in (1,4):
+    measure(workspace,len(paths),['forall',f'-j{jobs}','git rev-parse --verify HEAD >/dev/null'],f'local-forall-j{jobs}')
+report['metadata']['load_average_end'] = os.getloadavg()
+(output / 'results.json').write_text(json.dumps(report,indent=2)+'\n')
+print('All output comparisons passed. Results: '+str(output/'results.json'),flush=True)

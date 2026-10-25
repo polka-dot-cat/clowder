@@ -1,0 +1,938 @@
+{
+  "branch": {
+    "help": "usage: clowder branch [-h] [--all | --remote] [<project|group> ...]\n\npositional arguments:\n  <project|group>  projects and groups to show branches for\n\noptions:\n  -h, --help       show this help message and exit\n  --all, -a        show local and remote branches\n  --remote, -r     show local and remote branches\n",
+    "usage": "usage: clowder branch [-h] [--all | --remote] [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "all",
+        "flags": [
+          "--all",
+          "-a"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "remote",
+        "flags": [
+          "--remote",
+          "-r"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": [
+      [
+        "all",
+        "remote"
+      ]
+    ]
+  },
+  "checkout": {
+    "help": "usage: clowder checkout [-h] <branch> [<project|group> ...]\n\npositional arguments:\n  <branch>         branch to checkout\n  <project|group>  projects and groups to checkout branches for\n\noptions:\n  -h, --help       show this help message and exit\n",
+    "usage": "usage: clowder checkout [-h] <branch> [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "branch",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<branch>"
+      },
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "clean": {
+    "help": "usage: clowder clean [-h] [--recursive] [--all] [--untracked-directories]\n                     [--force] [--ignored] [--untracked-files] [--submodules]\n                     [<project|group> ...]\n\npositional arguments:\n  <project|group>       projects and groups to clean\n\noptions:\n  -h, --help            show this help message and exit\n  --recursive, -r       clean submodules recursively\n\nclean options:\n  --all, -a             clean all the things\n  --untracked-directories, -d\n                        remove untracked directories\n  --force, -f           remove directories with .git subdirectory or file\n  --ignored, -X         remove only files ignored by git\n  --untracked-files, -x\n                        remove all untracked files\n  --submodules, -s      clean submodules\n",
+    "usage": "usage: clowder clean [-h] [--recursive] [--all] [--untracked-directories]\n                     [--force] [--ignored] [--untracked-files] [--submodules]\n                     [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "recursive",
+        "flags": [
+          "--recursive",
+          "-r"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "all",
+        "flags": [
+          "--all",
+          "-a"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "untracked_directories",
+        "flags": [
+          "--untracked-directories",
+          "-d"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "force",
+        "flags": [
+          "--force",
+          "-f"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "ignored",
+        "flags": [
+          "--ignored",
+          "-X"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "untracked_files",
+        "flags": [
+          "--untracked-files",
+          "-x"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "submodules",
+        "flags": [
+          "--submodules",
+          "-s"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "config clear jobs": {
+    "help": "usage: clowder config clear jobs [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config clear jobs [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "config clear projects": {
+    "help": "usage: clowder config clear projects [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config clear projects [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "config clear protocol": {
+    "help": "usage: clowder config clear protocol [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config clear protocol [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "config clear rebase": {
+    "help": "usage: clowder config clear rebase [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config clear rebase [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "config clear": {
+    "help": "usage: clowder config clear [-h] {jobs,projects,protocol,rebase} ...\n\npositional arguments:\n  {jobs,projects,protocol,rebase}\n                        Clear clowder config options\n    jobs                Clear default jobs count\n    projects            Clear default projects and groups\n    protocol            Clear default git protocol\n    rebase              Clear use rebase with herd command\n\noptions:\n  -h, --help            show this help message and exit\n",
+    "usage": "usage: clowder config clear [-h] {jobs,projects,protocol,rebase} ...\n",
+    "actions": [],
+    "children": [
+      "jobs",
+      "projects",
+      "protocol",
+      "rebase"
+    ],
+    "exclusive": []
+  },
+  "config set jobs": {
+    "help": "usage: clowder config set jobs [-h] <n>\n\npositional arguments:\n  <n>         number of jobs to use running command in parallel\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config set jobs [-h] <n>\n",
+    "actions": [
+      {
+        "name": "jobs",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": true,
+        "default": null,
+        "choices": null,
+        "metavar": "<n>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "config set rebase": {
+    "help": "usage: clowder config set rebase [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config set rebase [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "config set projects": {
+    "help": "usage: clowder config set projects [-h] <project|group> [<project|group> ...]\n\npositional arguments:\n  <project|group>  Default projects and groups to run commands for\n\noptions:\n  -h, --help       show this help message and exit\n",
+    "usage": "usage: clowder config set projects [-h] <project|group> [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "+",
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<project|group>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "config set protocol": {
+    "help": "usage: clowder config set protocol [-h] <protocol>\n\npositional arguments:\n  <protocol>  \n                                 Default git protocol to use:\n                                 https, ssh\n                                 \n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder config set protocol [-h] <protocol>\n",
+    "actions": [
+      {
+        "name": "protocol",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": [
+          "https",
+          "ssh"
+        ],
+        "metavar": "<protocol>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "config set": {
+    "help": "usage: clowder config set [-h] {jobs,rebase,projects,protocol} ...\n\npositional arguments:\n  {jobs,rebase,projects,protocol}\n                        Set clowder config options\n    jobs                Set default number of jobs for relevant commands\n    rebase              Set use rebase with herd command\n    projects            Set default projects and groups\n    protocol            Set default git protocol\n\noptions:\n  -h, --help            show this help message and exit\n",
+    "usage": "usage: clowder config set [-h] {jobs,rebase,projects,protocol} ...\n",
+    "actions": [],
+    "children": [
+      "jobs",
+      "rebase",
+      "projects",
+      "protocol"
+    ],
+    "exclusive": []
+  },
+  "config": {
+    "help": "usage: clowder config [-h] {clear,set} ...\n\npositional arguments:\n  {clear,set}  Manage clowder config (EXPERIMENTAL)\n    clear      Clear clowder config options\n    set        Set clowder config options\n\noptions:\n  -h, --help   show this help message and exit\n",
+    "usage": "usage: clowder config [-h] {clear,set} ...\n",
+    "actions": [],
+    "children": [
+      "clear",
+      "set"
+    ],
+    "exclusive": []
+  },
+  "diff": {
+    "help": "usage: clowder diff [-h] [<project|group> ...]\n\npositional arguments:\n  <project|group>  projects and groups to show diff for\n\noptions:\n  -h, --help       show this help message and exit\n",
+    "usage": "usage: clowder diff [-h] [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "forall": {
+    "help": "usage: clowder forall [-h] [--ignore-errors] [--jobs <n>]\n                      <command> [<project|group> ...]\n\npositional arguments:\n  <command>            command to run in project directories\n  <project|group>      projects and groups to run command for\n\noptions:\n  -h, --help           show this help message and exit\n  --ignore-errors, -i  ignore errors in command or script\n  --jobs <n>, -j <n>   number of jobs to use running command in parallel\n",
+    "usage": "usage: clowder forall [-h] [--ignore-errors] [--jobs <n>]\n                      <command> [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "command",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<command>"
+      },
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "ignore_errors",
+        "flags": [
+          "--ignore-errors",
+          "-i"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "jobs",
+        "flags": [
+          "--jobs",
+          "-j"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": true,
+        "default": null,
+        "choices": null,
+        "metavar": "<n>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "herd": {
+    "help": "usage: clowder herd [-h] [--jobs <n>] [--rebase] [--depth <n>]\n                    [--protocol <protocol>]\n                    [--exclude <exclude> [<exclude> ...]]\n                    [--branch <branch> | --tag <tag>]\n                    [<project|group> ...]\n\npositional arguments:\n  <project|group>       projects and groups to herd\n\noptions:\n  -h, --help            show this help message and exit\n  --jobs <n>, -j <n>    number of jobs to use running command in parallel\n  --rebase, -r          use rebase instead of pull\n  --depth <n>, -d <n>   depth to herd\n  --protocol <protocol>, -p <protocol>\n                        git protocol to use for cloning\n  --exclude <exclude> [<exclude> ...]\n                        Projects to exclude\n  --branch <branch>, -b <branch>\n                        branch to herd if present\n  --tag <tag>, -t <tag>\n                        tag to herd if present\n",
+    "usage": "usage: clowder herd [-h] [--jobs <n>] [--rebase] [--depth <n>]\n                    [--protocol <protocol>]\n                    [--exclude <exclude> [<exclude> ...]]\n                    [--branch <branch> | --tag <tag>]\n                    [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "jobs",
+        "flags": [
+          "--jobs",
+          "-j"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": true,
+        "default": null,
+        "choices": null,
+        "metavar": "<n>"
+      },
+      {
+        "name": "rebase",
+        "flags": [
+          "--rebase",
+          "-r"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "depth",
+        "flags": [
+          "--depth",
+          "-d"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": true,
+        "default": null,
+        "choices": null,
+        "metavar": "<n>"
+      },
+      {
+        "name": "protocol",
+        "flags": [
+          "--protocol",
+          "-p"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": [
+          "ssh",
+          "https"
+        ],
+        "metavar": "<protocol>"
+      },
+      {
+        "name": "exclude",
+        "flags": [
+          "--exclude"
+        ],
+        "nargs": "+",
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<exclude>"
+      },
+      {
+        "name": "branch",
+        "flags": [
+          "--branch",
+          "-b"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<branch>"
+      },
+      {
+        "name": "tag",
+        "flags": [
+          "--tag",
+          "-t"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<tag>"
+      }
+    ],
+    "children": [],
+    "exclusive": [
+      [
+        "branch",
+        "tag"
+      ]
+    ]
+  },
+  "init": {
+    "help": "usage: clowder init [-h] [--branch <branch>] <url>\n\npositional arguments:\n  <url>                 url of repo containing clowder yaml file\n\noptions:\n  -h, --help            show this help message and exit\n  --branch <branch>, -b <branch>\n                        branch of repo containing clowder yaml file\n",
+    "usage": "usage: clowder init [-h] [--branch <branch>] <url>\n",
+    "actions": [
+      {
+        "name": "url",
+        "flags": [],
+        "nargs": null,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<url>"
+      },
+      {
+        "name": "branch",
+        "flags": [
+          "--branch",
+          "-b"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<branch>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "link": {
+    "help": "usage: clowder link [-h] [<version>]\n\npositional arguments:\n  <version>   version to symlink\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder link [-h] [<version>]\n",
+    "actions": [
+      {
+        "name": "version",
+        "flags": [],
+        "nargs": "?",
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<version>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "prune": {
+    "help": "usage: clowder prune [-h] [--force] [--all | --remote]\n                     <branch> [<project|group> ...]\n\npositional arguments:\n  <branch>         name of branch to remove\n  <project|group>  projects and groups to prune\n\noptions:\n  -h, --help       show this help message and exit\n  --force, -f      force prune branches\n  --all, -a        prune local and remote branches\n  --remote, -r     prune remote branches\n",
+    "usage": "usage: clowder prune [-h] [--force] [--all | --remote]\n                     <branch> [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "branch",
+        "flags": [],
+        "nargs": null,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<branch>"
+      },
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "force",
+        "flags": [
+          "--force",
+          "-f"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "all",
+        "flags": [
+          "--all",
+          "-a"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      },
+      {
+        "name": "remote",
+        "flags": [
+          "--remote",
+          "-r"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": [
+      [
+        "all",
+        "remote"
+      ]
+    ]
+  },
+  "repo add": {
+    "help": "usage: clowder repo add [-h] <files> [<files> ...]\n\npositional arguments:\n  <files>     files to add\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo add [-h] <files> [<files> ...]\n",
+    "actions": [
+      {
+        "name": "files",
+        "flags": [],
+        "nargs": "+",
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<files>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "repo checkout": {
+    "help": "usage: clowder repo checkout [-h] <ref>\n\npositional arguments:\n  <ref>       git ref to checkout\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo checkout [-h] <ref>\n",
+    "actions": [
+      {
+        "name": "ref",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<ref>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "repo clean": {
+    "help": "usage: clowder repo clean [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo clean [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "repo commit": {
+    "help": "usage: clowder repo commit [-h] <message>\n\npositional arguments:\n  <message>   commit message\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo commit [-h] <message>\n",
+    "actions": [
+      {
+        "name": "message",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<message>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "repo pull": {
+    "help": "usage: clowder repo pull [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo pull [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "repo push": {
+    "help": "usage: clowder repo push [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo push [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "repo run": {
+    "help": "usage: clowder repo run [-h] <command>\n\npositional arguments:\n  <command>   command to run in clowder repo directory\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo run [-h] <command>\n",
+    "actions": [
+      {
+        "name": "command",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<command>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "repo status": {
+    "help": "usage: clowder repo status [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder repo status [-h]\n",
+    "actions": [],
+    "children": [],
+    "exclusive": []
+  },
+  "repo": {
+    "help": "usage: clowder repo [-h] {add,checkout,clean,commit,pull,push,run,status} ...\n\npositional arguments:\n  {add,checkout,clean,commit,pull,push,run,status}\n                        Manage clowder repo\n    add                 Add files in clowder repo\n    checkout            Checkout ref in clowder repo\n    clean               Discard changes in clowder repo\n    commit              Commit current changes in clowder repo\n    pull                Pull upstream changes in clowder repo\n    push                Push changes in clowder repo\n    run                 Run command in clowder repo\n    status              Print clowder repo git status\n\noptions:\n  -h, --help            show this help message and exit\n",
+    "usage": "usage: clowder repo [-h] {add,checkout,clean,commit,pull,push,run,status} ...\n",
+    "actions": [],
+    "children": [
+      "add",
+      "checkout",
+      "clean",
+      "commit",
+      "pull",
+      "push",
+      "run",
+      "status"
+    ],
+    "exclusive": []
+  },
+  "reset": {
+    "help": "usage: clowder reset [-h] [--jobs <n>] [<project|group> ...]\n\npositional arguments:\n  <project|group>     projects and groups to reset\n\noptions:\n  -h, --help          show this help message and exit\n  --jobs <n>, -j <n>  number of jobs to use running command in parallel\n",
+    "usage": "usage: clowder reset [-h] [--jobs <n>] [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "jobs",
+        "flags": [
+          "--jobs",
+          "-j"
+        ],
+        "nargs": 1,
+        "boolean": false,
+        "integer": true,
+        "default": null,
+        "choices": null,
+        "metavar": "<n>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "save": {
+    "help": "usage: clowder save [-h] <version>\n\npositional arguments:\n  <version>   version to save\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "usage": "usage: clowder save [-h] <version>\n",
+    "actions": [
+      {
+        "name": "version",
+        "flags": [],
+        "nargs": null,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<version>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "start": {
+    "help": "usage: clowder start [-h] [--tracking] <branch> [<project|group> ...]\n\npositional arguments:\n  <branch>         name of branch to create\n  <project|group>  projects and groups to start branches for\n\noptions:\n  -h, --help       show this help message and exit\n  --tracking, -t   create remote tracking branch\n",
+    "usage": "usage: clowder start [-h] [--tracking] <branch> [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "branch",
+        "flags": [],
+        "nargs": 1,
+        "boolean": false,
+        "integer": false,
+        "default": null,
+        "choices": null,
+        "metavar": "<branch>"
+      },
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "tracking",
+        "flags": [
+          "--tracking",
+          "-t"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "stash": {
+    "help": "usage: clowder stash [-h] [<project|group> ...]\n\npositional arguments:\n  <project|group>  projects and groups to stash changes for\n\noptions:\n  -h, --help       show this help message and exit\n",
+    "usage": "usage: clowder stash [-h] [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "status": {
+    "help": "usage: clowder status [-h] [--fetch] [<project|group> ...]\n\npositional arguments:\n  <project|group>  projects and groups to show diff for\n\noptions:\n  -h, --help       show this help message and exit\n  --fetch, -f      fetch projects before printing status\n",
+    "usage": "usage: clowder status [-h] [--fetch] [<project|group> ...]\n",
+    "actions": [
+      {
+        "name": "projects",
+        "flags": [],
+        "nargs": "*",
+        "boolean": false,
+        "integer": false,
+        "default": "default",
+        "choices": null,
+        "metavar": "<project|group>"
+      },
+      {
+        "name": "fetch",
+        "flags": [
+          "--fetch",
+          "-f"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "yaml": {
+    "help": "usage: clowder yaml [-h] [--resolved]\n\noptions:\n  -h, --help      show this help message and exit\n  --resolved, -r  print resolved clowder yaml file\n",
+    "usage": "usage: clowder yaml [-h] [--resolved]\n",
+    "actions": [
+      {
+        "name": "resolved",
+        "flags": [
+          "--resolved",
+          "-r"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [],
+    "exclusive": []
+  },
+  "": {
+    "help": "usage: clowder [-h] [-v] [--debug]\n               {branch,checkout,clean,config,diff,forall,herd,init,link,prune,repo,reset,save,start,stash,status,yaml}\n               ...\n\npositional arguments:\n  {branch,checkout,clean,config,diff,forall,herd,init,link,prune,repo,reset,save,start,stash,status,yaml}\n    branch              Display current branches\n    checkout            Checkout local branch in projects\n    clean               Discard current changes in projects\n    config              Manage clowder config (EXPERIMENTAL)\n    diff                Show git diff for projects\n    forall              Run command or script in project directories\n    herd                Clone and update projects with latest changes\n    init                Clone repository to clowder directory and create\n                        clowder yaml symlink\n    link                Symlink clowder yaml version\n    prune               Prune branches\n    repo                Manage clowder repo\n    reset               Reset branches to upstream commits or check out\n                        detached HEADs for tags and shas\n    save                Create clowder yaml version for current repos\n    start               Start a new branch\n    stash               Stash current changes\n    status              projects and groups to print status of\n    yaml                Print clowder yaml file information\n\noptions:\n  -h, --help            show this help message and exit\n  -v, --version         show program's version number and exit\n  --debug, -d           print debug output\n",
+    "usage": "usage: clowder [-h] [-v] [--debug]\n               {branch,checkout,clean,config,diff,forall,herd,init,link,prune,repo,reset,save,start,stash,status,yaml}\n               ...\n",
+    "actions": [
+      {
+        "name": "debug",
+        "flags": [
+          "--debug",
+          "-d"
+        ],
+        "nargs": 0,
+        "boolean": true,
+        "integer": false,
+        "default": false,
+        "choices": null,
+        "metavar": null
+      }
+    ],
+    "children": [
+      "branch",
+      "checkout",
+      "clean",
+      "config",
+      "diff",
+      "forall",
+      "herd",
+      "init",
+      "link",
+      "prune",
+      "repo",
+      "reset",
+      "save",
+      "start",
+      "stash",
+      "status",
+      "yaml"
+    ],
+    "exclusive": []
+  }
+}

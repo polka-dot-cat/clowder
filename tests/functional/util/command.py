@@ -1,6 +1,9 @@
 """New syntax test file"""
 
+import os
 import re
+import shlex
+import sys
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import List
@@ -16,6 +19,11 @@ class CommandResults:
 
 def run_command(command: str, cwd: Path, check: bool = False) -> CompletedProcess:
     env = {"DEBUG": "true"}
+    executable = os.environ.get('CLOWDER_EXECUTABLE')
+    if executable:
+        # Git aliases and user scripts call `clowder` through PATH too.
+        executable_directory = str(Path(executable).resolve().parent)
+        env['PATH'] = executable_directory + os.pathsep + os.environ.get('PATH', '')
     processed_command = _process_clowder_commands(command)
     CONSOLE.stdout('echo $PATH')
     result = cmd.run('echo $PATH', cwd=cwd, check=check, print_output=False, print_command=True, env=env)
@@ -33,8 +41,14 @@ def run_command(command: str, cwd: Path, check: bool = False) -> CompletedProces
 
 def _process_clowder_commands(command: str) -> str:
 
-    pattern = r'^(clowder(.+?))'
-    replace = r'python -m clowder.app '
-    output = re.sub(pattern, replace, command)
+    pattern = r'^clowder(?=\s|$)'
+    executable = os.environ.get('CLOWDER_EXECUTABLE')
+    if executable:
+        replacement = shlex.quote(executable)
+    elif os.environ.get('CLOWDER_IMPLEMENTATION') == 'python':
+        replacement = f'{shlex.quote(sys.executable)} -m clowder.app'
+    else:
+        raise RuntimeError('The native CLI was not selected; run through pytest or set CLOWDER_EXECUTABLE')
+    output = re.sub(pattern, lambda match: replacement, command)
 
     return output

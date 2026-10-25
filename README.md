@@ -4,6 +4,18 @@
 >
 > **herding cats** - An idiom that refers to a frustrating attempt to control or organize a class of entities which are uncontrollable or chaotic
 
+Swift is the intended production CLI and the starting point for a future Mac app.
+Build it with `swift build --package-path swift -c release`, then run
+`swift/.build/release/clowder`. See the [Swift guide](docs/swift-migration.md)
+for requirements and current validation limits.
+
+The same checkout retains [Rust](docs/rust-installation.md) as a maintained
+performance comparison and Python as the compatibility reference. The
+[implementation policy](docs/implementations.md) describes shared tests,
+benchmarks, and release scope. The combined work is on `rust-migration` in
+[draft PR #642](https://github.com/polka-dot-cat/clowder/pull/642).
+The Python installation instructions below describe the existing published release.
+
 |  |  |
 |:-|:-|
 | docs | [Documentation](https://clowder.cat) |

@@ -1,9 +1,32 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@1.0.2
-
 commands:
+  setup_rust:
+    steps:
+      - run:
+          name: Install the pinned Rust toolchain
+          command: |
+            curl --proto '=https' --tlsv1.2 -fsS https://sh.rustup.rs -o /tmp/clowder-rustup-init.sh
+            sh /tmp/clowder-rustup-init.sh -y --no-modify-path --profile minimal --default-toolchain 1.99.1
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$BASH_ENV"
+            export PATH="$HOME/.cargo/bin:$PATH"
+            rustup component add clippy rustfmt
+      - restore_cache:
+          keys:
+            - rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Build the Rust comparison CLI
+          command: |
+            cargo build --locked
+            echo 'export CLOWDER_IMPLEMENTATION=rust' >> "$BASH_ENV"
+            echo "export CLOWDER_EXECUTABLE='$PWD/target/debug/clowder'" >> "$BASH_ENV"
+            echo "export PATH='$PWD/target/debug':\"\$PATH\"" >> "$BASH_ENV"
+            echo "export PYTHONPATH='$PWD'" >> "$BASH_ENV"
+      - save_cache:
+          key: rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/.cargo/registry
+            - ~/.cargo/git
   install_code_climate:
     steps:
       - run:
@@ -44,8 +67,6 @@ commands:
       - run:
           name: Generate test coverage reports
           command: script/test --report-coverage
-      - codecov/upload:
-          file: build/coverage/coverage.xml
       - run:
           name: Sum coverage for Code climate
           command: |
@@ -241,61 +262,92 @@ jobs:
           groups: <<parameters.groups>>
           group: <<parameters.group>>
   test_write:
-    docker:
-      - image: cimg/python:3.8.16
-    environment:
-      CATS_MASTER_SHA: 6767bc8cb483775cb13ecdf9ac50bb24307f2130
-      CATS_ALT_BRANCH_SHA: ee065226e79f8001478cae930bbff1a1564befcd
+    # Preserve the required check name; all 89 writes now use Swift and private fixtures.
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
     steps:
       - checkout
-      - setup_ssh
-      - install_git_lfs
-      - setup_git_config
-      - run: script/cibuild
-      # Keep published fixture names compatible until the migration PR merges.
       - run:
-          name: Prepare staged Cats fixtures
-          command: |
-            git clone --bare https://github.com/polka-dot-cat/cats.git /tmp/clowder-cats.git
-            git -C /tmp/clowder-cats.git update-ref refs/heads/master "$CATS_MASTER_SHA"
-            git -C /tmp/clowder-cats.git update-ref refs/heads/alt-branch "$CATS_ALT_BRANCH_SHA"
+          name: Build the isolated Swift test environment
+          no_output_timeout: 20m
+          command: python3 script/test-isolated build --implementation swift
       - run:
-          name: Run write tests against staged manifests
-          environment:
-            GIT_CONFIG_COUNT: '3'
-            GIT_CONFIG_KEY_0: url.file:///tmp/clowder-cats.git.insteadOf
-            GIT_CONFIG_VALUE_0: git@github.com:polka-dot-cat/cats.git
-            GIT_CONFIG_KEY_1: url.file:///tmp/clowder-cats.git.insteadOf
-            GIT_CONFIG_VALUE_1: https://github.com/polka-dot-cat/cats.git
-            GIT_CONFIG_KEY_2: protocol.file.allow
-            GIT_CONFIG_VALUE_2: always
-          command: |
-            write_key="$HOME/.ssh/id_rsa_e97d20a051b29c22f6b95b5547c47c20"
-            if [[ ! -f "$write_key" ]]; then
-              echo 'Missing CircleCI additional SSH key e9:7d:20:a0:51:b2:9c:22:f6:b9:5b:55:47:c4:7c:20' >&2
-              exit 1
-            fi
-            export GIT_SSH_COMMAND="ssh -F /dev/null -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -i \"$write_key\""
-            mkdir -p build/coverage build/junit build/cucumber
-            # Save only the public key so account access can be restored if needed.
-            ssh-keygen -y -P '' -f "$write_key" > build/circleci-write-key.pub
-            for project in mu duke kishka kit sasha june; do
-              git -C /tmp/clowder-cats.git push --dry-run \
-                "git@github.com:polka-dot-cat/$project.git" \
-                refs/heads/master:refs/heads/pytest-ci-access-check
-            done
-            python -m pytest tests/functional -v -s --tb=short --exitfirst \
-              --basetemp=temp -m 'write and not offline' \
-              --cov=clowder --cov-append --cov-config=.coveragerc \
-              --cov-report=xml:build/coverage/coverage.write.xml \
-              --cov-report=html:build/coverage/html.write \
-              --cov-report=annotate:build/coverage/annotate.write \
-              --junitxml=build/junit/results.write.xml \
-              --cucumberjson=build/cucumber/results.write.json
+          name: Run Swift write tests without public repository credentials
+          no_output_timeout: 15m
+          command: python3 script/test-isolated write --implementation swift
       - store_test_results:
-          path: build/junit/
+          path: build/isolated/swift
+      - store_artifacts:
+          path: build/isolated/swift
+  rust:
+    docker:
+      - image: cimg/python:3.11.9
+    environment:
+      PYENV_VERSION: "3.11.9"
+      CLOWDER_IMPLEMENTATION: rust
+    steps:
+      - checkout
+      - setup_git_config
+      - setup_rust
+      - run:
+          name: Check Rust formatting, lints, and local regressions
+          command: |
+            cargo fmt --check
+            cargo clippy --all-targets -- -D warnings
+            env -u BASH_ENV cargo test --locked
+            python -m unittest discover -s tests/isolation -p 'test_*.py'
+      - run:
+          name: Build the native Linux archive
+          command: |
+            script/package-rust
+            cargo package --locked
+            cp target/package/*.crate dist/rust/
+      - run:
+          name: Install the unchanged BDD harness
+          command: |
+            python -m pip install --upgrade 'pip<25' setuptools==67.8.0 wheel==0.40.0
+            python -m pip install -r requirements.txt
+      - run:
+          name: Measure native coverage with local and read-only BDD scenarios
+          no_output_timeout: 15m
+          command: |
+            rustup component add llvm-tools-preview
+            cargo install cargo-llvm-cov --version 0.9.1 --locked
+            mkdir -p temp build/junit build/cucumber
+            script/coverage-rust -- python -m pytest tests/functional -v -n 4 --tb=short \
+              --basetemp=temp/rust -m 'not ssh and not offline and not write and not lfs' \
+              --junitxml=build/junit/rust.xml --cucumberjson=build/cucumber/rust.json
+      - store_test_results:
+          path: build/junit
       - store_artifacts:
           path: build
+      - store_artifacts:
+          path: dist/rust
+  rust_macos:
+    environment:
+      CLOWDER_IMPLEMENTATION: rust
+    macos:
+      xcode: "16.4.0"
+    resource_class: m4pro.medium
+    steps:
+      - checkout
+      - setup_rust
+      - run:
+          name: Check native macOS regressions and packaging
+          command: |
+            cargo fmt --check
+            cargo clippy --all-targets -- -D warnings
+            env -u BASH_ENV cargo test --locked
+            script/package-rust
+            archive=$(find dist/rust -name '*.tar.gz' -print -quit)
+            (cd dist/rust && shasum -a 256 -c "$(basename "$archive").sha256")
+            staging=$(mktemp -d)
+            trap 'rm -rf "$staging"' EXIT
+            tar -xzf "$archive" -C "$staging"
+            "$staging"/*/clowder --version
+      - store_artifacts:
+          path: dist/rust
   test_offline:
     machine: true
     steps:
@@ -332,8 +384,10 @@ jobs:
 workflows:
   pytest:
     jobs:
+      - rust
+      - rust_macos
       - test_write:
-          # These cases share remote pytest branches in the example repositories.
+          # Keep the existing workflow queue; writes use private container repositories.
           serial-group: << pipeline.project.slug >>/test-write
       # FIXME: Re-enable these tests
       # - test_offline
