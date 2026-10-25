@@ -26,6 +26,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Import Swift release signing keys
+        if: runner.os == 'Linux'
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsS https://www.swift.org/keys/all-keys.asc -o "$RUNNER_TEMP/swift-release-keys.asc"
+          gpg --batch --import "$RUNNER_TEMP/swift-release-keys.asc"
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
         with:
           swift-version: '6.4.1'

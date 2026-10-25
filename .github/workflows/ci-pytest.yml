@@ -53,6 +53,11 @@ jobs:
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Import Swift release signing keys
+      if: runner.os == 'Linux'
+      run: |
+        curl --proto '=https' --tlsv1.2 -fsS https://www.swift.org/keys/all-keys.asc -o "$RUNNER_TEMP/swift-release-keys.asc"
+        gpg --batch --import "$RUNNER_TEMP/swift-release-keys.asc"
     - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
       with:
         swift-version: '6.4.1'
