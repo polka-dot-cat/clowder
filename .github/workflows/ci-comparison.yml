@@ -1,0 +1,71 @@
+name: CI - Implementation comparisons
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  python_reference:
+    name: Python reference
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CLOWDER_IMPLEMENTATION: python
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - name: Install reference dependencies
+        run: |
+          python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
+          python -m pip install -r requirements.txt
+      - name: Verify parser captures and reference CLI selection
+        run: |
+          python script/generate-rust-compatibility --check
+          python -m unittest discover -s tests/isolation -p 'test_*.py'
+          python -m pytest tests/functional/test_features.py -v -m help -k empty_directory
+
+  shared_contract:
+    name: Python, Rust, and Swift shared behavior
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2.4.0
+        with:
+          swift-version: '6.4'
+      - name: Install Rust and Python comparison tools
+        run: |
+          rustup toolchain install 1.99.1 --profile minimal
+          python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
+          python -m pip install -r requirements.txt
+      - name: Compare output on identical local workloads
+        run: |
+          python script/benchmark-implementations --python "$(command -v python)" \
+            --check-only --sizes 8,100 --output build/comparison
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: implementation-comparison
+          path: |
+            build/comparison/results.json
+            build/comparison/mismatch-*.txt

@@ -15,5 +15,5 @@ COPY . .
 RUN python -m pip install --no-deps --no-build-isolation -e . \
     && python -m unittest discover -s tests/isolation -p 'test_*.py' \
     && cargo test --locked && cargo build --release --locked
-ENV CLOWDER_EXECUTABLE=/work/target/release/clowder PYTHONPATH=/work
+ENV CLOWDER_IMPLEMENTATION=rust CLOWDER_EXECUTABLE=/work/target/release/clowder PYTHONPATH=/work
 ENTRYPOINT ["bash", "/work/tests/isolation/run.sh"]

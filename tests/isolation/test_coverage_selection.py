@@ -44,11 +44,13 @@ esac
             executable(launcher, """#!/usr/bin/env bash
 set -eu
 [[ "$CLOWDER_EXECUTABLE" == "$EXPECTED/clowder" ]]
+[[ "$CLOWDER_IMPLEMENTATION" == rust ]]
 [[ "$(command -v clowder)" == "$EXPECTED/clowder" ]]
 printf 'instrumented selection retained\\n'
 """)
             env = os.environ.copy()
             env.update(BASH_ENV=str(startup), ORDINARY=str(ordinary), EXPECTED=str(instrumented),
+                       CLOWDER_IMPLEMENTATION="swift",
                        PATH=str(tools) + os.pathsep + env.get("PATH", ""),
                        RUSTC=str(tools / "rustc"), CARGO_LLVM_COV_BIN=str(tools / "cargo-llvm-cov"))
             result = subprocess.run([str(script), "--", str(launcher)], env=env, text=True,

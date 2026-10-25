@@ -15,9 +15,10 @@ commands:
           keys:
             - rust-v1-{{ arch }}-{{ checksum "Cargo.lock" }}
       - run:
-          name: Build the native CLI
+          name: Build the Rust comparison CLI
           command: |
             cargo build --locked
+            echo 'export CLOWDER_IMPLEMENTATION=rust' >> "$BASH_ENV"
             echo "export CLOWDER_EXECUTABLE='$PWD/target/debug/clowder'" >> "$BASH_ENV"
             echo "export PATH='$PWD/target/debug':\"\$PATH\"" >> "$BASH_ENV"
             echo "export PYTHONPATH='$PWD'" >> "$BASH_ENV"
@@ -261,50 +262,30 @@ jobs:
           groups: <<parameters.groups>>
           group: <<parameters.group>>
   test_write:
-    docker:
-      - image: cimg/python:3.8.16
+    # Preserve the required check name; all 89 writes now use Swift and private fixtures.
+    machine:
+      image: ubuntu-2204:current
+    resource_class: medium
     steps:
       - checkout
-      - setup_ssh
-      - install_git_lfs
-      - setup_git_config
-      - run: script/cibuild
-      - setup_rust
       - run:
-          name: Run native write tests against published manifests
-          command: |
-            write_key="$HOME/.ssh/id_rsa_e97d20a051b29c22f6b95b5547c47c20"
-            if [[ ! -f "$write_key" ]]; then
-              echo 'Missing CircleCI additional SSH key e9:7d:20:a0:51:b2:9c:22:f6:b9:5b:55:47:c4:7c:20' >&2
-              exit 1
-            fi
-            export GIT_SSH_COMMAND="ssh -F /dev/null -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -i \"$write_key\""
-            mkdir -p build/coverage build/junit build/cucumber
-            # Save only the public key so account access can be restored if needed.
-            ssh-keygen -y -P '' -f "$write_key" > build/circleci-write-key.pub
-            for project in mu duke kishka kit sasha june; do
-              # Hooks (including LFS uploads) can run even for a dry-run push.
-              git push --dry-run --no-verify \
-                "git@github.com:polka-dot-cat/$project.git" \
-                HEAD:refs/heads/pytest-ci-access-check
-            done
-            python -m pytest tests/functional -v -s --tb=short --exitfirst \
-              --basetemp=temp -m 'write and not offline' \
-              --cov=clowder --cov-append --cov-config=.coveragerc \
-              --cov-report=xml:build/coverage/coverage.write.xml \
-              --cov-report=html:build/coverage/html.write \
-              --cov-report=annotate:build/coverage/annotate.write \
-              --junitxml=build/junit/results.write.xml \
-              --cucumberjson=build/cucumber/results.write.json
+          name: Build the isolated Swift test environment
+          no_output_timeout: 20m
+          command: python3 script/test-isolated build --implementation swift
+      - run:
+          name: Run Swift write tests without public repository credentials
+          no_output_timeout: 15m
+          command: python3 script/test-isolated write --implementation swift
       - store_test_results:
-          path: build/junit/
+          path: build/isolated/swift
       - store_artifacts:
-          path: build
+          path: build/isolated/swift
   rust:
     docker:
       - image: cimg/python:3.11.9
     environment:
       PYENV_VERSION: "3.11.9"
+      CLOWDER_IMPLEMENTATION: rust
     steps:
       - checkout
       - setup_git_config
@@ -344,6 +325,8 @@ jobs:
       - store_artifacts:
           path: dist/rust
   rust_macos:
+    environment:
+      CLOWDER_IMPLEMENTATION: rust
     macos:
       xcode: "16.4.0"
     resource_class: m4pro.medium
@@ -404,7 +387,7 @@ workflows:
       - rust
       - rust_macos
       - test_write:
-          # These cases share remote pytest branches in the example repositories.
+          # Keep the existing workflow queue; writes use private container repositories.
           serial-group: << pipeline.project.slug >>/test-write
       # FIXME: Re-enable these tests
       # - test_offline

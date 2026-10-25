@@ -9,6 +9,8 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('results', type=Path)
 args = parser.parse_args()
 report = json.loads(args.results.read_text())
+if report['metadata'].get('mode') == 'check-only':
+    parser.error('This report contains correctness checks only; run without --check-only to collect timings')
 rng = random.Random(report['metadata']['seed'])
 
 

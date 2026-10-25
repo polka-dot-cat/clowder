@@ -1,4 +1,4 @@
-"""Select the native CLI for BDD runs; retain an explicit Python reference mode."""
+"""Default to Swift; retain explicit Rust and Python comparison modes."""
 
 import json
 import os
@@ -12,7 +12,7 @@ import pytest
 
 
 def pytest_configure(config):
-    implementation = os.environ.get('CLOWDER_IMPLEMENTATION', 'rust')
+    implementation = os.environ.get('CLOWDER_IMPLEMENTATION', 'swift')
     if implementation not in ('rust', 'swift', 'python'):
         raise pytest.UsageError('CLOWDER_IMPLEMENTATION must be rust, swift, or python')
     label = 'Swift' if implementation == 'swift' else 'Rust'
@@ -41,7 +41,7 @@ def pytest_configure(config):
         config.clowder_cli_description = f'{label} (collection only; build deferred)'
         return
     # This runs before xdist starts its workers. They inherit the selected binary
-    # through the environment, so each worker does not start another Cargo build.
+    # through the environment, so workers do not start additional builds.
     root = Path(__file__).resolve().parent.parent
     if implementation == 'swift':
         try:

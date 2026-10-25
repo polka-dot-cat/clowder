@@ -2,19 +2,10 @@ name: CI - Swift
 
 on:
   push:
-    branches: [swift-migration]
+    branches: [master]
   pull_request:
-    branches: [master, rust-migration]
-    paths:
-      - 'swift/**'
-      - 'src/cli_spec.json'
-      - 'clowder/clowder.schema.json'
-      - 'tests/**'
-      - 'completions/**'
-      - 'script/check-swift'
-      - 'script/update-swift-resources'
-      - 'script/test-native-compatibility'
-      - '.github/workflows/ci-swift.yml'
+    branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,6 +35,8 @@ jobs:
           python3 script/check-swift
       - name: Native Swift tests
         run: swift test --package-path swift
+      - name: Install the pinned Rust compatibility-test toolchain
+        run: rustup toolchain install 1.99.1 --profile minimal
       - name: Existing native compatibility tests against Swift
         run: python3 script/test-native-compatibility swift/.build/debug/clowder
       - name: Release build

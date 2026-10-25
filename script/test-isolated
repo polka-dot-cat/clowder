@@ -11,10 +11,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SUITES = ("read", "write", "schema", "schema-lfs", "ssh-features", "lfs", "offline", "offline-write", "source-urls")
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("suite", choices=("build", "all", *SUITES))
-parser.add_argument("--implementation", choices=("rust", "swift"), default="rust")
+parser.add_argument("--implementation", choices=("rust", "swift"), default="swift")
 parser.add_argument("--image")
-parser.add_argument("--reports", type=Path, default=ROOT / "build" / "isolated")
+parser.add_argument("--reports", type=Path)
 args = parser.parse_args()
+args.reports = args.reports or ROOT / "build" / "isolated" / args.implementation
 args.image = args.image or ("clowder-swift-tests:local" if args.implementation == "swift" else "clowder-native-tests:local")
 if args.suite == "build":
     # Include current tracked/unignored files, but no .git, credentials, host
@@ -34,7 +35,8 @@ else:
     reports = args.reports.resolve()
     reports.mkdir(parents=True, exist_ok=True)
     image_id = subprocess.check_output(["docker", "image", "inspect", args.image, "--format", "{{.Id}}"], text=True).strip()
-    (reports / "image.json").write_text(json.dumps({"tag": args.image, "id": image_id}, indent=2) + "\n")
+    (reports / "image.json").write_text(json.dumps({"implementation": args.implementation,
+                                                  "tag": args.image, "id": image_id}, indent=2) + "\n")
     failures = []
     for suite in SUITES if args.suite == "all" else (args.suite,):
         print("Running isolated suite: " + suite, flush=True)

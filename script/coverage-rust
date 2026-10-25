@@ -5,6 +5,7 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
 # CI setup has already been loaded by this Bash process. Do not let Bash-based
 # launchers reload it and replace test-specific executables or PATH entries.
 unset BASH_ENV
+export CLOWDER_IMPLEMENTATION=rust
 
 tool="${CARGO_LLVM_COV_BIN:-cargo-llvm-cov}"
 if [[ "$("$tool" llvm-cov --version)" != 'cargo-llvm-cov 0.9.1' ]]; then

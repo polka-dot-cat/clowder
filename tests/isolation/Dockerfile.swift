@@ -13,7 +13,7 @@ WORKDIR /work
 COPY . .
 RUN python -m pip install --no-deps --no-build-isolation -e . \
     && python -m unittest discover -s tests/isolation -p 'test_*.py' \
-    && swift test --package-path swift \
-    && swift build --package-path swift -c release --static-swift-stdlib
+    && swift test --package-path swift --jobs 2 \
+    && swift build --package-path swift -c release --static-swift-stdlib --jobs 2
 ENV CLOWDER_IMPLEMENTATION=swift CLOWDER_EXECUTABLE=/work/swift/.build/release/clowder PYTHONPATH=/work
 ENTRYPOINT ["bash", "/work/tests/isolation/run.sh"]

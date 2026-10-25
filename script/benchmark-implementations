@@ -23,6 +23,7 @@ parser.add_argument('--warmups', type=int, default=3)
 parser.add_argument('--sizes', default='8,100,1000')
 parser.add_argument('--seed', type=int, default=20261024)
 parser.add_argument('--output', type=Path)
+parser.add_argument('--check-only', action='store_true', help='Compare behavior without collecting timing samples')
 args = parser.parse_args()
 sizes = sorted(set(int(value) for value in args.sizes.split(',')))
 if args.samples < 3 or args.warmups < 1 or not sizes or min(sizes) < 2:
@@ -72,7 +73,9 @@ metadata = {'time_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()
             'platform': platform.platform(), 'machine': platform.machine(), 'cpu_count': os.cpu_count(),
             'python': python_info, 'rustc': read(['rustc','--version']), 'cargo': read(['cargo','--version']),
             'swift': read(['swift','--version']), 'git': read(['git','--version']),
-            'samples': args.samples, 'warmups': args.warmups, 'seed': args.seed, 'sizes': sizes,
+            'mode': 'check-only' if args.check_only else 'benchmark',
+            'samples': 0 if args.check_only else args.samples,
+            'warmups': 0 if args.check_only else args.warmups, 'seed': args.seed, 'sizes': sizes,
             'python_warning_filter': env['PYTHONWARNINGS'],
             'filesystem_cache': 'warm; no OS cache purge', 'manifest_cache': 'none in any implementation',
             'processes': 'fresh for every sample', 'load_average_start': os.getloadavg(), 'artifacts': artifacts}
@@ -145,6 +148,18 @@ def measure(workspace, count, arguments, name):
             if native is not None and getattr(actual,stream) != getattr(native,stream):
                 raise RuntimeError(f'Native byte-output mismatch: {name}, {stream}')
         native = actual
+    item = {'name':name, 'projects':count, 'arguments':arguments, 'output_matches':True,
+            'output_comparison':'project/status lines for Python forall; exact native bytes' if arguments[0] == 'forall' else 'exact bytes',
+            'stdout_sha256':hashlib.sha256(expected.stdout).hexdigest()}
+    manifest = workspace / 'clowder.yml'
+    if manifest.is_file():
+        item.update(manifest_bytes=manifest.stat().st_size,
+                    manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest())
+    if args.check_only:
+        report['workloads'].append(item)
+        (output / 'results.json').write_text(json.dumps(report,indent=2)+'\n')
+        print(name + ': Python, Rust, and Swift output checks passed', flush=True)
+        return
     values = {key:[] for key in commands}
     orders = []
     for index in range(args.warmups + args.samples):
@@ -158,15 +173,8 @@ def measure(workspace, count, arguments, name):
                 values[mode].append(elapsed)
         if index >= args.warmups and (index-args.warmups+1) % 8 == 0:
             print(f'{name}: {index-args.warmups+1}/{args.samples} rounds', flush=True)
-    item = {'name':name, 'projects':count, 'arguments':arguments, 'output_matches':True,
-            'output_comparison':'project/status lines for Python forall; exact native bytes' if arguments[0] == 'forall' else 'exact bytes',
-            'stdout_sha256':hashlib.sha256(expected.stdout).hexdigest(),
-            'round_order':orders,
-            'implementations':{mode:summary(samples) for mode,samples in values.items()}}
-    manifest = workspace / 'clowder.yml'
-    if manifest.is_file():
-        item.update(manifest_bytes=manifest.stat().st_size,
-                    manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest())
+    item.update(round_order=orders,
+                implementations={mode:summary(samples) for mode,samples in values.items()})
     report['workloads'].append(item)
     (output / 'results.json').write_text(json.dumps(report,indent=2)+'\n')
     print(name, {mode:round(data['median_ms'],3) for mode,data in item['implementations'].items()}, flush=True)
