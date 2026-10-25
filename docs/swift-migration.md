@@ -4,9 +4,11 @@ The `swift-migration` branch adds a native Swift implementation alongside the
 Rust port and Python reference. It uses the same command grammar, manifest
 schema, output captures, and unchanged Gherkin scenarios. It does not invoke
 Python or Rust to implement commands. Git remains an external dependency.
+The command scope and retained legacy limitations follow the
+[native compatibility notes](rust-compatibility.md).
 
-The comparison is in progress. Validation and benchmark results will be recorded
-here before choosing an implementation. Manifest caching remains deferred.
+The comparison keeps both native implementations available for review. Manifest
+caching remains deferred.
 
 ## Build and run
 
@@ -110,14 +112,25 @@ host-key/credential validation remains deferred.
 Validation passed on macOS and Linux: all 10 Swift test functions (including
 1,175 captured/generated YAML and INI cases), all 19 native black-box checks
 on macOS, 18 existing empty-directory help scenarios, and the full unchanged
-1,111-case isolated functional matrix. The final process/parser hardening changes
-are receiving a focused native check and another isolated matrix run.
+1,111-case isolated functional matrix. The full matrix also passed after the
+final process/parser hardening changes; that run used four workers for the
+681 read cases and serial execution for each remaining suite. All Gherkin
+files remain unchanged.
+
+The Linux release passed all 18 applicable native black-box tests in a Debian 12
+container without a Swift installation; the extra Zsh test is macOS-only. The
+[validation record](benchmarks/implementations-20261025/validation.json) gives
+suite counts, image/binary fingerprints, and limits. Both local platforms are
+arm64; remote CI and execution on the oldest declared macOS remain pending.
 
 Like Rust, Swift preserves the captured output contract but does not duplicate
 all of Python's presentation: `forall` omits the `>` command prefix and live
 parallel progress display, and workspace metadata has one fewer blank line.
 
 ## Three-way benchmark
+
+The [measured comparison](cli-implementation-benchmark.md) includes all three
+implementations, raw timings, confidence intervals, and distribution tradeoffs.
 
 Use an existing Python interpreter with the reference CLI's dependencies. The
 driver builds optimized Rust and Swift binaries, checks output, then launches

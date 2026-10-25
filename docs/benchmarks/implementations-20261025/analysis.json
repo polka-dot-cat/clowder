@@ -1,0 +1,327 @@
+{
+  "source_results": "results.json",
+  "bootstrap_samples": 10000,
+  "estimator": "difference of medians; paired bootstrap by randomized round",
+  "seed": 20261024,
+  "workloads": [
+    {
+      "name": "empty-version",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 223.967042,
+          "ratio_of_medians": 51.49135816941893,
+          "difference_95_percent_interval_ms": [
+            222.84212599999998,
+            225.79516700000002
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 219.858375,
+          "ratio_of_medians": 26.731231867545795,
+          "difference_95_percent_interval_ms": [
+            218.700583,
+            221.831458
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 4.108667,
+          "ratio_of_medians": 1.9262620751845798,
+          "difference_95_percent_interval_ms": [
+            3.7365839999999997,
+            4.389875000000001
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty-help",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 224.516499,
+          "ratio_of_medians": 50.258575573008464,
+          "difference_95_percent_interval_ms": [
+            224.08024999999998,
+            227.021542
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 220.11145800000003,
+          "ratio_of_medians": 25.557903540326755,
+          "difference_95_percent_interval_ms": [
+            219.68795799999998,
+            222.60399999999998
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 4.405041000000001,
+          "ratio_of_medians": 1.9664592400432042,
+          "difference_95_percent_interval_ms": [
+            3.8115840000000007,
+            4.725707999999999
+          ]
+        }
+      }
+    },
+    {
+      "name": "8-help",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 356.750041,
+          "ratio_of_medians": 56.068176633066464,
+          "difference_95_percent_interval_ms": [
+            353.597375,
+            361.601417
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 349.16845900000004,
+          "ratio_of_medians": 25.83432041841502,
+          "difference_95_percent_interval_ms": [
+            345.79808299999996,
+            354.016876
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 7.581581999999999,
+          "ratio_of_medians": 2.170298104420056,
+          "difference_95_percent_interval_ms": [
+            7.458583,
+            8.047875
+          ]
+        }
+      }
+    },
+    {
+      "name": "8-yaml",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 363.67925,
+          "ratio_of_medians": 56.84111934282753,
+          "difference_95_percent_interval_ms": [
+            361.645999,
+            366.40575
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 354.801833,
+          "ratio_of_medians": 24.053800065977192,
+          "difference_95_percent_interval_ms": [
+            353.039291,
+            357.318125
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 8.877417000000001,
+          "ratio_of_medians": 2.363082722352309,
+          "difference_95_percent_interval_ms": [
+            8.4255,
+            9.136417
+          ]
+        }
+      }
+    },
+    {
+      "name": "100-help",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 1289.358042,
+          "ratio_of_medians": 141.5409752295828,
+          "difference_95_percent_interval_ms": [
+            1285.9085830000001,
+            1298.443459
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 1278.437875,
+          "ratio_of_medians": 64.62154597468542,
+          "difference_95_percent_interval_ms": [
+            1274.8973760000001,
+            1287.7710829999999
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 10.920167,
+          "ratio_of_medians": 2.1903062375671034,
+          "difference_95_percent_interval_ms": [
+            10.535707999999998,
+            11.197875999999999
+          ]
+        }
+      }
+    },
+    {
+      "name": "100-yaml",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 1351.905958,
+          "ratio_of_medians": 127.73128268104054,
+          "difference_95_percent_interval_ms": [
+            1348.716167,
+            1369.276333
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 1336.804875,
+          "ratio_of_medians": 52.877314130932234,
+          "difference_95_percent_interval_ms": [
+            1333.678417,
+            1354.148125
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 15.101083,
+          "ratio_of_medians": 2.41561593625498,
+          "difference_95_percent_interval_ms": [
+            14.634458,
+            15.341624
+          ]
+        }
+      }
+    },
+    {
+      "name": "1000-help",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 11735.184167,
+          "ratio_of_medians": 328.78547549627643,
+          "difference_95_percent_interval_ms": [
+            11658.273874999999,
+            11771.344125000001
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 11698.548874,
+          "ratio_of_medians": 162.5002812179112,
+          "difference_95_percent_interval_ms": [
+            11621.776791,
+            11734.990667
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 36.63529299999999,
+          "ratio_of_medians": 2.0232917323717023,
+          "difference_95_percent_interval_ms": [
+            36.103916,
+            37.244834
+          ]
+        }
+      }
+    },
+    {
+      "name": "1000-yaml",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 12245.127917,
+          "ratio_of_medians": 251.4613424575444,
+          "difference_95_percent_interval_ms": [
+            12185.049834,
+            12301.672167
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 12170.886666999999,
+          "ratio_of_medians": 99.84458984396207,
+          "difference_95_percent_interval_ms": [
+            12110.641875,
+            12227.430917
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 74.24125000000001,
+          "ratio_of_medians": 2.5185274720496142,
+          "difference_95_percent_interval_ms": [
+            73.440959,
+            75.390958
+          ]
+        }
+      }
+    },
+    {
+      "name": "local-status",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 200.76474900000005,
+          "ratio_of_medians": 1.3780613993909963,
+          "difference_95_percent_interval_ms": [
+            184.87304199999994,
+            209.67437500000005
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 161.483291,
+          "ratio_of_medians": 1.2831456191941746,
+          "difference_95_percent_interval_ms": [
+            145.844375,
+            174.537333
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 39.28145800000004,
+          "ratio_of_medians": 1.0739711680241169,
+          "difference_95_percent_interval_ms": [
+            31.29483300000004,
+            49.968125999999984
+          ]
+        }
+      }
+    },
+    {
+      "name": "local-forall-j1",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 716.326834,
+          "ratio_of_medians": 2.2312630505792868,
+          "difference_95_percent_interval_ms": [
+            687.249333,
+            745.4474580000001
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 673.4236669999999,
+          "ratio_of_medians": 2.0780206859744665,
+          "difference_95_percent_interval_ms": [
+            645.468416,
+            705.433625
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 42.90316700000005,
+          "ratio_of_medians": 1.0737443884168838,
+          "difference_95_percent_interval_ms": [
+            34.50137500000005,
+            50.38554099999999
+          ]
+        }
+      }
+    },
+    {
+      "name": "local-forall-j4",
+      "comparisons": {
+        "python_minus_rust": {
+          "median_difference_ms": 1041.667458,
+          "ratio_of_medians": 6.778841353766362,
+          "difference_95_percent_interval_ms": [
+            1016.540083,
+            1077.365041
+          ]
+        },
+        "python_minus_swift": {
+          "median_difference_ms": 1016.9689579999999,
+          "ratio_of_medians": 5.961939605184516,
+          "difference_95_percent_interval_ms": [
+            994.717957,
+            1052.877417
+          ]
+        },
+        "swift_minus_rust": {
+          "median_difference_ms": 24.698499999999996,
+          "ratio_of_medians": 1.1370194605580146,
+          "difference_95_percent_interval_ms": [
+            14.655042000000009,
+            28.895583999999985
+          ]
+        }
+      }
+    }
+  ]
+}

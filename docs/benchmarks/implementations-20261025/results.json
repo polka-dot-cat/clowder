@@ -1,0 +1,3228 @@
+{
+  "metadata": {
+    "time_utc": "2026-10-25T02:13:22.335863+00:00",
+    "commit": "704d19164e031d00ea7daa442ee01425aead4696",
+    "source_sha256": "d23bef26ec89f27cf3b1b80bf02c513352f37c01d53112a84078ffc61a12c249",
+    "working_tree": "",
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu_count": 10,
+    "python": {
+      "version": "3.10.11",
+      "packages": {
+        "PyYAML": "6.0",
+        "jsonschema": "4.17.3",
+        "trio": "0.22.1"
+      },
+      "libyaml_available": true
+    },
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13) (Homebrew)",
+    "cargo": "cargo 1.99.1 (5f94df478 2026-08-27) (Homebrew)",
+    "swift": "swift-driver version: 1.168.6 Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0",
+    "git": "git version 2.56.0",
+    "samples": 31,
+    "warmups": 3,
+    "seed": 20261024,
+    "sizes": [
+      8,
+      100,
+      1000
+    ],
+    "python_warning_filter": "ignore:trio.MultiError is deprecated",
+    "filesystem_cache": "warm; no OS cache purge",
+    "manifest_cache": "none in any implementation",
+    "processes": "fresh for every sample",
+    "load_average_start": [
+      7.35205078125,
+      6.61474609375,
+      5.9833984375
+    ],
+    "artifacts": {
+      "rust": {
+        "bytes": 5345888,
+        "sha256": "088c46aff7a14267dbb852ade434f472909c525e84417fca96f928c65feadfc6"
+      },
+      "swift": {
+        "bytes": 1920904,
+        "sha256": "f6b2894abd62d12916c127fbc126b73f667d9c2d8228ea231bd3f1015fcdfd45"
+      }
+    },
+    "cpu": "Apple M1 Max",
+    "memory_bytes": 68719476736,
+    "load_average_end": [
+      10.10986328125,
+      9.6396484375,
+      8.26904296875
+    ]
+  },
+  "workloads": [
+    {
+      "name": "empty-version",
+      "projects": 0,
+      "arguments": [
+        "--version"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "b4416760af26053115031e0fe631962d68ed0b13cac08033daf46ce5468fd92f",
+      "round_order": [
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 228.402792,
+          "p95_ms": 234.585625,
+          "min_ms": 224.783208,
+          "max_ms": 237.425625,
+          "samples_ms": [
+            231.427625,
+            231.599875,
+            234.585625,
+            226.450083,
+            225.954292,
+            227.302959,
+            233.662792,
+            230.618333,
+            228.587666,
+            228.402792,
+            230.550167,
+            227.62325,
+            227.337292,
+            227.356875,
+            237.425625,
+            224.783208,
+            230.973958,
+            227.246417,
+            229.53225,
+            230.954166,
+            227.051708,
+            229.757291,
+            230.037584,
+            226.259,
+            225.935875,
+            226.111042,
+            231.926375,
+            227.7565,
+            228.376,
+            226.94925,
+            230.10175
+          ]
+        },
+        "rust": {
+          "median_ms": 4.43575,
+          "p95_ms": 5.436333,
+          "min_ms": 3.792417,
+          "max_ms": 7.327667,
+          "samples_ms": [
+            4.173125,
+            4.650666,
+            4.155333,
+            4.533708,
+            4.307208,
+            4.111834,
+            4.6135,
+            7.327667,
+            4.839666,
+            4.43575,
+            5.436333,
+            4.26875,
+            4.882,
+            4.266417,
+            4.111667,
+            4.417917,
+            4.636791,
+            4.188042,
+            4.192917,
+            4.706959,
+            4.306583,
+            4.708042,
+            4.355292,
+            4.460833,
+            4.155708,
+            4.800292,
+            4.225125,
+            4.626917,
+            4.884417,
+            4.754041,
+            3.792417
+          ]
+        },
+        "swift": {
+          "median_ms": 8.544417,
+          "p95_ms": 10.930834,
+          "min_ms": 7.621834,
+          "max_ms": 11.209375,
+          "samples_ms": [
+            8.270292,
+            8.6085,
+            8.656292,
+            7.621834,
+            9.288208,
+            9.316875,
+            8.2045,
+            8.842459,
+            10.930834,
+            9.022584,
+            11.209375,
+            8.456375,
+            8.758,
+            7.785042,
+            8.888834,
+            7.881375,
+            8.137333,
+            8.911291,
+            7.971583,
+            8.684666,
+            8.079166,
+            8.682208,
+            9.122125,
+            9.532625,
+            7.965917,
+            8.544417,
+            7.751292,
+            8.488583,
+            7.629667,
+            8.402167,
+            7.867583
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty-help",
+      "projects": 0,
+      "arguments": [
+        "--help"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "e390b7796cb38950a37a7e587c941b8a0f18442f7c0f877852b9cce7933b801c",
+      "round_order": [
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 229.074416,
+          "p95_ms": 238.568375,
+          "min_ms": 225.6,
+          "max_ms": 239.592417,
+          "samples_ms": [
+            229.074416,
+            231.719166,
+            229.217042,
+            226.895041,
+            229.681167,
+            227.531542,
+            225.6,
+            227.004708,
+            228.651542,
+            228.111583,
+            232.715708,
+            232.294583,
+            231.691375,
+            228.839875,
+            226.927458,
+            229.974834,
+            239.592417,
+            227.107417,
+            228.650916,
+            228.748292,
+            231.286375,
+            229.039334,
+            233.219084,
+            238.568375,
+            231.500042,
+            228.121,
+            228.841,
+            235.639292,
+            233.879833,
+            235.615209,
+            227.388875
+          ]
+        },
+        "rust": {
+          "median_ms": 4.557917,
+          "p95_ms": 7.910459,
+          "min_ms": 3.9625,
+          "max_ms": 8.775417,
+          "samples_ms": [
+            5.701166,
+            4.439,
+            4.812209,
+            4.152875,
+            4.491667,
+            4.845375,
+            5.290291,
+            8.775417,
+            4.581583,
+            4.227458,
+            4.4785,
+            4.075458,
+            7.910459,
+            4.153042,
+            4.386417,
+            4.842875,
+            4.835625,
+            4.557917,
+            4.2365,
+            5.246,
+            4.664541,
+            4.686,
+            4.043542,
+            4.247917,
+            4.668042,
+            4.401792,
+            4.354584,
+            4.72525,
+            3.9625,
+            4.9405,
+            4.1535
+          ]
+        },
+        "swift": {
+          "median_ms": 8.962958,
+          "p95_ms": 10.253625,
+          "min_ms": 7.55225,
+          "max_ms": 11.078875,
+          "samples_ms": [
+            9.046958,
+            9.235958,
+            7.996292,
+            10.198959,
+            9.826583,
+            8.430875,
+            8.517542,
+            8.367125,
+            8.042959,
+            10.253625,
+            8.536834,
+            9.087375,
+            8.181,
+            9.1275,
+            8.790292,
+            7.76975,
+            8.906625,
+            9.943375,
+            9.006709,
+            8.307083,
+            9.583083,
+            8.519,
+            7.7935,
+            10.176584,
+            10.142417,
+            8.962958,
+            7.988417,
+            11.078875,
+            9.220125,
+            9.080291,
+            7.55225
+          ]
+        }
+      }
+    },
+    {
+      "name": "8-help",
+      "projects": 8,
+      "arguments": [
+        "--help"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "e390b7796cb38950a37a7e587c941b8a0f18442f7c0f877852b9cce7933b801c",
+      "round_order": [
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 363.228375,
+          "p95_ms": 395.97375,
+          "min_ms": 353.431208,
+          "max_ms": 399.215834,
+          "samples_ms": [
+            357.289291,
+            360.081375,
+            368.076792,
+            361.151875,
+            364.134042,
+            353.431208,
+            371.237708,
+            376.574125,
+            366.706416,
+            356.791459,
+            363.386833,
+            356.918083,
+            362.569125,
+            359.689,
+            363.228375,
+            363.123291,
+            358.274833,
+            360.198542,
+            353.89725,
+            363.921542,
+            358.455459,
+            375.345,
+            399.215834,
+            381.708958,
+            374.192542,
+            395.97375,
+            375.160084,
+            372.261625,
+            353.747041,
+            358.020417,
+            373.268584
+          ]
+        },
+        "rust": {
+          "median_ms": 6.478334,
+          "p95_ms": 6.931792,
+          "min_ms": 5.748584,
+          "max_ms": 7.106375,
+          "samples_ms": [
+            6.847458,
+            5.9045,
+            6.846167,
+            6.761458,
+            5.845042,
+            6.342708,
+            5.889542,
+            6.195291,
+            6.478334,
+            6.513834,
+            6.575167,
+            6.082625,
+            5.904083,
+            6.484,
+            6.423917,
+            6.502875,
+            6.247667,
+            5.748584,
+            5.940416,
+            6.122459,
+            6.603,
+            6.787458,
+            6.213833,
+            6.475375,
+            6.627834,
+            6.931792,
+            6.814167,
+            6.486166,
+            5.994208,
+            7.106375,
+            6.495667
+          ]
+        },
+        "swift": {
+          "median_ms": 14.059916,
+          "p95_ms": 15.936917,
+          "min_ms": 13.271625,
+          "max_ms": 19.02625,
+          "samples_ms": [
+            14.023833,
+            14.430208,
+            19.02625,
+            13.871833,
+            13.271625,
+            13.870208,
+            15.936917,
+            14.283292,
+            13.879625,
+            13.670458,
+            13.69275,
+            14.723292,
+            13.429708,
+            14.059916,
+            13.619333,
+            13.95425,
+            14.531875,
+            14.082458,
+            14.90525,
+            13.444834,
+            14.207292,
+            14.962667,
+            14.025125,
+            14.048792,
+            14.6135,
+            14.556166,
+            14.567083,
+            14.173709,
+            14.346459,
+            14.053875,
+            13.727292
+          ]
+        }
+      },
+      "manifest_bytes": 2795,
+      "manifest_sha256": "bd0649dd97889ab906670ea15effa3eeb4656061b56b9e8c0475334e82f019cb"
+    },
+    {
+      "name": "8-yaml",
+      "projects": 8,
+      "arguments": [
+        "yaml"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "ea98d1471f355b3c9f1b4c9e770081a551a754f7ae6af30756af9c7be4afcda1",
+      "round_order": [
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 370.192,
+          "p95_ms": 391.875916,
+          "min_ms": 361.501083,
+          "max_ms": 396.63825,
+          "samples_ms": [
+            365.631292,
+            368.359416,
+            366.492375,
+            391.875916,
+            380.035333,
+            369.491792,
+            369.617167,
+            368.052375,
+            370.2995,
+            368.658334,
+            368.092125,
+            379.328042,
+            365.307958,
+            370.858291,
+            361.501083,
+            369.171917,
+            371.908417,
+            372.705167,
+            396.63825,
+            382.861834,
+            377.481416,
+            378.471417,
+            364.736083,
+            366.212958,
+            372.597333,
+            364.520167,
+            374.178333,
+            375.041625,
+            374.446208,
+            370.192,
+            367.787333
+          ]
+        },
+        "rust": {
+          "median_ms": 6.51275,
+          "p95_ms": 7.061042,
+          "min_ms": 5.944042,
+          "max_ms": 7.08575,
+          "samples_ms": [
+            6.792583,
+            6.778416,
+            6.173,
+            6.51275,
+            6.008875,
+            6.860292,
+            6.900084,
+            6.584625,
+            6.2615,
+            6.604791,
+            6.510958,
+            6.188875,
+            7.08575,
+            6.136,
+            6.751875,
+            6.8655,
+            6.569917,
+            6.074125,
+            6.299417,
+            6.601292,
+            6.49225,
+            6.713417,
+            6.252417,
+            7.061042,
+            6.28075,
+            6.874958,
+            6.455833,
+            5.944042,
+            6.230333,
+            7.021125,
+            6.093875
+          ]
+        },
+        "swift": {
+          "median_ms": 15.390167,
+          "p95_ms": 16.705958,
+          "min_ms": 14.136125,
+          "max_ms": 17.506167,
+          "samples_ms": [
+            16.275833,
+            14.31025,
+            15.031291,
+            15.596875,
+            14.890584,
+            15.57725,
+            16.203208,
+            15.397917,
+            14.733875,
+            15.390167,
+            14.414625,
+            15.50725,
+            14.985417,
+            14.448834,
+            14.736834,
+            16.215209,
+            15.719333,
+            15.320125,
+            17.506167,
+            16.705958,
+            16.599333,
+            15.452167,
+            14.136125,
+            15.010125,
+            15.421792,
+            15.003459,
+            15.387042,
+            15.234584,
+            15.668625,
+            14.330209,
+            15.719541
+          ]
+        }
+      },
+      "manifest_bytes": 2795,
+      "manifest_sha256": "bd0649dd97889ab906670ea15effa3eeb4656061b56b9e8c0475334e82f019cb"
+    },
+    {
+      "name": "100-help",
+      "projects": 100,
+      "arguments": [
+        "--help"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "e390b7796cb38950a37a7e587c941b8a0f18442f7c0f877852b9cce7933b801c",
+      "round_order": [
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 1298.532292,
+          "p95_ms": 1390.059709,
+          "min_ms": 1275.346666,
+          "max_ms": 1419.604209,
+          "samples_ms": [
+            1295.717333,
+            1346.397959,
+            1314.670083,
+            1280.859,
+            1282.083125,
+            1287.837042,
+            1390.059709,
+            1275.346666,
+            1296.695834,
+            1301.182208,
+            1286.310959,
+            1374.134875,
+            1294.504375,
+            1284.553333,
+            1307.576292,
+            1349.290917,
+            1321.479875,
+            1294.176083,
+            1298.532292,
+            1288.669291,
+            1419.604209,
+            1289.083375,
+            1301.892625,
+            1295.180542,
+            1307.482875,
+            1358.006542,
+            1297.297125,
+            1304.204709,
+            1296.763458,
+            1352.34025,
+            1339.07425
+          ]
+        },
+        "rust": {
+          "median_ms": 9.17425,
+          "p95_ms": 9.688458,
+          "min_ms": 8.598417,
+          "max_ms": 12.40775,
+          "samples_ms": [
+            9.069666,
+            8.598417,
+            9.122292,
+            8.731041,
+            9.17025,
+            9.17425,
+            9.2775,
+            9.426041,
+            9.271959,
+            8.792417,
+            9.341875,
+            9.064875,
+            9.26075,
+            8.8475,
+            12.40775,
+            9.457791,
+            8.826833,
+            8.6145,
+            9.410458,
+            9.688458,
+            9.200167,
+            9.369791,
+            9.36375,
+            8.873458,
+            9.55725,
+            9.66225,
+            8.960125,
+            9.438416,
+            9.132833,
+            8.727834,
+            8.992084
+          ]
+        },
+        "swift": {
+          "median_ms": 20.094417,
+          "p95_ms": 21.382542,
+          "min_ms": 18.996666,
+          "max_ms": 21.88775,
+          "samples_ms": [
+            19.2615,
+            21.382542,
+            19.96125,
+            20.283166,
+            19.25675,
+            19.761709,
+            20.38725,
+            19.986833,
+            20.127791,
+            20.094417,
+            20.383875,
+            20.163708,
+            21.88775,
+            19.807667,
+            19.657791,
+            19.411708,
+            19.710542,
+            20.391416,
+            18.996666,
+            20.338875,
+            19.873917,
+            20.296958,
+            19.520792,
+            20.303875,
+            21.188167,
+            19.711792,
+            20.267542,
+            20.389292,
+            19.679208,
+            19.68,
+            20.521084
+          ]
+        }
+      },
+      "manifest_bytes": 23151,
+      "manifest_sha256": "aaf34631ded6659c4a1410fe813a8556098f627ca6fc0e01456576613d81f1cd"
+    },
+    {
+      "name": "100-yaml",
+      "projects": 100,
+      "arguments": [
+        "yaml"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "b219690a6af21a04f86d6fd75c8caf6bebb8cacb84009ed122239df2115e4835",
+      "round_order": [
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 1362.573458,
+          "p95_ms": 1449.600375,
+          "min_ms": 1343.158666,
+          "max_ms": 1465.462292,
+          "samples_ms": [
+            1361.729666,
+            1356.729167,
+            1359.517583,
+            1438.173625,
+            1343.158666,
+            1370.296375,
+            1360.248708,
+            1383.896417,
+            1421.718458,
+            1350.828708,
+            1390.601375,
+            1361.055708,
+            1449.600375,
+            1369.420083,
+            1351.505792,
+            1351.965291,
+            1393.834625,
+            1390.828834,
+            1377.639541,
+            1357.487875,
+            1352.758292,
+            1449.395958,
+            1343.62325,
+            1343.399167,
+            1353.075,
+            1408.46675,
+            1379.835417,
+            1359.49,
+            1362.573458,
+            1373.177917,
+            1465.462292
+          ]
+        },
+        "rust": {
+          "median_ms": 10.6675,
+          "p95_ms": 11.721,
+          "min_ms": 10.053666,
+          "max_ms": 12.579625,
+          "samples_ms": [
+            10.897167,
+            10.264916,
+            11.006708,
+            10.053666,
+            10.272333,
+            10.96725,
+            10.65575,
+            11.11575,
+            10.52225,
+            10.6675,
+            10.543042,
+            10.795625,
+            12.579625,
+            10.773833,
+            10.374541,
+            10.276791,
+            10.413833,
+            10.559084,
+            10.156208,
+            10.915416,
+            10.778584,
+            11.721,
+            10.469959,
+            10.121958,
+            10.753083,
+            10.408667,
+            10.782375,
+            10.814375,
+            10.262542,
+            10.815583,
+            10.861834
+          ]
+        },
+        "swift": {
+          "median_ms": 25.768583,
+          "p95_ms": 26.265,
+          "min_ms": 24.712875,
+          "max_ms": 27.417375,
+          "samples_ms": [
+            25.413042,
+            24.934792,
+            26.020667,
+            25.397292,
+            25.877667,
+            25.000708,
+            25.908167,
+            26.093291,
+            25.772958,
+            25.687292,
+            24.827542,
+            25.932667,
+            24.712875,
+            25.637792,
+            24.798917,
+            25.790125,
+            25.203542,
+            25.768583,
+            26.166375,
+            25.257625,
+            25.388291,
+            26.083084,
+            26.265,
+            26.029416,
+            25.811583,
+            25.911417,
+            26.006625,
+            25.375542,
+            25.041333,
+            27.417375,
+            25.719666
+          ]
+        }
+      },
+      "manifest_bytes": 23151,
+      "manifest_sha256": "aaf34631ded6659c4a1410fe813a8556098f627ca6fc0e01456576613d81f1cd"
+    },
+    {
+      "name": "1000-help",
+      "projects": 1000,
+      "arguments": [
+        "--help"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "e390b7796cb38950a37a7e587c941b8a0f18442f7c0f877852b9cce7933b801c",
+      "round_order": [
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 11770.985583,
+          "p95_ms": 12117.749625,
+          "min_ms": 11381.482209,
+          "max_ms": 12422.822375,
+          "samples_ms": [
+            11765.255292,
+            11995.342166,
+            12422.822375,
+            12117.749625,
+            11814.37825,
+            11694.2135,
+            11690.898917,
+            11737.483542,
+            11774.976166,
+            11601.38425,
+            11807.1285,
+            11838.175583,
+            11730.665125,
+            11770.985583,
+            11672.035125,
+            11820.258666,
+            11927.479,
+            11792.50875,
+            11805.913125,
+            11761.734292,
+            11648.229125,
+            11563.962959,
+            11643.358041,
+            11949.979875,
+            11919.958625,
+            11785.719375,
+            11381.482209,
+            11406.596916,
+            11572.26,
+            11617.485541,
+            11839.407166
+          ]
+        },
+        "rust": {
+          "median_ms": 35.801416,
+          "p95_ms": 37.873375,
+          "min_ms": 34.702709,
+          "max_ms": 38.430459,
+          "samples_ms": [
+            35.544042,
+            34.832208,
+            35.656292,
+            37.500458,
+            38.430459,
+            36.305417,
+            35.477334,
+            36.803833,
+            35.785834,
+            34.702709,
+            36.623125,
+            36.104958,
+            35.784375,
+            36.627167,
+            37.440417,
+            35.370292,
+            35.801416,
+            35.939625,
+            34.91025,
+            35.166208,
+            36.324042,
+            35.782333,
+            35.934792,
+            35.345584,
+            37.873375,
+            35.911834,
+            36.256375,
+            35.67575,
+            34.975375,
+            36.033917,
+            34.965917
+          ]
+        },
+        "swift": {
+          "median_ms": 72.436709,
+          "p95_ms": 75.412917,
+          "min_ms": 70.993542,
+          "max_ms": 76.463958,
+          "samples_ms": [
+            72.137833,
+            72.868791,
+            76.463958,
+            71.883042,
+            75.412917,
+            71.987333,
+            72.010416,
+            73.184625,
+            71.809333,
+            70.993542,
+            73.076,
+            71.980625,
+            74.123958,
+            74.71225,
+            73.679959,
+            71.481583,
+            71.673667,
+            72.863458,
+            74.262667,
+            73.651125,
+            73.04625,
+            72.798375,
+            72.392334,
+            73.109625,
+            71.906875,
+            72.792875,
+            72.436709,
+            71.340833,
+            72.197541,
+            72.206292,
+            71.586667
+          ]
+        }
+      },
+      "manifest_bytes": 220251,
+      "manifest_sha256": "2a5f138da4cf78cc424fc370df476dba428b7717dc466a72c26dbe4621671951"
+    },
+    {
+      "name": "1000-yaml",
+      "projects": 1000,
+      "arguments": [
+        "yaml"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "7978f8b82fe3f2aeff233133448d0872386adc7b5964669e06162fedba7d7b46",
+      "round_order": [
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 12294.018208,
+          "p95_ms": 12972.560417,
+          "min_ms": 12071.66425,
+          "max_ms": 13180.032166,
+          "samples_ms": [
+            12325.731,
+            12447.548417,
+            12350.562458,
+            12294.018208,
+            12288.445625,
+            12206.764375,
+            12371.582042,
+            12185.291583,
+            12122.493792,
+            12174.590042,
+            12168.256375,
+            12233.940125,
+            12225.86875,
+            12106.335708,
+            12153.059042,
+            12071.66425,
+            12171.220916,
+            12439.091209,
+            12256.155709,
+            12268.10225,
+            12972.560417,
+            13180.032166,
+            12479.481625,
+            12624.813959,
+            12519.73725,
+            12695.204667,
+            12315.677375,
+            12963.183458,
+            12319.877875,
+            12257.75525,
+            12316.806125
+          ]
+        },
+        "rust": {
+          "median_ms": 48.890291,
+          "p95_ms": 52.094542,
+          "min_ms": 46.836667,
+          "max_ms": 52.275584,
+          "samples_ms": [
+            47.792542,
+            49.685042,
+            48.890291,
+            48.66425,
+            48.616041,
+            47.66,
+            52.094542,
+            49.760333,
+            47.693167,
+            47.304917,
+            47.9185,
+            47.790458,
+            49.219042,
+            48.373583,
+            48.019125,
+            49.447375,
+            47.856541,
+            52.275584,
+            49.497458,
+            49.023667,
+            49.24525,
+            50.259417,
+            48.768292,
+            49.098166,
+            50.076916,
+            50.474083,
+            49.073916,
+            48.740834,
+            48.090666,
+            50.064083,
+            46.836667
+          ]
+        },
+        "swift": {
+          "median_ms": 123.131541,
+          "p95_ms": 126.668125,
+          "min_ms": 121.106584,
+          "max_ms": 129.341666,
+          "samples_ms": [
+            123.410083,
+            123.131541,
+            125.158,
+            122.353875,
+            125.433542,
+            124.184791,
+            129.341666,
+            122.577541,
+            122.4855,
+            126.668125,
+            121.890792,
+            121.712583,
+            125.821792,
+            122.514875,
+            122.311917,
+            121.106584,
+            123.29825,
+            125.597583,
+            121.69275,
+            125.629083,
+            124.735541,
+            125.667,
+            123.980125,
+            122.816084,
+            122.851542,
+            125.807625,
+            123.893542,
+            121.512084,
+            121.320334,
+            122.126333,
+            122.211416
+          ]
+        }
+      },
+      "manifest_bytes": 220251,
+      "manifest_sha256": "2a5f138da4cf78cc424fc370df476dba428b7717dc466a72c26dbe4621671951"
+    },
+    {
+      "name": "local-status",
+      "projects": 8,
+      "arguments": [
+        "status"
+      ],
+      "output_matches": true,
+      "output_comparison": "exact bytes",
+      "stdout_sha256": "b35539d572ccb1d7ac0fc3a65ac07dbdf23331576bf5db4c5b4cbbdb92ec981f",
+      "round_order": [
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 731.802166,
+          "p95_ms": 841.141583,
+          "min_ms": 701.286667,
+          "max_ms": 860.806625,
+          "samples_ms": [
+            773.562834,
+            741.262167,
+            718.42975,
+            713.84975,
+            718.994792,
+            741.733458,
+            702.272583,
+            705.140042,
+            708.222458,
+            713.751292,
+            731.802166,
+            703.02375,
+            732.310042,
+            711.054208,
+            701.286667,
+            708.744833,
+            713.916792,
+            709.331625,
+            728.066,
+            741.784833,
+            710.951625,
+            737.176917,
+            749.4565,
+            746.223709,
+            760.75775,
+            834.641333,
+            798.860542,
+            860.806625,
+            841.141583,
+            781.761542,
+            803.558416
+          ]
+        },
+        "rust": {
+          "median_ms": 531.037417,
+          "p95_ms": 565.898667,
+          "min_ms": 509.835916,
+          "max_ms": 597.227417,
+          "samples_ms": [
+            557.568084,
+            532.059083,
+            513.869666,
+            528.416958,
+            534.12175,
+            531.037417,
+            543.471333,
+            518.388709,
+            523.297,
+            519.703333,
+            523.677583,
+            519.988917,
+            524.537958,
+            517.780208,
+            521.965125,
+            527.53075,
+            526.750708,
+            513.745583,
+            529.241959,
+            538.338,
+            509.835916,
+            539.024042,
+            534.160916,
+            549.707042,
+            551.097583,
+            558.332167,
+            565.898667,
+            546.915875,
+            549.015334,
+            597.227417,
+            559.522875
+          ]
+        },
+        "swift": {
+          "median_ms": 570.318875,
+          "p95_ms": 623.630375,
+          "min_ms": 540.736458,
+          "max_ms": 630.238958,
+          "samples_ms": [
+            612.493166,
+            587.023875,
+            572.585375,
+            560.49325,
+            598.495833,
+            570.318958,
+            557.416,
+            552.300583,
+            566.626542,
+            562.0705,
+            560.0605,
+            560.603292,
+            581.972625,
+            562.63725,
+            562.880959,
+            574.896459,
+            543.119833,
+            540.736458,
+            566.46375,
+            584.657542,
+            555.789792,
+            570.318875,
+            566.724834,
+            561.517959,
+            592.412958,
+            595.418333,
+            593.888583,
+            623.630375,
+            630.238958,
+            584.129042,
+            611.965333
+          ]
+        }
+      },
+      "manifest_bytes": 2795,
+      "manifest_sha256": "bd0649dd97889ab906670ea15effa3eeb4656061b56b9e8c0475334e82f019cb"
+    },
+    {
+      "name": "local-forall-j1",
+      "projects": 8,
+      "arguments": [
+        "forall",
+        "-j1",
+        "git rev-parse --verify HEAD >/dev/null"
+      ],
+      "output_matches": true,
+      "output_comparison": "project/status lines for Python forall; exact native bytes",
+      "stdout_sha256": "518a10599c31c4e10834cfc50784673a437cdb8fd6c95c3efdf736e23fa17463",
+      "round_order": [
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 1298.108959,
+          "p95_ms": 1513.348042,
+          "min_ms": 1231.40275,
+          "max_ms": 1974.652458,
+          "samples_ms": [
+            1282.04825,
+            1298.108959,
+            1385.493459,
+            1327.229583,
+            1408.24125,
+            1404.418542,
+            1513.348042,
+            1395.301667,
+            1291.749917,
+            1334.94975,
+            1366.935083,
+            1974.652458,
+            1398.562084,
+            1267.861167,
+            1308.448,
+            1259.617167,
+            1259.93175,
+            1250.7745,
+            1251.331084,
+            1307.772292,
+            1307.915292,
+            1301.055666,
+            1238.630125,
+            1245.758958,
+            1274.952084,
+            1269.943166,
+            1295.401833,
+            1341.074375,
+            1231.40275,
+            1239.318917,
+            1251.949416
+          ]
+        },
+        "rust": {
+          "median_ms": 581.782125,
+          "p95_ms": 636.887791,
+          "min_ms": 553.300291,
+          "max_ms": 655.112667,
+          "samples_ms": [
+            571.948958,
+            571.564458,
+            655.112667,
+            590.19,
+            580.639459,
+            581.782125,
+            608.435375,
+            628.857334,
+            600.62975,
+            589.282125,
+            577.994667,
+            636.887791,
+            566.100417,
+            583.088584,
+            577.233291,
+            572.23875,
+            589.71125,
+            553.300291,
+            562.999333,
+            577.102459,
+            561.290209,
+            587.167792,
+            570.229292,
+            565.145958,
+            596.771667,
+            596.083917,
+            574.089209,
+            611.056917,
+            582.693833,
+            588.556541,
+            573.810917
+          ]
+        },
+        "swift": {
+          "median_ms": 624.685292,
+          "p95_ms": 648.310084,
+          "min_ms": 593.435209,
+          "max_ms": 672.33925,
+          "samples_ms": [
+            607.853833,
+            641.369958,
+            621.248833,
+            613.3555,
+            625.7875,
+            634.169834,
+            672.33925,
+            633.152667,
+            624.685292,
+            629.971666,
+            618.535542,
+            636.881791,
+            621.000334,
+            621.669167,
+            625.229708,
+            619.125541,
+            626.3295,
+            611.958375,
+            610.974041,
+            630.394333,
+            621.795958,
+            621.111291,
+            593.435209,
+            624.47475,
+            617.188917,
+            642.203625,
+            637.294,
+            637.50375,
+            648.310084,
+            626.932334,
+            607.160041
+          ]
+        }
+      },
+      "manifest_bytes": 2795,
+      "manifest_sha256": "bd0649dd97889ab906670ea15effa3eeb4656061b56b9e8c0475334e82f019cb"
+    },
+    {
+      "name": "local-forall-j4",
+      "projects": 8,
+      "arguments": [
+        "forall",
+        "-j4",
+        "git rev-parse --verify HEAD >/dev/null"
+      ],
+      "output_matches": true,
+      "output_comparison": "project/status lines for Python forall; exact native bytes",
+      "stdout_sha256": "48e71a243fb329b2af6c19ee4807000325c7db39c19973d28801249ef0761c73",
+      "round_order": [
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ],
+        [
+          "swift",
+          "rust",
+          "python"
+        ],
+        [
+          "rust",
+          "python",
+          "swift"
+        ],
+        [
+          "python",
+          "rust",
+          "swift"
+        ],
+        [
+          "python",
+          "swift",
+          "rust"
+        ],
+        [
+          "rust",
+          "swift",
+          "python"
+        ],
+        [
+          "swift",
+          "python",
+          "rust"
+        ]
+      ],
+      "implementations": {
+        "python": {
+          "median_ms": 1221.922875,
+          "p95_ms": 1401.275792,
+          "min_ms": 1181.41425,
+          "max_ms": 1462.634083,
+          "samples_ms": [
+            1274.132292,
+            1188.896084,
+            1257.572083,
+            1313.651083,
+            1231.705041,
+            1221.922875,
+            1189.188917,
+            1191.061208,
+            1237.661208,
+            1200.768541,
+            1181.803167,
+            1190.894375,
+            1295.02,
+            1210.169084,
+            1196.316292,
+            1264.423834,
+            1462.634083,
+            1226.087583,
+            1281.129167,
+            1349.5775,
+            1401.275792,
+            1268.769708,
+            1298.337542,
+            1199.585166,
+            1226.455708,
+            1202.379416,
+            1181.41425,
+            1195.409125,
+            1209.311083,
+            1219.357125,
+            1199.713917
+          ]
+        },
+        "rust": {
+          "median_ms": 180.255417,
+          "p95_ms": 205.18175,
+          "min_ms": 163.0125,
+          "max_ms": 209.501792,
+          "samples_ms": [
+            190.214375,
+            185.839333,
+            169.607875,
+            177.5985,
+            191.582125,
+            173.2105,
+            192.701167,
+            192.447666,
+            174.756375,
+            180.255417,
+            180.207042,
+            172.379834,
+            177.307166,
+            209.501792,
+            163.0125,
+            186.0205,
+            171.008333,
+            180.13675,
+            193.45725,
+            189.246458,
+            191.741708,
+            205.18175,
+            191.165875,
+            177.9165,
+            192.469375,
+            178.739875,
+            188.353333,
+            176.091542,
+            176.645917,
+            188.713667,
+            175.049875
+          ]
+        },
+        "swift": {
+          "median_ms": 204.953917,
+          "p95_ms": 220.394708,
+          "min_ms": 191.870416,
+          "max_ms": 223.592334,
+          "samples_ms": [
+            223.592334,
+            215.770875,
+            206.812084,
+            203.532125,
+            204.631416,
+            204.953917,
+            201.609458,
+            210.052458,
+            209.173,
+            202.99275,
+            198.623959,
+            202.597709,
+            193.052958,
+            199.224083,
+            198.209834,
+            191.870416,
+            220.394708,
+            204.694666,
+            219.210625,
+            218.470209,
+            206.050584,
+            199.782958,
+            215.233375,
+            203.008375,
+            199.138709,
+            209.515709,
+            209.025917,
+            206.743708,
+            206.480333,
+            197.319125,
+            215.207416
+          ]
+        }
+      },
+      "manifest_bytes": 2795,
+      "manifest_sha256": "bd0649dd97889ab906670ea15effa3eeb4656061b56b9e8c0475334e82f019cb"
+    }
+  ]
+}

@@ -18,8 +18,13 @@ implementation alongside Rust while comparing compatibility and performance.
 - [x] Preserve Python parser/output captures and pass native CLI/process regression checks.
 - [x] Build and run Swift tests on macOS and isolated Linux.
 - [x] Complete the unchanged 1,111-case functional matrix against Swift.
-- [ ] Benchmark Python, Rust release, and Swift release with identical local workloads.
+- [x] Benchmark Python, Rust release, and Swift release with identical local workloads.
+  See the [results](docs/cli-implementation-benchmark.md) and raw samples.
 - [ ] Review measured tradeoffs before choosing the implementation to ship.
+- [ ] Push `swift-migration` and run the added macOS/Linux Swift CI workflow.
+  The CLI token lacks `workflow` scope and the GitHub SSH agent is unavailable.
+- [ ] If Swift is selected, finish oldest-macOS runtime checks, release
+  packaging/signing, and static Swift runtime redistribution notices.
 - [ ] Expand output captures for workspace metadata and `forall` UI. Both native
   ports omit Python's extra metadata blank line, `>` command prefix, and live
   parallel progress display; benchmark checks account for those differences.

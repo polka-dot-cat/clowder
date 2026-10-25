@@ -1,0 +1,125 @@
+{
+  "implementation_commit": "5c1fb536",
+  "test_runner_commit": "704d1916",
+  "isolated_image": {
+    "tag": "clowder-swift-tests:local",
+    "id": "sha256:bd0d0eb1d44d24773a9ce82ab82855409438608e1dd232abb035c31137a8b79f"
+  },
+  "suites": [
+    {
+      "suite": "lfs",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 13.912,
+      "workers": 1
+    },
+    {
+      "suite": "offline",
+      "tests": 51,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 13.545,
+      "workers": 1
+    },
+    {
+      "suite": "offline-write",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.723,
+      "workers": 1
+    },
+    {
+      "suite": "read",
+      "tests": 681,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 204.513,
+      "workers": 4
+    },
+    {
+      "suite": "schema",
+      "tests": 211,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 80.906,
+      "workers": 1
+    },
+    {
+      "suite": "schema-lfs",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 6.91,
+      "workers": 1
+    },
+    {
+      "suite": "source-urls",
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 3.624,
+      "workers": 1
+    },
+    {
+      "suite": "ssh-features",
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 45.701,
+      "workers": 1
+    },
+    {
+      "suite": "write",
+      "tests": 89,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 78.49,
+      "workers": 1
+    }
+  ],
+  "total": 1111,
+  "swift_testing": {
+    "macos": 10,
+    "linux": 10,
+    "schema_parameters": 9,
+    "yaml_ini_reference_cases": 1175
+  },
+  "native_blackbox": {
+    "macos_release": 19,
+    "linux_release": 18,
+    "linux_note": "The original Zsh wrapper test is compiled only on macOS."
+  },
+  "pytest_automatic_swift_selection": 18,
+  "linux_binary": {
+    "sha256": "d702f5d10a6d69683239ee66bbefa5f9cae4cb9f3d807153cc0bb7d0f607c191",
+    "unstripped_bytes": 75125496,
+    "stripped_bytes": 57790120,
+    "build_platform": "Swift 6.4.1 / Ubuntu 22.04 / arm64",
+    "runtime_platform": "Debian 12 / arm64, no Swift installation, network disabled"
+  },
+  "limits": [
+    "No live Beanstalk credential/host-key verification",
+    "No macOS 13 runtime or x86_64 execution yet",
+    "No remote CI run: publishing awaits GitHub SSH access"
+  ],
+  "architecture_verification": {
+    "python_reference": "arm64",
+    "rust_macos_binary": "arm64",
+    "swift_macos_binary": "arm64"
+  },
+  "renamed_binary_runner": {
+    "macos_checks_passed": 19,
+    "runner_sha256": "0d88c058e52b88202feabe2c482e1bb0cc925629d370295e730ad4c91ce61c2a"
+  }
+}
