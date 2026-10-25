@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+"""Check generated Swift resources and source formatting without touching build trees."""
+from pathlib import Path
+import subprocess
+root = Path(__file__).resolve().parent.parent
+subprocess.run([str(root / 'script/update-swift-resources'), '--check'], check=True)
+files = [str(path) for parent in ('swift/Sources', 'swift/Tests') for path in (root / parent).rglob('*.swift')
+         if path.name != 'Embedded.swift']
+subprocess.run(['swift', 'format', 'lint', '--strict', '--configuration', str(root / 'swift/.swift-format'),
+                str(root / 'swift/Package.swift'), *files], check=True)

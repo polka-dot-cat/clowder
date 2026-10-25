@@ -9,6 +9,21 @@ Check an item off only after its completion criteria are met. Add regression
 coverage for behavior fixes. Abstract methods and pytest-bdd scenario bodies that
 contain `pass` are not automatically missing implementations.
 
+## Swift implementation comparison
+
+Follow [the Swift comparison guide](docs/swift-migration.md). Keep the Swift
+implementation alongside Rust while comparing compatibility and performance.
+
+- [x] Add a native Swift CLI with the shared grammar/schema and no Python/Rust runtime fallback.
+- [x] Preserve Python parser/output captures and pass native CLI/process regression checks.
+- [x] Build and run Swift tests on macOS and isolated Linux.
+- [x] Complete the unchanged 1,111-case functional matrix against Swift.
+- [ ] Benchmark Python, Rust release, and Swift release with identical local workloads.
+- [ ] Review measured tradeoffs before choosing the implementation to ship.
+- [ ] Expand output captures for workspace metadata and `forall` UI. Both native
+  ports omit Python's extra metadata blank line, `>` command prefix, and live
+  parallel progress display; benchmark checks account for those differences.
+
 ## Rust migration
 
 Follow [the migration plan](docs/rust-migration.md). Work in `rust-migration`
@@ -56,8 +71,8 @@ and keep PR #642 as a draft until compatibility and distribution checks pass.
   See the [results](docs/rust-manifest-benchmark.md): validated JSON with content
   hashing cuts `--help` time by 23–30% in the synthetic fixtures; the small-workspace
   `status` difference is within timing noise. No production cache is enabled.
-- [ ] Decide whether manifest startup savings justify a production cache. If
-  adopted, use a versioned per-user cache checked against source contents, retain
+- [ ] **Deferred:** revisit manifest caching only if startup becomes noticeable.
+  The owner deferred it after the benchmark. If adopted, use a versioned per-user cache checked against source contents, retain
   live config/path checks, and test invalidation, corrupt/unwritable entries,
   concurrent writers, and cleanup. Do not create `.clowder` for this cache.
 

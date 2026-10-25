@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""Run the existing Rust black-box tests against an explicitly selected native CLI."""
+import argparse
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+import json
+
+root = Path(__file__).resolve().parent.parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('executable', type=Path)
+args = parser.parse_args()
+executable = args.executable.resolve()
+if not executable.is_file() or not os.access(executable, os.X_OK):
+    parser.error('Select a built native executable')
+(root / 'build').mkdir(exist_ok=True)
+with tempfile.TemporaryDirectory(prefix='native-compatibility-', dir=root / 'build') as directory:
+    directory = Path(directory)
+    cargo = (root / 'Cargo.toml').read_text()
+    package = cargo.split('[package]\n', 1)[1].split('include = [', 1)[0]
+    dependencies = cargo.split('[dependencies]\n', 1)[1].split('[profile.release]', 1)[0]
+    manifest = '[package]\n' + package + '\n[dependencies]\n' + dependencies
+    for name in ('rust_cli', 'rust_process'):
+        manifest += '\n[[test]]\nname = ' + json.dumps(name) + '\npath = ' + json.dumps(str(root / 'tests' / (name + '.rs'))) + '\n'
+    (directory / 'Cargo.toml').write_text(manifest)
+    shutil.copy2(root / 'Cargo.lock', directory / 'Cargo.lock')
+    (directory / 'completions').symlink_to(root / 'completions', target_is_directory=True)
+    env = dict(os.environ, CARGO_BIN_EXE_clowder=str(executable), GIT_CONFIG_GLOBAL=os.devnull,
+               GIT_CONFIG_SYSTEM=os.devnull, GIT_TERMINAL_PROMPT='0')
+    env.pop('CLOWDER_COMPLETE', None)
+    result = subprocess.run(['cargo', 'test', '--locked', '--manifest-path', str(directory / 'Cargo.toml'),
+                             '--target-dir', str(root / 'target/native-compatibility'), '--', '--test-threads=2'],
+                            cwd=root, env=env)
+    raise SystemExit(result.returncode)

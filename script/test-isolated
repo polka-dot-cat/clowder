@@ -11,9 +11,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SUITES = ("read", "write", "schema", "schema-lfs", "ssh-features", "lfs", "offline", "offline-write", "source-urls")
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("suite", choices=("build", "all", *SUITES))
-parser.add_argument("--image", default="clowder-native-tests:local")
+parser.add_argument("--implementation", choices=("rust", "swift"), default="rust")
+parser.add_argument("--image")
 parser.add_argument("--reports", type=Path, default=ROOT / "build" / "isolated")
 args = parser.parse_args()
+args.image = args.image or ("clowder-swift-tests:local" if args.implementation == "swift" else "clowder-native-tests:local")
 if args.suite == "build":
     # Include current tracked/unignored files, but no .git, credentials, host
     # build output, or disposable test trees. Preserve symlinks without following.
@@ -25,7 +27,7 @@ if args.suite == "build":
                 destination = Path(context) / name
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, destination, follow_symlinks=False)
-        subprocess.run(["docker", "build", "-t", args.image, "-f", str(Path(context) / "tests/isolation/Dockerfile"), context],
+        subprocess.run(["docker", "build", "-t", args.image, "-f", str(Path(context) / ("tests/isolation/Dockerfile.swift" if args.implementation == "swift" else "tests/isolation/Dockerfile")), context],
                        check=True)
 
 else:

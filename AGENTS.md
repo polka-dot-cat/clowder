@@ -74,6 +74,16 @@ and source-text hashes in `about.toml` with the dependency update.
 coverage. `build/`, `temp/`, `dist/`, `*.egg-info`, caches, and
 `README-processed.md` are generated or ignored content; do not edit them as source.
 
+### Swift comparison branch
+
+The independent Swift CLI is under `swift/`; read [docs/swift-migration.md](docs/swift-migration.md).
+Use `script/check-swift`, `swift test --package-path swift`, and a release build.
+`CLOWDER_IMPLEMENTATION=swift` selects it in the unchanged BDD harness; Rust
+remains the default. Use `script/test-isolated ... --implementation swift` for
+side-effecting integration tests. Keep Python/Rust runtime fallbacks out of the
+Swift executable. `Embedded.swift` is generated from the shared grammar/schema
+by `script/update-swift-resources`. Do not edit `.build/` dependency/build output.
+
 ## Environment and setup
 
 `.python-version`, `Pipfile`, and `Pipfile.lock` select Python 3.8.16.

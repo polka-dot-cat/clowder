@@ -1,0 +1,56 @@
+name: CI - Swift
+
+on:
+  push:
+    branches: [swift-migration]
+  pull_request:
+    branches: [master, rust-migration]
+    paths:
+      - 'swift/**'
+      - 'src/cli_spec.json'
+      - 'clowder/clowder.schema.json'
+      - 'tests/**'
+      - 'completions/**'
+      - 'script/check-swift'
+      - 'script/update-swift-resources'
+      - 'script/test-native-compatibility'
+      - '.github/workflows/ci-swift.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2.4.0
+        with:
+          swift-version: '6.4'
+      - name: Check shared resources and formatting
+        run: |
+          swift --version
+          python3 script/check-swift
+      - name: Native Swift tests
+        run: swift test --package-path swift
+      - name: Existing native compatibility tests against Swift
+        run: python3 script/test-native-compatibility swift/.build/debug/clowder
+      - name: Release build
+        run: |
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            swift build --package-path swift -c release --static-swift-stdlib
+          else
+            swift build --package-path swift -c release
+          fi
+          swift/.build/release/clowder --version

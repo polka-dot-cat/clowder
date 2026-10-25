@@ -13,8 +13,9 @@ import pytest
 
 def pytest_configure(config):
     implementation = os.environ.get('CLOWDER_IMPLEMENTATION', 'rust')
-    if implementation not in ('rust', 'python'):
-        raise pytest.UsageError('CLOWDER_IMPLEMENTATION must be rust or python')
+    if implementation not in ('rust', 'swift', 'python'):
+        raise pytest.UsageError('CLOWDER_IMPLEMENTATION must be rust, swift, or python')
+    label = 'Swift' if implementation == 'swift' else 'Rust'
     executable = os.environ.get('CLOWDER_EXECUTABLE')
     if implementation == 'python':
         if executable:
@@ -34,14 +35,26 @@ def pytest_configure(config):
         if not path.is_file() or not os.access(path, os.X_OK):
             raise pytest.UsageError(f'CLOWDER_EXECUTABLE is not an executable file: {path}')
         os.environ['CLOWDER_EXECUTABLE'] = str(path)
-        config.clowder_cli_description = f'Rust ({path})'
+        config.clowder_cli_description = f'{label} ({path})'
         return
     if config.option.collectonly:
-        config.clowder_cli_description = 'Rust (collection only; build deferred)'
+        config.clowder_cli_description = f'{label} (collection only; build deferred)'
         return
     # This runs before xdist starts its workers. They inherit the selected binary
     # through the environment, so each worker does not start another Cargo build.
     root = Path(__file__).resolve().parent.parent
+    if implementation == 'swift':
+        try:
+            subprocess.run(['swift', 'build', '--package-path', str(root / 'swift')], cwd=root, check=True)
+            directory = subprocess.check_output(
+                ['swift', 'build', '--package-path', str(root / 'swift'), '--show-bin-path'], cwd=root, text=True,
+            ).strip()
+        except (FileNotFoundError, subprocess.CalledProcessError) as error:
+            raise pytest.UsageError('Swift tests require a working Swift 6.2 or later toolchain') from error
+        executable = str(Path(directory) / 'clowder')
+        os.environ['CLOWDER_EXECUTABLE'] = executable
+        config.clowder_cli_description = f'Swift ({executable})'
+        return
     try:
         result = subprocess.run(
             ['cargo', 'build', '--locked', '--message-format=json'],
