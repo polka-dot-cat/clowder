@@ -50,9 +50,9 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.11'
-      - uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2.4.0
+      - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
         with:
-          swift-version: '6.4'
+          swift-version: '6.4.1'
       - name: Install Rust and Python comparison tools
         run: |
           rustup toolchain install 1.99.1 --profile minimal

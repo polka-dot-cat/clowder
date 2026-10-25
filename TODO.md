@@ -26,7 +26,9 @@ comparison and Python as the compatibility reference. Keep all three together in
   parser captures, six harness tests, Swift Linux native tests/release build,
   Actions lint, and the benchmark timing/analysis smoke run pass. Sphinx builds
   with existing documentation warnings. No runtime sources or Gherkin files changed.
-- [ ] Publish the combined branch, update draft PR #642, and verify hosted checks.
+- [x] Publish the combined branch and update draft PR #642 for the Swift direction.
+- [ ] Verify hosted checks for the combined configuration. Use the pinned Swiftly
+  installer for Swift 6.4.1; the old setup action only recognized versions through 6.2.1.
 - [ ] Separate structured core results/progress from CLI
   presentation and exit behavior for future Mac app reuse.
 - [ ] After validation and owner review, merge the combined PR into `master` and
