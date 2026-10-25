@@ -11,7 +11,7 @@ charset-normalizer==3.1.0
 colorama==0.4.6
 commonmark==0.9.1
 coverage==7.2.7
-cryptography==41.0.1
+cryptography==41.0.3
 dill==0.3.6
 distlib==0.3.6
 docutils==0.18.1
