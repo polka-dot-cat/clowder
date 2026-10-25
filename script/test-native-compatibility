@@ -18,6 +18,11 @@ if not executable.is_file() or not os.access(executable, os.X_OK):
 (root / 'build').mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='native-compatibility-', dir=root / 'build') as directory:
     directory = Path(directory)
+    # The git-herd alias invokes "clowder" through PATH. Keep it pointed at the
+    # selected binary even if the caller supplied a renamed comparison build.
+    (directory / 'bin').mkdir()
+    selected = directory / 'bin/clowder'
+    selected.symlink_to(executable)
     cargo = (root / 'Cargo.toml').read_text()
     package = cargo.split('[package]\n', 1)[1].split('include = [', 1)[0]
     dependencies = cargo.split('[dependencies]\n', 1)[1].split('[profile.release]', 1)[0]
@@ -27,7 +32,7 @@ with tempfile.TemporaryDirectory(prefix='native-compatibility-', dir=root / 'bui
     (directory / 'Cargo.toml').write_text(manifest)
     shutil.copy2(root / 'Cargo.lock', directory / 'Cargo.lock')
     (directory / 'completions').symlink_to(root / 'completions', target_is_directory=True)
-    env = dict(os.environ, CARGO_BIN_EXE_clowder=str(executable), GIT_CONFIG_GLOBAL=os.devnull,
+    env = dict(os.environ, CARGO_BIN_EXE_clowder=str(selected), GIT_CONFIG_GLOBAL=os.devnull,
                GIT_CONFIG_SYSTEM=os.devnull, GIT_TERMINAL_PROMPT='0')
     env.pop('CLOWDER_COMPLETE', None)
     result = subprocess.run(['cargo', 'test', '--locked', '--manifest-path', str(directory / 'Cargo.toml'),
