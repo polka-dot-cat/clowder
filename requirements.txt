@@ -88,7 +88,7 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 tomli==2.0.1
 tomlkit==0.11.8
-tornado==6.3.2
+tornado==6.3.3
 trio==0.22.1
 twine==4.0.2
 typing_extensions==4.7.1
