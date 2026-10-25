@@ -27,8 +27,15 @@ comparison and Python as the compatibility reference. Keep all three together in
   Actions lint, and the benchmark timing/analysis smoke run pass. Sphinx builds
   with existing documentation warnings. No runtime sources or Gherkin files changed.
 - [x] Publish the combined branch and update draft PR #642 for the Swift direction.
-- [ ] Verify hosted checks for the combined configuration. Use the pinned Swiftly
-  installer for Swift 6.4.1; the old setup action only recognized versions through 6.2.1.
+- [x] Verify hosted checks for the combined configuration at `8007319c`.
+  The [Swift functional matrix](https://github.com/polka-dot-cat/clowder/actions/runs/40204746172)
+  passes 684 cases in each macOS/Linux and Python 3.8/3.11 harness job.
+  [Swift native checks](https://github.com/polka-dot-cat/clowder/actions/runs/40204746166),
+  [Python reference and nine shared workloads](https://github.com/polka-dot-cat/clowder/actions/runs/40204746243),
+  [Rust Linux checks and 681 coverage cases](https://circleci.com/gh/polka-dot-cat/clowder/3077),
+  [Rust macOS checks](https://circleci.com/gh/polka-dot-cat/clowder/3079), and
+  [89 isolated Swift write cases](https://circleci.com/gh/polka-dot-cat/clowder/3076)
+  also pass.
 - [ ] Separate structured core results/progress from CLI
   presentation and exit behavior for future Mac app reuse.
 - [ ] After validation and owner review, merge the combined PR into `master` and
