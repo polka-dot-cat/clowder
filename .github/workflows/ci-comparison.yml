@@ -53,15 +53,17 @@ jobs:
           python-version: '3.11'
       - name: Import Swift release signing keys
         if: runner.os == 'Linux'
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL https://www.swift.org/keys/all-keys.asc -o "$RUNNER_TEMP/swift-release-keys.asc"
-          gpg --batch --import "$RUNNER_TEMP/swift-release-keys.asc"
+        run: gpg --batch --import .github/keys/swift-signing-keys.asc
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
         with:
           swift-version: '6.4.1'
       - name: Install Rust and Python comparison tools
         run: |
-          rustup toolchain install 1.99.1 --profile minimal
+          # Keep toolchain files and component metadata independent of the runner image.
+          RUSTUP_HOME=$(mktemp -d "$RUNNER_TEMP/clowder-rustup.XXXXXX")
+          export RUSTUP_HOME
+          echo "RUSTUP_HOME=$RUSTUP_HOME" >> "$GITHUB_ENV"
+          rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt
           python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
           python -m pip install -r requirements.txt
           python -m pip install --no-deps --no-build-isolation -e .

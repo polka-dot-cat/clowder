@@ -28,9 +28,7 @@ jobs:
           persist-credentials: false
       - name: Import Swift release signing keys
         if: runner.os == 'Linux'
-        run: |
-          curl --proto '=https' --tlsv1.2 -fsSL https://www.swift.org/keys/all-keys.asc -o "$RUNNER_TEMP/swift-release-keys.asc"
-          gpg --batch --import "$RUNNER_TEMP/swift-release-keys.asc"
+        run: gpg --batch --import .github/keys/swift-signing-keys.asc
       - uses: swift-actions/setup-swift@364295d9c23900ce04d4e5cc708387921b4e50f9 # v3 (Swiftly installer)
         with:
           swift-version: '6.4.1'
@@ -41,7 +39,12 @@ jobs:
       - name: Native Swift tests
         run: swift test --package-path swift
       - name: Install the pinned Rust compatibility-test toolchain
-        run: rustup toolchain install 1.99.1 --profile minimal
+        run: |
+          # Keep toolchain files and component metadata independent of the runner image.
+          RUSTUP_HOME=$(mktemp -d "$RUNNER_TEMP/clowder-rustup.XXXXXX")
+          export RUSTUP_HOME
+          echo "RUSTUP_HOME=$RUSTUP_HOME" >> "$GITHUB_ENV"
+          rustup toolchain install 1.99.1 --profile minimal --component clippy,rustfmt
       - name: Existing native compatibility tests against Swift
         run: python3 script/test-native-compatibility swift/.build/debug/clowder
       - name: Release build
