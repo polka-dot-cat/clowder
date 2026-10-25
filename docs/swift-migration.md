@@ -117,6 +117,31 @@ Like Rust, Swift preserves the captured output contract but does not duplicate
 all of Python's presentation: `forall` omits the `>` command prefix and live
 parallel progress display, and workspace metadata has one fewer blank line.
 
+## Three-way benchmark
+
+Use an existing Python interpreter with the reference CLI's dependencies. The
+driver builds optimized Rust and Swift binaries, checks output, then launches
+fresh processes in randomized order. It uses only disposable local workspaces
+and Git repositories, with warm filesystem caches and no manifest caching.
+
+```sh
+set -o pipefail
+python3 script/benchmark-implementations --python /path/to/venv/bin/python \
+  --samples 31 --warmups 3 --sizes 8,100,1000 \
+  --output build/benchmarks/implementations-local \
+  2>&1 | tee build/benchmarks/implementations-local.log
+python3 script/benchmarks/analyze_implementations.py \
+  build/benchmarks/implementations-local/results.json
+```
+
+Choose a new output directory for each run. Raw samples, toolchain/package
+versions, source/binary fingerprints, fixture sizes, and execution order are
+recorded in `results.json`; analysis adds paired bootstrap intervals. Python's
+known Trio deprecation warning is suppressed. All other stderr and exit codes
+must match. `forall` checks the selected project/status lines across Python and
+the native ports; all other commands compare exact output bytes. Rust and Swift
+always require exact byte agreement, including `forall`.
+
 ## Shared generated inputs
 
 After changing `src/cli_spec.json` or `clowder/clowder.schema.json`, run:
