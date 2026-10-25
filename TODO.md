@@ -38,6 +38,7 @@ comparison and Python as the compatibility reference. Keep all three together in
   also pass.
 - [ ] Separate structured core results/progress from CLI
   presentation and exit behavior for future Mac app reuse.
+  Track in [#643](https://github.com/polka-dot-cat/clowder/issues/643).
 - [ ] After validation and owner review, merge the combined PR into `master` and
   use ordinary feature branches. Keep Python and Rust source for comparisons.
 
@@ -55,6 +56,10 @@ for compatibility and performance comparisons.
 - [x] Choose Swift for the production CLI and future Mac app after reviewing the measured tradeoffs.
 - [ ] Finish oldest-macOS runtime checks, release
   packaging/signing, and static Swift runtime redistribution notices.
+  Track in [#644](https://github.com/polka-dot-cat/clowder/issues/644).
+- [ ] Profile and optimize measured native CLI bottlenecks with controlled
+  Python/Rust/Swift comparisons; retain historical benchmark results.
+  Track in [#645](https://github.com/polka-dot-cat/clowder/issues/645).
 - [ ] Expand output captures for workspace metadata and `forall` UI. Both native
   ports omit Python's extra metadata blank line, `>` command prefix, and live
   parallel progress display; benchmark checks account for those differences.
