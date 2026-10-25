@@ -9,10 +9,33 @@ Check an item off only after its completion criteria are met. Add regression
 coverage for behavior fixes. Abstract methods and pytest-bdd scenario bodies that
 contain `pass` are not automatically missing implementations.
 
-## Swift implementation comparison
+## Combined implementation migration
 
-Follow [the Swift comparison guide](docs/swift-migration.md). Keep the Swift
-implementation alongside Rust while comparing compatibility and performance.
+Follow [the implementation policy](docs/implementations.md). Swift is the intended
+production CLI and future Mac app core. Retain Rust as a maintained performance
+comparison and Python as the compatibility reference. Keep all three together in
+`rust-migration` and draft PR #642 until review and validation are complete.
+
+- [x] Fast-forward `rust-migration` to include the four Swift comparison commits.
+- [x] Make Swift the default in pytest and the isolated runner; select Rust
+  explicitly in its coverage tools and containers.
+- [x] Configure Swift functional CI, explicit Rust/Python comparison checks, and
+  shared output checks without CI timing thresholds. Preserve required check names.
+- [x] Validate consolidation locally: 54 help cases across the three selections,
+  89 isolated Swift write cases, nine shared output workloads, 1,069 generated
+  parser captures, six harness tests, Swift Linux native tests/release build,
+  Actions lint, and the benchmark timing/analysis smoke run pass. Sphinx builds
+  with existing documentation warnings. No runtime sources or Gherkin files changed.
+- [ ] Publish the combined branch, update draft PR #642, and verify hosted checks.
+- [ ] Separate structured core results/progress from CLI
+  presentation and exit behavior for future Mac app reuse.
+- [ ] After validation and owner review, merge the combined PR into `master` and
+  use ordinary feature branches. Keep Python and Rust source for comparisons.
+
+## Swift implementation
+
+Follow [the Swift guide](docs/swift-migration.md). Retain all three implementations
+for compatibility and performance comparisons.
 
 - [x] Add a native Swift CLI with the shared grammar/schema and no Python/Rust runtime fallback.
 - [x] Preserve Python parser/output captures and pass native CLI/process regression checks.
@@ -20,19 +43,17 @@ implementation alongside Rust while comparing compatibility and performance.
 - [x] Complete the unchanged 1,111-case functional matrix against Swift.
 - [x] Benchmark Python, Rust release, and Swift release with identical local workloads.
   See the [results](docs/cli-implementation-benchmark.md) and raw samples.
-- [ ] Review measured tradeoffs before choosing the implementation to ship.
-- [ ] Push `swift-migration` and run the added macOS/Linux Swift CI workflow.
-  The CLI token lacks `workflow` scope and the GitHub SSH agent is unavailable.
-- [ ] If Swift is selected, finish oldest-macOS runtime checks, release
+- [x] Choose Swift for the production CLI and future Mac app after reviewing the measured tradeoffs.
+- [ ] Finish oldest-macOS runtime checks, release
   packaging/signing, and static Swift runtime redistribution notices.
 - [ ] Expand output captures for workspace metadata and `forall` UI. Both native
   ports omit Python's extra metadata blank line, `>` command prefix, and live
   parallel progress display; benchmark checks account for those differences.
 
-## Rust migration
+## Rust comparison implementation
 
-Follow [the migration plan](docs/rust-migration.md). Work in `rust-migration`
-and keep PR #642 as a draft until compatibility and distribution checks pass.
+Follow [the Rust guide](docs/rust-migration.md) for comparison work. The completed
+items below record the Rust migration; new production releases target Swift.
 
 - [x] Add the native Cargo binary, manifest schema validation and inheritance,
   workspace discovery, and command dispatch without a Python runtime fallback.

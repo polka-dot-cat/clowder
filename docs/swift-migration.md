@@ -1,14 +1,16 @@
-# Native Swift CLI comparison
+# Swift CLI migration
 
-The `swift-migration` branch adds a native Swift implementation alongside the
-Rust port and Python reference. It uses the same command grammar, manifest
+The combined `rust-migration` branch contains the intended production Swift
+implementation alongside the maintained Rust comparison and Python reference.
+See the [implementation policy](implementations.md). It uses the same command grammar, manifest
 schema, output captures, and unchanged Gherkin scenarios. It does not invoke
 Python or Rust to implement commands. Git remains an external dependency.
 The command scope and retained legacy limitations follow the
 [native compatibility notes](rust-compatibility.md).
 
-The comparison keeps both native implementations available for review. Manifest
-caching remains deferred.
+Swift was selected to support both the CLI and a future Mac app. All three
+implementations remain available for correctness and performance comparisons.
+Manifest caching remains deferred.
 
 ## Build and run
 
@@ -60,7 +62,8 @@ work with either native implementation.
 `swift/Package.resolved` pins the dependency revision. Dependency notices are in
 [swift/THIRD-PARTY-NOTICES.md](../swift/THIRD-PARTY-NOTICES.md). Release signing,
 publication, and a complete notice audit for redistributed static Swift runtime
-libraries are separate from this local implementation comparison.
+libraries remain release prerequisites. Only Swift is planned for new native
+release publication; retained Rust and Python code support comparisons.
 
 ## Validation
 
@@ -92,7 +95,7 @@ CLOWDER_IMPLEMENTATION=swift CLOWDER_EXECUTABLE="$PWD/swift/.build/release/clowd
   -m 'not ssh and not offline and not write and not lfs'
 ```
 
-Automatic Swift selection builds once before pytest workers start. Rust remains
+Automatic Swift selection builds once before pytest workers start. Swift is
 the harness default. Python reference selection is unchanged. The broad
 read-only selection still reads public Git repositories.
 
@@ -100,9 +103,12 @@ Run the full matrix in disposable Linux containers, including offline, LFS,
 write, SSH, and custom-URL scenarios:
 
 ```sh
-python3 script/test-isolated build --implementation swift
-python3 script/test-isolated all --implementation swift --reports build/swift-isolated
+python3 script/test-isolated build
+python3 script/test-isolated all
 ```
+
+Default reports go to `build/isolated/swift/`. Add `--implementation rust`
+for the Rust image and `build/isolated/rust/` reports.
 
 The Swift image uses Swift 6.4 and Python 3.10 on Ubuntu 22.04. It uses the same
 pinned private fixture refs and transport isolation as the Rust image. No host

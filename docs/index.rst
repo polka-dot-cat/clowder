@@ -10,6 +10,7 @@ clowder
    :hidden:
 
    clowder-transfer-preflight
+   implementations
 
 .. image:: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fpolka-dot-cat%2Fclowder%2Fbadge&style=flat
     :target: https://actions-badge.atrox.dev/polka-dot-cat/clowder/goto

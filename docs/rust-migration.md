@@ -1,4 +1,9 @@
-# Rust Migration
+# Rust comparison implementation
+
+Swift is now the intended production CLI and future Mac app core. This document
+retains the Rust port plan and validation procedure. Rust stays in the combined
+`rust-migration` branch as a maintained comparison; see the
+[implementation policy](implementations.md).
 
 Port clowder cli from python to rust.
 
@@ -18,7 +23,7 @@ While working on this migration, check ChatGPT usage periodically. At 10% remain
 
 ## Build and validate the native CLI
 
-The migration is in progress on `rust-migration` and draft PR #642. The transfer
+The combined migration is in progress on `rust-migration` and draft PR #642. The transfer
 cleanup branch is merged into this branch. The Python implementation remains as
 a behavior reference and supplies utilities used by the unchanged BDD harness.
 The native executable runs its own commands and does not invoke Python.
@@ -34,9 +39,10 @@ cargo test --locked
 ```
 
 Use the existing Python test environment to run the BDD suite. It builds the
-native executable once before starting workers, or accepts an explicit binary:
+selected executable once before starting workers. Select Rust explicitly:
 
 ```sh
+export CLOWDER_IMPLEMENTATION=rust
 export CLOWDER_EXECUTABLE="$PWD/target/debug/clowder"
 export PYTHONPATH="$PWD"
 pipenv run python -m pytest tests/functional -q \

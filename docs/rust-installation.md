@@ -1,5 +1,10 @@
 # Native Clowder installation
 
+Rust is retained for development and benchmark comparisons. Swift is the intended
+production implementation; see the [implementation policy](implementations.md).
+The archives described here are comparison artifacts, not a parallel release
+commitment.
+
 The Rust migration produces one `clowder` executable for macOS or Linux.
 It needs Git on `PATH`, a POSIX shell for `forall` and `repo run`, and Git LFS
 only when a manifest enables LFS. Python is needed only for the retained test

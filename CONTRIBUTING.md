@@ -1,37 +1,51 @@
 # Contributing
 
-## Rust migration branch
+## Implementations and shared tests
 
-The native CLI is built from `src/`. Install the toolchain selected by
-`rust-toolchain.toml`, then run:
+Swift is the intended production implementation. Rust remains a maintained
+comparison implementation; Python remains the compatibility reference and test
+harness. Keep them in the same branch and follow the
+[implementation policy](docs/implementations.md).
+
+With Swift 6.2 or later and Git installed:
 
 ```sh
-cargo build --locked
-cargo fmt --check
-cargo clippy --all-targets -- -D warnings
-cargo test --locked
+script/check-swift
+swift test --package-path swift
+swift build --package-path swift -c release
 ```
 
-Keep the Gherkin features unchanged. With the existing Python test dependencies
-installed, pytest builds/selects the native CLI by default. An explicit executable
-can select another native build:
+Keep the existing Gherkin features unchanged. With the Python test dependencies
+installed, pytest builds/selects Swift by default. Use explicit selection when
+comparing implementations:
 
 ```sh
-export CLOWDER_EXECUTABLE="$PWD/target/debug/clowder"
 export PYTHONPATH="$PWD"
-python -m pytest tests/functional -q -m 'not ssh and not offline and not write and not lfs'
+# Local help cases; no public repositories or credentials required.
+python -m pytest tests/functional/test_features.py -q -m help -k empty_directory
+CLOWDER_IMPLEMENTATION=rust python -m pytest tests/functional/test_features.py -q -m help -k empty_directory
+CLOWDER_IMPLEMENTATION=python python -m pytest tests/functional/test_features.py -q -m help -k empty_directory
 ```
 
-Use the interpreter from your test environment. This selection still uses public
-Git repositories. Run offline, LFS, and write scenarios in disposable or serialized
-environments as described in `AGENTS.md`. The Rust unit/integration tests use
-temporary local repositories and do not need credentials or Python.
-To compare behavior with Python, unset `CLOWDER_EXECUTABLE` and set
-`CLOWDER_IMPLEMENTATION=python`.
+Use the interpreter from your test environment. `CLOWDER_EXECUTABLE` can point to
+an existing native build; set `CLOWDER_IMPLEMENTATION` to its language as well.
+Unset `CLOWDER_EXECUTABLE` when selecting Python. Native tests use temporary local
+repositories. Run offline, LFS, and write scenarios in disposable environments:
 
-See [native testing and coverage](docs/rust-testing.md), [the migration guide](docs/rust-migration.md) and
-[native packaging instructions](docs/rust-installation.md). The legacy setup
-below remains available for the Python behavior reference and published package.
+```sh
+script/test-isolated build
+script/test-isolated all
+# Rust comparison uses its own image and report directory.
+script/test-isolated build --implementation rust
+script/test-isolated all --implementation rust
+```
+
+For Rust changes, use the toolchain in `rust-toolchain.toml` and run
+`cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
+`cargo test --locked`. See the [Swift guide](docs/swift-migration.md),
+[Rust testing guide](docs/rust-testing.md), and
+[shared benchmark procedure](docs/cli-implementation-benchmark.md).
+The legacy setup below supports the Python reference and published package.
 
 ## Getting Started
 

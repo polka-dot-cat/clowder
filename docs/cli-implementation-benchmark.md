@@ -67,11 +67,11 @@ these sizes do not measure total runtime footprint. The Linux Swift build with
 passed the native tests on Debian 12 without a Swift installation. Linux speed
 and a comparable Rust Linux package size were not measured here.
 
-Measured performance favors keeping Rust for this port. Swift remains a viable
-alternative if language familiarity or maintenance preferences outweigh its
-extra startup cost, custom validator, and Linux runtime packaging work. This
-comparison does not change the implementation selected by the existing test
-harness or enable manifest caching.
+These measurements favor Rust on speed. The owner subsequently selected Swift
+for production and a future Mac app, with Rust and Python retained for comparison.
+That decision does not change these historical results. See the
+[implementation policy](implementations.md) for shared tests and benchmark rules.
+Manifest caching remains deferred.
 
 ## Method
 
@@ -162,3 +162,17 @@ python3 script/benchmarks/analyze_implementations.py \
 - [Raw samples, fingerprints, versions, and fixture details](benchmarks/implementations-20261025/results.json).
 - [Bootstrap comparisons](benchmarks/implementations-20261025/analysis.json).
 - [Validation counts and Linux image/binary details](benchmarks/implementations-20261025/validation.json).
+
+## Correctness checks in CI
+
+Use the same fixtures and output checks without collecting timing samples:
+
+```sh
+python3 script/benchmark-implementations --python /path/to/venv/bin/python \
+  --check-only --sizes 8,100 --output build/comparison
+```
+
+The report records `mode: check-only`, zero samples/warmups, toolchain versions,
+source/binary hashes, fixture hashes, and each successful comparison. It contains
+no timing estimates and cannot be passed to the timing analysis script. CI checks
+correctness; performance measurements remain explicit runs on a recorded host.

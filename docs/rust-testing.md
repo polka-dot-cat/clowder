@@ -1,4 +1,8 @@
-# Native validation
+# Rust comparison validation
+
+Swift is the default implementation. Select `CLOWDER_IMPLEMENTATION=rust` for
+Rust BDD runs; `script/coverage-rust` sets it explicitly. See the
+[shared implementation policy](implementations.md).
 
 ## Local regression tests
 
@@ -99,11 +103,11 @@ and bounded; this is deterministic differential testing, not exhaustive fuzzing.
 Install Docker with Linux container support and use host Python 3.8 or later:
 
 ```sh
-script/test-isolated build
-script/test-isolated all
+script/test-isolated build --implementation rust
+script/test-isolated all --implementation rust
 # Or select one suite, for example:
-script/test-isolated write
-script/test-isolated source-urls
+script/test-isolated write --implementation rust
+script/test-isolated source-urls --implementation rust
 ```
 
 The build uses current tracked and unignored repository files, so local edits are
@@ -113,8 +117,9 @@ host SSH keys, Docker sockets, or ignored build/test trees. Rebuild after source
 changes. `--image` selects an image tag and `--reports` selects the output folder.
 
 Each suite runs in a fresh container. A multi-suite run resolves the image tag
-to one image ID at the start and records that ID in the report directory. Only `build/isolated/` is mounted for JUnit
-and Cucumber reports. The container's Git configuration, fixtures, LFS filters,
+to one image ID at the start and records that ID in the report directory.
+By default, only `build/isolated/rust/` is mounted for JUnit and Cucumber reports.
+The container's Git configuration, fixtures, LFS filters,
 and network interface are disposable. `NET_ADMIN` is granted only to the write
 suite's local connectivity stub and the two suites that exercise offline behavior.
 No command changes host Git configuration or host networking.
