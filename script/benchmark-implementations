@@ -17,7 +17,7 @@ import time
 
 ROOT = Path(__file__).resolve().parent.parent
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--python', required=True, type=Path, help='Python reference interpreter with project dependencies')
+parser.add_argument('--python', required=True, type=Path, help='Python interpreter with the project and its dependencies installed')
 parser.add_argument('--samples', type=int, default=31)
 parser.add_argument('--warmups', type=int, default=3)
 parser.add_argument('--sizes', default='8,100,1000')
@@ -50,7 +50,7 @@ def build(command):
 
 
 python_info = json.loads(read([str(python), '-c', '''import json, platform, importlib.metadata, yaml
-print(json.dumps({'version':platform.python_version(), 'packages':{name:importlib.metadata.version(name) for name in ('PyYAML','jsonschema','trio')}, 'libyaml_available':yaml.__with_libyaml__}))''']))
+print(json.dumps({'version':platform.python_version(), 'packages':{name:importlib.metadata.version(name) for name in ('clowder-repo','PyYAML','jsonschema','trio')}, 'libyaml_available':yaml.__with_libyaml__}))''']))
 build(['cargo', 'build', '--release', '--locked', '--target-dir', str(ROOT / 'target')])
 build(['swift', 'build', '--package-path', str(ROOT / 'swift'), '-c', 'release'])
 swift_bin = Path(read(['swift', 'build', '--package-path', str(ROOT / 'swift'), '-c', 'release', '--show-bin-path'])) / 'clowder'

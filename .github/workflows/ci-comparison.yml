@@ -33,6 +33,7 @@ jobs:
         run: |
           python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
           python -m pip install -r requirements.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Verify parser captures and reference CLI selection
         run: |
           python script/generate-rust-compatibility --check
@@ -63,6 +64,7 @@ jobs:
           rustup toolchain install 1.99.1 --profile minimal
           python -m pip install 'pip<25' setuptools==67.8.0 wheel==0.40.0
           python -m pip install -r requirements.txt
+          python -m pip install --no-deps --no-build-isolation -e .
       - name: Compare output on identical local workloads
         run: |
           python script/benchmark-implementations --python "$(command -v python)" \

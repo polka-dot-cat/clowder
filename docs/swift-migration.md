@@ -127,7 +127,9 @@ The Linux release passed all 18 applicable native black-box tests in a Debian 12
 container without a Swift installation; the extra Zsh test is macOS-only. The
 [validation record](benchmarks/implementations-20261025/validation.json) gives
 suite counts, image/binary fingerprints, and limits. Both local platforms are
-arm64; remote CI and execution on the oldest declared macOS remain pending.
+arm64. Hosted macOS/Linux checks run on
+[draft PR #642](https://github.com/polka-dot-cat/clowder/pull/642);
+execution on the oldest declared macOS remains pending.
 
 Like Rust, Swift preserves the captured output contract but does not duplicate
 all of Python's presentation: `forall` omits the `>` command prefix and live
@@ -138,7 +140,9 @@ parallel progress display, and workspace metadata has one fewer blank line.
 The [measured comparison](cli-implementation-benchmark.md) includes all three
 implementations, raw timings, confidence intervals, and distribution tradeoffs.
 
-Use an existing Python interpreter with the reference CLI's dependencies. The
+Use a Python environment with the reference CLI and its dependencies installed.
+After installing dependencies, run `python -m pip install --no-deps --no-build-isolation -e .`
+with that interpreter so Python can resolve the CLI version metadata. The
 driver builds optimized Rust and Swift binaries, checks output, then launches
 fresh processes in randomized order. It uses only disposable local workspaces
 and Git repositories, with warm filesystem caches and no manifest caching.

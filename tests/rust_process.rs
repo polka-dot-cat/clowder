@@ -415,12 +415,23 @@ fn terminal_ctrl_c_cancels_even_when_forall_ignores_command_errors() {
 
 #[test]
 fn terminal_suspend_and_resume_preserve_foreground_input() {
+    #[cfg(target_os = "macos")]
+    let shells = ["/bin/sh"];
+    #[cfg(not(target_os = "macos"))]
+    let shells = ["/bin/sh", "/bin/bash"];
+    for shell in shells {
+        check_terminal_suspend_and_resume(shell);
+    }
+}
+
+fn check_terminal_suspend_and_resume(shell: &str) {
     use std::io::Write;
     let root = workspace(&["alpha"]);
     let output = fs::File::create(root.path().join("terminal.log")).unwrap();
     let executable = env!("CARGO_BIN_EXE_clowder");
     let script = "echo $PPID > ../clowder.pid; echo $$ > ../shell.pid; touch terminal.ready; read value; printf 'resumed:%s\\n' \"$value\"";
     let mut terminal = Command::new("script");
+    terminal.env("SHELL", shell);
     #[cfg(target_os = "macos")]
     terminal.args([
         "-q",
@@ -497,6 +508,15 @@ fn terminal_suspend_and_resume_preserve_foreground_input() {
     let mut status = None;
     until(|| {
         status = running.child.try_wait().unwrap();
+        if status.is_none() {
+            // util-linux script suspends its relay when its direct child stops.
+            // Bash can exec Clowder, whereas dash keeps an intermediate shell.
+            // Resume the relay too, including a stop observed after our SIGCONT.
+            let _ = nix::sys::signal::kill(
+                nix::unistd::Pid::from_raw(running.child.id() as i32),
+                nix::sys::signal::Signal::SIGCONT,
+            );
+        }
         status.is_some()
     });
     assert_eq!(status.unwrap().code(), Some(0));

@@ -165,6 +165,11 @@ python3 script/benchmarks/analyze_implementations.py \
 
 ## Correctness checks in CI
 
+The selected Python environment must contain the project installation as well
+as its dependencies. After dependency setup, run
+`python -m pip install --no-deps --no-build-isolation -e .`; the legacy CLI needs
+installed distribution metadata to expose `--version`.
+
 Use the same fixtures and output checks without collecting timing samples:
 
 ```sh
